@@ -13,7 +13,7 @@ import CompanyInformation from '@/pages/enrollment/company-information';
 
 
 import OwnershipInfo from '@/pages/enrollment/ownership-simple';
-import AuthorizedContact from '@/pages/enrollment/authorized-contact';
+import AuthorizedContact from '@/pages/enrollment/authorized-contact-simple';
 import EmployeeInfo from '@/pages/enrollment/employee-info';
 import DocumentUpload from '@/pages/enrollment/document-upload';
 import PlanSelection from '@/pages/enrollment/plan-selection';
