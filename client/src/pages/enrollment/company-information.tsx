@@ -158,10 +158,16 @@ const formatTaxId = (value: string) => {
 // Format date to always use day 01
 const formatFormationDate = (value: string) => {
   if (!value) return value;
+  
+  // If it's already in YYYY-MM format, just add -01
+  if (value.match(/^\d{4}-\d{2}$/)) {
+    return `${value}-01`;
+  }
+  
+  // If it's a full date, extract year and month
   const date = new Date(value);
   if (isNaN(date.getTime())) return value;
 
-  // Set day to 01
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   return `${year}-${month}-01`;
@@ -235,9 +241,9 @@ export default function CompanyInformation() {
     onSuccess: () => {
       toast({
         title: 'Company information saved',
-        description: 'Proceeding to coverage information...',
+        description: 'Proceeding to ownership information...',
       });
-      setLocation('/enrollment/coverage-information');
+      setLocation('/enrollment/ownership');
     },
     onError: (error: any) => {
       toast({
@@ -683,7 +689,7 @@ export default function CompanyInformation() {
                 Back to Application Initiator
               </Button>
               <Button type="submit" disabled={saveMutation.isPending} className="min-w-[150px]">
-                {saveMutation.isPending ? 'Saving...' : 'Continue to Coverage Information'}
+                {saveMutation.isPending ? 'Saving...' : 'Continue to Ownership Information'}
               </Button>
             </div>
           </form>
