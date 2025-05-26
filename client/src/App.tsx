@@ -12,7 +12,7 @@ import CarriersPage from '@/pages/enrollment/carriers';
 import CompanyInformation from '@/pages/enrollment/company-information';
 
 
-import OwnershipInfo from '@/pages/enrollment/ownership-info';
+import OwnershipInfo from '@/pages/enrollment/ownership-simple';
 import AuthorizedContact from '@/pages/enrollment/authorized-contact';
 import EmployeeInfo from '@/pages/enrollment/employee-info';
 import DocumentUpload from '@/pages/enrollment/document-upload';
