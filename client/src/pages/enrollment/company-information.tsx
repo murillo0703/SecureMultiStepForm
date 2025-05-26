@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { z } from 'zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,9 +28,11 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { apiRequest } from '@/lib/queryClient';
-import { Building, MapPin, Calendar, FileText, Phone } from 'lucide-react';
-import { EnrollmentLayout } from '@/components/layout/enrollment-layout';
-import { useAutosave } from '@/hooks/use-autosave';
+import { Building, MapPin, Calendar, FileText, Phone, CheckCircle, Loader2 } from 'lucide-react';
+import { Header } from '@/components/layout/header';
+import { ProgressBar } from '@/components/layout/progress-bar';
+import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
 
 const companyInfoSchema = z.object({
   legalName: z.string().min(1, 'Legal company name is required'),
@@ -170,6 +172,22 @@ export default function CompanyInformation() {
   const { toast } = useToast();
   const { user } = useAuth();
 
+  // Get the enrollment steps
+  const steps = getEnabledEnrollmentSteps();
+
+  // Fetch companies for this user to get companyId
+  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
+    queryKey: ['/api/companies'],
+  });
+
+  const companyId = companies.length > 0 ? companies[0].id : null;
+
+  // Fetch application data
+  const { data: application, isLoading: isLoadingApplication } = useQuery({
+    queryKey: [`/api/companies/${companyId}/application`],
+    enabled: !!companyId,
+  });
+
   const form = useForm<CompanyInfoData>({
     resolver: zodResolver(companyInfoSchema),
     defaultValues: {
@@ -244,20 +262,51 @@ export default function CompanyInformation() {
 
   const watchSameAsPhysical = form.watch('sameAsPhysical');
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="mb-8 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Building className="w-6 h-6 text-blue-600" />
-            </div>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Company Information</h1>
-          <p className="text-gray-600">
-            Please provide your company's basic information and business details
-          </p>
+  if (isLoadingCompanies || isLoadingApplication) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <ProgressBar currentStep={2} totalSteps={steps.length} />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-border" />
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <ProgressBar currentStep={2} totalSteps={steps.length} />
+      
+      <div className="flex">
+        {/* Sidebar */}
+        <div className="w-64 bg-white shadow-sm border-r border-gray-200 min-h-screen">
+          <div className="p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Enrollment Progress</h2>
+            <EnrollmentChecklist 
+              companyId={companyId}
+              completedSteps={application?.completedSteps || {}}
+            />
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1">
+          <div className="max-w-4xl mx-auto px-6 py-8">
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Building className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Company Information</h1>
+                  <p className="text-gray-600">
+                    Please provide your company's basic information and business details
+                  </p>
+                </div>
+              </div>
+            </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -641,6 +690,8 @@ export default function CompanyInformation() {
             </div>
           </form>
         </Form>
+          </div>
+        </div>
       </div>
     </div>
   );
