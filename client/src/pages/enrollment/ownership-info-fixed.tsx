@@ -10,7 +10,10 @@ import { useAuth } from '@/hooks/use-auth';
 import { Owner } from '@shared/schema';
 import { ownerValidationSchema } from '@/utils/form-validators';
 import { formatPhoneNumber } from '@/utils/format-masks';
-import { EnrollmentLayout } from '@/components/layout/enrollment-layout';
+import { Header } from '@/components/layout/header';
+import { ProgressBar } from '@/components/layout/progress-bar';
+import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
 import {
   Form,
   FormControl,
@@ -60,6 +63,15 @@ export default function OwnershipInfo() {
   });
 
   const companyId = companies.length > 0 ? companies[0].id : null;
+
+  // Use the enabled enrollment steps
+  const steps = getEnabledEnrollmentSteps();
+
+  // Fetch application data
+  const { data: application, isLoading: isLoadingApplication } = useQuery({
+    queryKey: [`/api/companies/${companyId}/application`],
+    enabled: !!companyId,
+  });
 
   // Fetch owners
   const { data: owners = [], isLoading: isLoadingOwners } = useQuery({
@@ -262,31 +274,42 @@ export default function OwnershipInfo() {
     setDeleteDialogOpen(true);
   };
 
-  // Show loading state while companies are being fetched
-  if (isLoadingCompanies) {
+  // Loading state
+  const isLoading = isLoadingCompanies || isLoadingOwners || isLoadingApplication;
+
+  if (isLoading) {
     return (
-      <EnrollmentLayout
-        title="Business Ownership"
-        subtitle="Loading..."
-        icon={<Users className="w-6 h-6 text-blue-600" />}
-      >
-        <div className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      </EnrollmentLayout>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header />
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center min-h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-border" />
+          </div>
+        </main>
+      </div>
     );
   }
 
   return (
-    <EnrollmentLayout
-      title="Business Ownership"
-      subtitle="Add all owners with 5% or more ownership in the company."
-      icon={<Users className="w-6 h-6 text-blue-600" />}
-    >
-      <div className="flex items-center mb-2 text-sm text-gray-500">
-        <CheckCircle className="h-4 w-4 mr-1 text-green-500" />
-        <span>All changes auto-saved</span>
-      </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
+
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Progress Bar */}
+        <ProgressBar
+          steps={steps}
+          currentStep="ownership-info"
+          completedSteps={(application?.completedSteps as string[]) || []}
+        />
+
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Main Content Area */}
+          <div className="lg:flex-1">
+            {/* Autosave Indicator */}
+            <div className="flex items-center mb-2 text-sm text-gray-500">
+              <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
+              <span>All changes autosaved</span>
+            </div>
 
       <Card className="mb-6">
         <CardHeader>
