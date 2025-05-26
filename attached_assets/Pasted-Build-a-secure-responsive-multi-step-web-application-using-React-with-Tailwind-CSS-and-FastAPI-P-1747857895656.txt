@@ -1,0 +1,23 @@
+Build a secure, responsive multi-step web application using React (with Tailwind CSS) and FastAPI (Python). This app should guide employer groups through completing a health insurance enrollment for submission to Murillo Insurance Agency. The key features must include:
+
+Multi-step wizard format with a progress bar and form autosave. Each step collects part of the required data (e.g., company details, ownership, employee counts, plan selection, contribution setup, etc.).
+
+A home screen with drag-and-drop document upload, where employers can upload required documents (DE-9C, Articles of Incorporation, etc.) at any point in the process.
+
+A live validation system that prevents submission unless all required fields and docs are completed.
+
+Signature capture using either a low-cost e-sign tool like SignWell or a native canvas-based finger draw that works on tablets/phones.
+
+Logic to auto-populate carrier-specific PDF forms (e.g., Anthem, Blue Shield, CCSB) based on employer input using a mapped field template and report generation.
+
+Secure login system using email/password or magic link, allowing employers to pause/resume progress.
+
+Data encryption in storage and transit. HIPAA-level security not required, but ensure best practices are followed (hashed passwords, HTTPS-only).
+
+An admin dashboard (for Mo, Laura, and Katelyn) to view all in-progress and submitted applications, validate files, and export final submission packets.
+
+The UI must match Murillo Insurance Agency branding (dark blue and green theme, clean sans-serif font, soft corners, minimalist).
+
+Deploy it under a subdomain like enroll.murilloinsuranceagency.com with export logic to cleanly delete all stored data after a set retention period (e.g. 30–60 days).
+
+Use Postgres for storage, S3-compatible storage for uploaded files, and make the system responsive across desktop, iPhone, and tablet. Provide a checklist view summarizing "what’s complete" and "what’s missing" for the employer and broker to review before submission.

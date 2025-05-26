@@ -1,0 +1,109 @@
+{
+  "payProof": {
+    "label": "Proof of Payment/Payroll",
+    "description": "Upload any one of the following to verify payroll capacity",
+    "oneOf": [
+      {
+        "type": "DE9C",
+        "label": "DE9C Form (Quarterly Contribution Return)",
+        "description": "Most recent quarterly filing with EDD"
+      },
+      {
+        "type": "PayrollStubs", 
+        "label": "Recent Payroll Stubs",
+        "description": "Last 3 months of payroll records"
+      },
+      {
+        "type": "OfferLetter",
+        "label": "Employment Offer Letters",
+        "description": "Signed offer letters showing compensation"
+      }
+    ]
+  },
+  "businessDocs": {
+    "label": "Business Formation Documents",
+    "description": "Upload any one document proving business formation",
+    "oneOf": [
+      {
+        "type": "ArticlesOfIncorporation",
+        "label": "Articles of Incorporation",
+        "description": "Filed with Secretary of State"
+      },
+      {
+        "type": "StatementOfInformation",
+        "label": "Statement of Information (SI-200)",
+        "description": "Current statement filed with California"
+      },
+      {
+        "type": "BusinessLicense",
+        "label": "Business License",
+        "description": "Current city/county business license"
+      }
+    ]
+  },
+  "priorCoverage": {
+    "label": "Prior Coverage Documentation",
+    "description": "Required only if you indicated having prior group health coverage",
+    "condition": "hasPriorCoverage",
+    "required": [
+      {
+        "type": "PriorCarrierBill",
+        "label": "Prior Carrier Billing Statement",
+        "description": "Most recent bill from previous health insurance carrier"
+      },
+      {
+        "type": "CoverageTerminationLetter",
+        "label": "Coverage Termination Letter (Optional)",
+        "description": "Letter confirming end date of prior coverage"
+      }
+    ]
+  },
+  "carrierSpecific": {
+    "Anthem": [
+      {
+        "type": "OfficerEligibilityForm",
+        "label": "Officer Eligibility Form",
+        "description": "Required for companies with corporate officers"
+      }
+    ],
+    "CCSB": [
+      {
+        "type": "OfferLetterIfMissingDE9C",
+        "label": "Employment Offer Letters",
+        "description": "Required if DE9C is not available for payroll verification",
+        "condition": "missingDE9C"
+      }
+    ],
+    "Blue Shield": [
+      {
+        "type": "EmployeeCensus",
+        "label": "Employee Census Form",
+        "description": "Detailed employee listing with ages and coverage elections"
+      }
+    ],
+    "Kaiser": [
+      {
+        "type": "ServiceAreaVerification",
+        "label": "Service Area Verification",
+        "description": "Confirmation that employees live/work in Kaiser service areas"
+      }
+    ]
+  },
+  "employeeCount": {
+    "label": "Large Group Documentation",
+    "description": "Additional requirements for groups over 50 employees",
+    "condition": "employeeCount > 50",
+    "required": [
+      {
+        "type": "ACAFilingDocuments",
+        "label": "ACA Filing Documents",
+        "description": "1094-C and 1095-C forms from previous year"
+      },
+      {
+        "type": "PayrollRegister",
+        "label": "Complete Payroll Register",
+        "description": "Detailed payroll records for all employees"
+      }
+    ]
+  }
+}

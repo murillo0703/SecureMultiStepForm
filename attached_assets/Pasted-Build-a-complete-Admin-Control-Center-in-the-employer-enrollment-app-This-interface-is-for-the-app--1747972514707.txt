@@ -1,0 +1,92 @@
+Build a complete Admin Control Center in the employer enrollment app.
+This interface is for the app owner (Murillo Insurance Agency admin) to manage brokers, users, system activity, uploads, and form templates.
+
+The following modules should be built into a single admin dashboard page (or a tabbed layout). Some modules may be hidden or disabled initially via features.json.
+
+✅ 1. User Management
+Display a table of all users with:
+
+Email, role, associated broker agency, last login
+
+Add admin controls for:
+
+Resetting passwords
+
+Editing user email addresses
+
+Toggling access: active/inactive (suspension toggle)
+
+Searching by email/name
+
+Only super admins can access this section
+
+✅ 2. Broker Account Status & Access
+List all registered broker agencies with:
+
+Agency name, logo, date created, user count
+
+Current access status: enabled/disabled
+
+Manual “flag for review” toggle
+
+Add ability to:
+
+Disable access (toggle switch)
+
+(Future) Tie access toggle to a payment status field
+
+✅ 3. Plan Upload Dashboard
+Allow uploading of Excel files by carrier
+
+File fields: Carrier, Plan Name, Metal Tier, Plan Type, Start/End Date
+
+Store and show upload history (file name, carrier, uploaded by, date)
+
+Filter plans by carrier, date range
+
+Remove/replace outdated plan sets
+
+Add future toggle for “wrap logic” support
+
+✅ 4. PDF Template Management
+Allow uploading blank carrier PDFs
+
+Store mappings in pdf-templates.json or DB
+
+Map fields (Company Name → field_1, EIN → field_2, etc.)
+
+Preview PDF layout before publishing
+
+Inject test signature preview using placeholder data
+
+✅ 5. Audit Logs & Activity Tracking
+Show a list of recent platform events:
+
+Logins, application submissions, doc uploads
+
+By broker, by user
+
+Include:
+
+Timestamp, action type, user name, agency
+
+Add export option (CSV)
+
+✅ 6. Additional Future Modules (Turn OFF for now)
+Role Permissions Editor:
+
+Create custom access levels (e.g. read-only staff, limited broker assistant)
+
+Email Notification Manager:
+
+Set triggers for sending emails (app submitted, doc uploaded, signature missing)
+
+Billing/Subscription Tracker:
+
+Connect broker access to paid status
+
+Disable login if payment is overdue (feature-flagged for later)
+
+Broker Sandbox Mode:
+
+Enable “practice mode” for brokers testing the app with mock data

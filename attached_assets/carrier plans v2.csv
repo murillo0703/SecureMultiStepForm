@@ -1,0 +1,175 @@
+Carrier,Plan Type,Metallic Level,Plan Title,Deductible,Office Visits (PCP/Specialist) *,Inpatient Hospital Services *,Out-of-Pocket Max,RX Tiers 1/2/3/4
+Aetna,PPO,Bronze,CA Bronze MC Savings Plus 50/50 8300,"$8,300/ $16,600 embedded",$85 (ded waived 1st visit) then 0%/$95,50%,"$8,900/ $17,800 embedded; includes ded",MedDed (2-4); $30/$100/$150/50%
+Aetna,PPO,Bronze,CA Bronze MC 50/50 8300,"$8,300/ $16,600 embedded",$85 (ded waived 1st visit) then 0%/$95,50%,"$8,900/ $17,800 embedded; includes ded",MedDed (2-4); $30/$100/$150/50%
+Aetna,PPO,Bronze,CA Bronze MC Savings Plus 100 6650 HSA M,"$6,650/ $13,300",0%,0%,"$6,650/ $13,300 embedded; includes ded",MedDed (1-4); 0%
+Aetna,PPO,Bronze,CA Bronze MC 100 6650 HSA M,"$6,650/ $13,300",0%,0%,"$6,650/ $13,300 embedded; includes ded",MedDed (1-4); 0%
+Aetna,PPO,Silver,CA Silver MC Savings Plus 60/50 2100,"$2,100/ $4,200 embedded",$45/$75 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $20/$80/$120/40%
+Aetna,PPO,Silver,CA Silver MC Savings Plus 65/50 2600,"$2,600/ $5,200 embedded",$50/$90 (ded waived),35%,"$9,000/ $18,000 embedded; includes ded",$100/$200 (2-4); $15/$70/$120/30%
+Aetna,PPO,Silver,CA Silver MC Savings Plus 65/50 2500 M,"$2,500/ $5,000 embedded",$55/$90 (ded waived),35%,"$8,600/ $17,200 embedded; includes ded",$300/$600 (2-4); $20/$75/$105/30%
+Aetna,PPO,Bronze,CA Bronze PPO 50/50 8300,"$8,300/ $16,600 embedded",$85 (ded waived 1st visit) then 0%/$95,50%,"$8,900/ $17,800 embedded; includes ded",MedDed (2-4); $30/$100/$150/50%
+Aetna,PPO,Silver,CA Silver MC 60/50 2100,"$2,100/ $4,200 embedded",$45/$75 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $20/$80/$120/40%
+Aetna,PPO,Silver,CA Silver MC 65/50 2600,"$2,600/ $5,200 embedded",$50/$90 (ded waived),35%,"$9,000/ $18,000 embedded; includes ded",$100/$200 (2-4); $15/$70/$120/30%
+Aetna,PPO,Gold,CA Gold MC Savings Plus 90/50 3300 HSA,"$3,300/ $6,600 embedded",10%,10%,"$4,200/ $8,400 embedded; includes ded",MedDed (1-4); 10%
+Aetna,PPO,Silver,CA Silver MC 65/50 2500 M,"$2,500/ $5,000 embedded",$55/$90 (ded waived),35%,"$8,600/ $17,200 embedded; includes ded",$300/$600 (2-4); $20/$75/$105/30%
+Aetna,PPO,Gold,CA Gold MC 90/50 3300 HSA,"$3,300/ $6,600 embedded",10%,10%,"$4,200/ $8,400 embedded; includes ded",MedDed (1-4); 10%
+Aetna,PPO,Gold,CA Gold MC Savings Plus 80/50 1500,"$1,500/ $3,000",$25/$45 (ded waived),20%,"$7,900/ $15,800 embedded; includes ded",$300/$600 (2-4); $15/$55/$80/20%
+Aetna,PPO,Bronze,CA Bronze PPO 55/50 5500,"$5,500/ $11,000 embedded",$70/$80 (ded waived),45%,"$9,100/ $18,200 embedded; includes ded",MedDed (2-4); $20/$80/$100/45%
+Aetna,PPO,Gold,CA Gold MC 80/50 1500,"$1,500/ $3,000",$25/$45 (ded waived),20%,"$7,900/ $15,800 embedded; includes ded",$300/$600 (2-4); $15/$55/$80/20%
+Aetna,PPO,Gold,CA Gold MC Savings Plus 70/50 1250,"$1,250/ $2,500 embedded",$20/$50 (ded waived),30%,"$7,500/ $15,000 embedded; includes ded",$300/$600 (2-4); $15/$55/$80/30%
+Aetna,PPO,Gold,CA Gold MC Savings Plus 75/50 500,"$500/ $1,000 embedded",$20/$50 (ded waived),25%,"$8,500/ $17,000 embedded; includes ded",$300/$600 (2-4); $15/$55/$80/25%
+Aetna,PPO,Silver,CA Silver PPO 60/50 2100,"$2,100/ $4,200 embedded",$45/$75 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $20/$80/$120/40%
+Aetna,PPO,Gold,CA Gold MC 70/50 1250,"$1,250/ $2,500 embedded",$20/$50 (ded waived),30%,"$7,500/ $15,000 embedded; includes ded",$300/$600 (2-4); $15/$55/$80/30%
+Aetna,PPO,Gold,CA Gold MC Savings Plus 80/50 350 M,$350/ $700 embedded,$25/$50 (ded waived),20%,"$7,800/ $15,600 embedded; includes ded",$15/$50/$80/20%
+Aetna,PPO,Gold,CA Gold MC 75/50 500,"$500/ $1,000 embedded",$20/$50 (ded waived),25%,"$8,500/ $17,000 embedded; includes ded",$300/$600 (2-4); $15/$55/$80/25%
+Aetna,PPO,Gold,CA Gold MC 80/50 350 M,$350/ $700 embedded,$25/$50 (ded waived),20%,"$7,800/ $15,600 embedded; includes ded",$15/$50/$80/20%
+Aetna,PPO,Platinum,CA Platinum MC Savings Plus 80/50 250,$250/ $500 embedded,$15/$30 (ded waived),20%,"$4,500/ $9,000 embedded; includes ded",$5/$35/$80/20%
+Aetna,PPO,Platinum,CA Platinum MC 80/50 250,$250/ $500 embedded,$15/$30 (ded waived),20%,"$4,500/ $9,000 embedded; includes ded",$5/$35/$80/20%
+Aetna,PPO,Platinum,CA Platinum MC Savings Plus 90/50 0 M,$0/$0,$15/$30,10%,"$4,500/ $9,000 embedded",$10/$25/$40/10%
+Aetna,PPO,Platinum,CA Platinum MC 90/50 0 M,$0/$0,$15/$30,10%,"$4,500/ $9,000 embedded",$10/$25/$40/10%
+Aetna,PPO,Gold,CA Gold PPO 80/50 1000,"$1,000/ $2,000 embedded",$20/$50 (ded waived),20%,"$7,000/ $14,000 embedded; includes ded",$300/$600 (2-4); $15/$55/$80/20%
+Anthem BC,PPO,Bronze,Anthem Bronze Select PPO 70/6600/35% (84QF),"$6,600/ $13,200 embedded",$70/$85,35%,"$8,900/ $17,800 embedded; includes ded",MedDed (2-4); $20/$80/$120/30%; $20/$90/$130/40%
+Anthem BC,PPO,Bronze,Anthem Bronze Select PPO 40/6200/40% (84Q1),"$6,200/ $12,400 embedded",$40/$80,40%,"$8,700/ $17,400 embedded; includes ded",MedDed (2-4); $20/$80/$120/30%; $20/$90/$130/40%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 70/6600/35% (84QG),"$6,600/ $13,200 embedded",$70/$85,35%,"$8,900/ $17,800 embedded; includes ded",MedDed (2-4); $20/$80/$120/30%; $20/$90/$130/40%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 40/6200/40% (84PV),"$6,200/ $12,400 embedded",$40/$80,40%,"$8,700/ $17,400 embedded; includes ded",MedDed (2-4); $20/$80/$120/30%; $20/$90/$130/40%
+Anthem BC,PPO,Bronze,Anthem Bronze Select PPO 60/6850/40% (84QY),"$6,850/ $13,700 embedded",$60/$80,40%,"$8,200/ $16,400 embedded; includes ded","$650/$1,300 (2-4); $20/$90/$160/30%; $20/$100/$170/40%"
+Anthem BC,PPO,Bronze,Anthem Bronze Select PPO 75/7300/40% (84PJ),"$7,300/ $14,600 embedded",$75/$110 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded","$650/$1,300 (2-4); $20/$90/$160/30%; $20/$100/$170/40%"
+Anthem BC,PPO,Bronze,Anthem Bronze Select PPO 6000/45% w/HSA PrevRx (84UT),"$6,000/ $12,000 embedded",45%,45%,"$7,400/ $14,800 embedded; includes ded",MedDed (1-4); $20/$90/$160/30%; $20/$100/$170/40%
+Anthem BC,PPO,Bronze,Anthem Bronze Select PPO 4600/50% (84U7),"$4,600/ $9,200 embedded",50%,50%,"$8,100/ $16,200 embedded; includes ded",MedDed (2-4); $20/$80/$120/30%; $20/$90/$130/40%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 60/6850/40% (84R0),"$6,850/ $13,700 embedded",$60/$80,40%,"$8,200/ $16,400 embedded; includes ded","$650/$1,300 (2-4); $20/$90/$160/30%; $20/$100/$170/40%"
+Anthem BC,PPO,Bronze,Anthem Bronze Select PPO 6700/0% w/HSA PrevRx (84VS),"$6,700/ $13,400 embedded",0%,0%,"$7,800/ $15,600 embedded; includes ded",MedDed (1-4); $20/$90/$160/30%; $20/$100/$170/40%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 75/7300/40% (84PH),"$7,300/ $14,600 embedded",$75/$110 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded","$650/$1,300 (2-4); $20/$90/$160/30%; $20/$100/$170/40%"
+Anthem BC,PPO,Bronze,Anthem Bronze Select PPO 6650/0% w/HSA (84L4),"$6,650/ $13,300 embedded",0%,0%,"$6,650/ $13,300 embedded; includes ded",MedDed (1-4); 0%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 6000/45% w/HSA PrevRx (84UR),"$6,000/ $12,000 embedded",45%,45%,"$7,400/ $14,800 embedded; includes ded",MedDed (1-4); $20/$90/$160/30%; $20/$100/$170/40%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 4600/50% (84U6),"$4,600/ $9,200 embedded",50%,50%,"$8,100/ $16,200 embedded; includes ded",MedDed (2-4); $20/$80/$120/30%; $20/$90/$130/40%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 6700/0% w/HSA PrevRx (84VR),"$6,700/ $13,400 embedded",0%,0%,"$7,800/ $15,600 embedded; includes ded",MedDed (1-4); $20/$90/$160/30%; $20/$100/$170/40%
+Anthem BC,PPO,Silver,Anthem Silver Select PPO HSA/H 2600/3300/5200 35% PrevRx (84TH/84TW),"$2,600; $3,300/ $5,200 embedded",35%,35%,"$7,050/ $14,100 embedded; includes ded",MedDed (1-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver Select PPO 55/2500/45% (84P1),"$2,500/ $5,000 embedded",$55/$90 (ded waived),45%,"$8,700/ $17,400 embedded; includes ded",$200/$400 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 6000/45% w/HSA PrevRx WH (84UU),"$6,000/ $12,000 embedded",45%,45%,"$7,400/ $14,800 embedded; includes ded",MedDed (1-4); $20/$90/$160/30%; $20/$100/$170/40%
+Anthem BC,PPO,Silver,Anthem Silver Select PPO 50/2200/40% (84NS),"$2,200/ $4,400 embedded",$50/$90 (ded waived),40%,"$8,600/ $17,200 embedded; includes ded",$300/$600 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Bronze,Anthem Bronze PPO 6700/0% w/HSA PrevRx WH (84VM),"$6,700/ $13,400 embedded",0%,0%,"$7,800/ $15,600 embedded; includes ded",MedDed (1-4); $20/$90/$160/30%; $20/$100/$170/40%
+Anthem BC,PPO,Silver,Anthem Silver Select PPO 55/1950/35% (84NF),"$1,950/ $3,900 embedded",$55/$90 (ded waived),35%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver Select PPO 45/1750/40% (84MY),"$1,750/ $3,500 embedded",$45/$95 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver Select PPO HSA/H 2100/3300/4200 30% PrevRx (84SN/84SM),"$2,100; $3,300/ $4,200 embedded",30%,30%,"$7,750/ $15,500 embedded; includes ded",MedDed (1-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver PPO HSA/H 2600/3300/5200 35% PrevRx (84T7/84T6),"$2,600; $3,300/ $5,200 embedded",35%,35%,"$7,050/ $14,100 embedded; includes ded",MedDed (1-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver PPO 55/2500/45% (84P5),"$2,500/ $5,000 embedded",$55/$90 (ded waived),45%,"$8,700/ $17,400 embedded; includes ded",$200/$400 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver PPO 50/2200/40% (84NR),"$2,200/ $4,400 embedded",$50/$90 (ded waived),40%,"$8,600/ $17,200 embedded; includes ded",$300/$600 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver Select PPO 45/1750/40% WH (84MW),"$1,750/ $3,500 embedded",$45/$95 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver PPO 55/1950/35% (84NG),"$1,950/ $3,900 embedded",$55/$90 (ded waived),35%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver PPO 45/1750/40% (84MX),"$1,750/ $3,500 embedded",$45/$95 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver PPO HSA/H 2100/3300/4200 30% PrevRx (84S2/84SD),"$2,100; $3,300/ $4,200 embedded",30%,30%,"$7,750/ $15,500 embedded; includes ded",MedDed (1-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver PPO 55/2500/45% WH (84P3),"$2,500/ $5,000 embedded",$55/$90 (ded waived),45%,"$8,700/ $17,400 embedded; includes ded",$200/$400 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Silver,Anthem Silver Select PPO 55/2500/35% (84KR),"$2,500/ $5,000 embedded",$55/$90 (ded waived),35%,"$8,600/ $17,200 embedded; includes ded",$300/$600 (2-4); $20/$75/$105/30%
+Anthem BC,PPO,Silver,Anthem Silver PPO 45/1750/40% WH (84MV),"$1,750/ $3,500 embedded",$45/$95 (ded waived),40%,"$9,100/ $18,200 embedded; includes ded",$300/$600 (2-4); $15/$70/$110/30%; $20/$80/$120/40%
+Anthem BC,PPO,Gold,Anthem Gold Select PPO 5/1500/30% (84MK),"$1,500/ $3,000 embedded",$5/$65 (ded waived),30%,"$8,100/ $16,200 embedded; includes ded",$300/$600 (2-4); $5/$60/$110/30%; $15/$70/$120/40%
+Anthem BC,PPO,Gold,Anthem Gold Select PPO 35/1000/20% (807D),"$1,000/ $3,000 embedded",$35/$60 (ded waived),20%,"$8,200/ $16,400 embedded; includes ded",$300/$600 (2-4); $5/$60/$110/30%; $15/$70/$120/40%
+Anthem BC,PPO,Gold,Anthem Gold Select PPO 35/500/25% (8067),"$500/ $1,500 embedded",$35/$65 (ded waived),25%,"$8,200/ $16,400 embedded; includes ded",$250/$500 (2-4); $10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold Select PPO 30/750/20% (8070),"$750/ $2,250 embedded",$30/$55 (ded waived),20%,"$8,200/ $16,400 embedded; includes ded",$250/$500 (2-4); $10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO 5/1500/30% (84ML),"$1,500/ $3,000 embedded",$5/$65 (ded waived),30%,"$8,100/ $16,200 embedded; includes ded",$300/$600 (2-4); $5/$60/$110/30%; $15/$70/$120/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO 35/1000/20% (807B),"$1,000/ $3,000 embedded",$35/$60 (ded waived),20%,"$8,200/ $16,400 embedded; includes ded",$300/$600 (2-4); $5/$60/$110/30%; $15/$70/$120/40%
+Anthem BC,PPO,Gold,Anthem Gold Select PPO 25/30% (8057),$0/ $0,$25/$50,30%,"$8,700/ $17,400 embedded",$10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO 35/500/25% (806B),"$500/ $1,500 embedded",$35/$65 (ded waived),25%,"$8,200/ $16,400 embedded; includes ded",$250/$500 (2-4); $10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold Select PPO HSA/H 1700/3300/3400 15% PrevRx (84RD/84RC),"$1,700; $3,300/ $3,400 embedded",15%,15%,"$3,900/ $7,800 embedded; includes ded",MedDed (1-4); $10/$30/$50/30%; $20/$40/$60/40%
+Anthem BC,PPO,Gold,Anthem Gold Select PPO 30/500/20% (805U),"$500/ $1,500 embedded",$30/$60 (ded waived),20%,"$7,900/ $15,800 embedded; includes ded",$10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO 35/1000/20% WH (807C),"$1,000/ $3,000 embedded",$35/$60 (ded waived),20%,"$8,200/ $16,400 embedded; includes ded",$300/$600 (2-4); $5/$60/$110/30%; $15/$70/$120/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO 30/750/20% (806Z),"$750/ $2,250 embedded",$30/$55 (ded waived),20%,"$8,200/ $16,400 embedded; includes ded",$250/$500 (2-4); $10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO 25/30% (8058),$0/ $0,$25/$50,30%,"$8,700/ $17,400 embedded",$10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO 35/500/25% WH (8066),"$500/ $1,500 embedded",$35/$65 (ded waived),25%,"$8,200/ $16,400 embedded; includes ded",$250/$500 (2-4); $10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO HSA/H 1700/3300/3400 15% PrevRx (84RG/84RF),"$1,700; $3,300/ $3,400 embedded",15%,15%,"$3,900/ $7,800 embedded; includes ded",MedDed (1-4); $10/$30/$50/30%; $20/$40/$60/40%
+Anthem BC,PPO,Gold,Anthem Gold PPO 30/500/20% (805T),"$500/ $1,500 embedded",$30/$60 (ded waived),20%,"$7,900/ $15,800 embedded; includes ded",$10/$50/$90/30%; $20/$60/$100/40%
+Anthem BC,PPO,Gold,Anthem Gold Select PPO 25/350/20% (84KA),$350/ $700 embedded,$25/$50 (ded waived),20%,"$7,800/ $15,600 embedded; includes ded",$15/$50/$80/20%
+Anthem BC,PPO,Platinum,Anthem Platinum Select PPO 5/200/15% (8043),$200/ $600 embedded,$5/$45 (ded waived),15%,"$3,600/ $7,200 embedded; includes ded",$5/$30/$50/30%; $15/$40/$60/40%
+Anthem BC,PPO,Platinum,Anthem Platinum Select PPO 15/250/10% (8044),$250/ $750 embedded,$15/$30 (ded waived),10%,"$3,700/ $7,400 embedded; includes ded",$5/$30/$50/30%; $15/$40/$60/40%
+Anthem BC,PPO,Platinum,Anthem Platinum Select PPO 15/40/10% (8042),$0/ $0,$15/$40,10%,"$3,800/ $7,600 embedded",$5/$30/$50/30%; $15/$40/$60/40%
+Anthem BC,PPO,Platinum,Anthem Platinum PPO 5/200/15% (8049),$200/ $600 embedded,$5/$45 (ded waived),15%,"$3,600/ $7,200 embedded; includes ded",$5/$30/$50/30%; $15/$40/$60/40%
+Anthem BC,PPO,Platinum,Anthem Platinum PPO 15/250/10% (8047),$250/ $750 embedded,$15/$30 (ded waived),10%,"$3,700/ $7,400 embedded; includes ded",$5/$30/$50/30%; $15/$40/$60/40%
+Anthem BC,PPO,Platinum,Anthem Platinum PPO 15/40/10% (803Z),$0/ $0,$15/$40,10%,"$3,800/ $7,600 embedded",$5/$30/$50/30%; $15/$40/$60/40%
+Anthem BC,PPO,Platinum,Anthem Platinum Select PPO 15/10% (84KZ),$0/ $0,$15/$30,10%,"$4,500/ $9,000 embedded",$10/$25/$40/10%
+Anthem BC,PPO,Platinum,Anthem Platinum PPO 5/200/15% WH (8041),$200/ $600 embedded,$5/$45 (ded waived),15%,"$3,600/ $7,200 embedded; includes ded",$5/$30/$50/30%; $15/$40/$60/40%
+Blue Shield,PPO,Bronze,Bronze Tandem PPO 7500/65 OffEx,"$7,500/ $15,000 embedded",$65 (ded waived 10 visits)/50%,50%,"$8,850/ $17,700 embedded; includes ded",MED (2-4); $20/50%/50%; $25/50%/50%; T4-50%
+Blue Shield,PPO,Bronze,Virtual Blue Bronze Tandem PPO 7500/75 OffEx ,"$7,500/ $15,000 embedded",$75 (ded waived 3 visits)/$80,50%,"$8,750/ $17,500 embedded; includes ded",MED (2-4); $20/50%/50%; $25/50%/50%; T4-50%
+Blue Shield,PPO,Bronze,Bronze Tandem PPO 6250/65 OffEx,"$6,250/ $12,500 embedded",$65/$80 (ded waived 5 visits),40%,"$8,850/ $17,700 embedded; includes ded",MED (2-4); $20/65/90; $25/95/140; T4-30%
+Blue Shield,PPO,Bronze,Bronze Tandem PPO 4500/65 OffEx,"$4,500/ $9,000 embedded",$65/$90 (ded waived 5 visits),50%,"$8,850/ $17,700 embedded; includes ded",$500 (2-4) $25/50%/50%; $30/50%/50%; T4-50%
+Blue Shield,PPO,Bronze,Bronze Tandem PPO 6850/55 OffEx,"$6,850/ $13,700 embedded",$55/$80 (ded waived 5 visits),35%,"$8,850/ $17,700 embedded; includes ded",$650 (2-4); $20/65/90; $25/95/140; T4-30%
+Blue Shield,PPO,Bronze,Bronze Tandem PPO Savings 7500 OffEx,"$7,500/ $15,000 embedded",0%,0%,"$7,500/ $15,000 embedded; includes ded",MED (1-4); 0%
+Blue Shield,PPO,Bronze,Bronze Full PPO 7500/65 OffEx,"$7,500/ $15,000 embedded",$65 (ded waived 10 visits)/50%,50%,"$8,850/ $17,700 embedded; includes ded",MED (2-4); $20/50%/ 50%/50%
+Blue Shield,PPO,Bronze,Bronze Tandem PPO Savings 5700/40% OffEx,"$5,700/ $11,400 embedded",40%,40%,"$7,500/ $15,000 embedded; includes ded",MED (1-4); 40%
+Blue Shield,PPO,Bronze,Bronze Full PPO 6250/65 OffEx,"$6,250/ $12,500 embedded",$65/$80 (ded waived 5 visits),40%,"$8,850/ $17,700 embedded; includes ded",MED (2-4); $20/$65/ $90/30%
+Blue Shield,PPO,Bronze,Bronze Tandem PPO 6500/70 OffEx,"$6,500/ $13,000 embedded",$70/$85 (ded waived 10 visits),50%,"$8,850/ $17,700 embedded; includes ded",$300 (2-4); $20/130/160; $25/160/210; T4- 50%
+Blue Shield,PPO,Bronze,Bronze Full PPO 4500/65 OffEx,"$4,500/ $9,000 embedded",$65/$90 (ded waived 5 visits),50%,"$8,850/ $17,700 embedded; includes ded",$500 (2-4) $25/50%/ 50%/50%
+Blue Shield,PPO,Bronze,Blue Shield Bronze 60 HDHP PPO 7500/0% PCP + Child Dental Alt(Mirror),"$7,500/$15,000 embedded",0%,0%,"$7,500/$15,000 embedded; includes ded",MED (1-4); 0%
+Blue Shield,PPO,Bronze,Bronze Full PPO Savings 7500 OffEx,"$7,500/ $15,000 embedded",0%,0%,"$7,500/ $15,000 embedded; includes ded",MED (1-4); 0%
+Blue Shield,PPO,Bronze,Bronze Full PPO 6850/55 OffEx,"$6,850/ $13,700 embedded",$55/$80 (ded waived 5 visits),35%,"$8,850/ $17,700 embedded; includes ded",$650 (2-4); $20/$65/ $90/30%
+Blue Shield,PPO,Silver,Silver Tandem PPO Savings 2600/35% HDHP PrevRx OffEx,"$2,600; $3,300/ $5,200 embedded",35%,35%,"$7,900/ $15,800 embedded; includes ded",MED (1-4); 35%/35%/35%; 40%/40%/40%; T4-35%
+Blue Shield,PPO,Bronze,Bronze Full PPO Savings 5700/40% OffEx,"$5,700/ $11,400 embedded",40%,40%,"$7,500/ $15,000 embedded; includes ded",MED (1-4); 40%
+Blue Shield,PPO,Bronze,Blue Shield Bronze 60 PPO 5800/60 PCP + Child Dental(Mirror),"$5,800/ $11,600 embedded",$60 (ded waived)/$95 (ded waived first 3 visits),40%,"$8,850/ $17,700 embedded; includes ded",$450 (2-4); $19/40%/ 40%/40%
+Blue Shield,PPO,Silver,Silver Tandem PPO Savings 2300/30% OffEx,"$2,300; $3,300/ $4,600 embedded",30%,30%,"$7,900/ $15,800 embedded; includes ded",MED (1-4); $25/75/100; $30/100/150; T4-30
+Blue Shield,PPO,Bronze,Bronze Full PPO 6500/70 OffEx,"$6,500/ $13,000 embedded",$70/$85 (ded waived 10 visits),50%,"$8,850/ $17,700 embedded; includes ded",$300 (2-4); $20/$130/ $160/50%
+Blue Shield,PPO,Silver,Silver Full PPO Savings 2600/35% HDHP PrevRx OffEx,"$2,600; $3,300/ $5,200 embedded",35%,35%,"$7,900/ $15,800 embedded; includes ded",MED (1-4); 35%
+Blue Shield,PPO,Silver,Silver Tandem PPO 2350/70 OffEx,"$2,350/ $4,700 embedded",$70/$85 (ded waived),40%,"$8,750/ $17,500 embedded; includes ded",$300 (3-4); $25/75/115; $30/100/155; T4-40%
+Blue Shield,PPO,Silver,Silver Tandem PPO 2100/65 OffEx,"$2,100/ $4,200 embedded",$65/$85 (ded waived; $0 Value),40%,"$8,750/ $17,500 embedded; includes ded",$350 (3-4); $25/75/115; $30/100/155; T4-40%
+Blue Shield,PPO,Silver,Blue Shield Silver 70 HDHP PPO 2300/30% PCP + Child Dental Alt(Mirror),"$2,300; $3,300/ $4,600 embedded",30%,30%,"$7,900/ $15,800 embedded; includes ded",MED (1-4); $25/$75/$100/30%
+Blue Shield,PPO,Silver,Silver Full PPO Savings 2300/30% OffEx,"$2,300; $3,300/ $4,600 embedded",30%,30%,"$7,900/ $15,800 embedded; includes ded",MED (1-4); $25/$75/$100/30%
+Blue Shield,PPO,Silver,Virtual Blue Silver Tandem PPO 2700/75 OffEx,"$2,700/ $5,400 embedded",$75/$90 (ded waived),40%,"$8,500/ $17,000 embedded; includes ded",$250 (2-4); $25/75/115; $30/100/155; T4-40%
+Blue Shield,PPO,Silver,Silver Tandem PPO 1700/60 OffEx,"$1,700/ $3,400 embedded",$60/$85 (ded waived),35%,"$8,500/ $17,000 embedded; includes ded",$300 (2-4); $25/80/115; $30/105/155; T4-30%
+Blue Shield,PPO,Silver,Silver Full PPO 2350/70 OffEx,"$2,350/ $4,700 embedded",$70/$85 (ded waived),40%,"$8,750/ $17,500 embedded; includes ded",$300 (2-4); $25/$75/ $115/40%
+Blue Shield,PPO,Silver,Silver Full PPO 2100/65 OffEx,"$2,100/ $4,200 embedded",$65/$85 (ded waived; $0 Value),40%,"$8,750/ $17,500 embedded; includes ded",$350 (3-4); $25/$75/ $115/40%
+Blue Shield,PPO,Silver,Silver Full PPO 1700/60 OffEx,"$1,700/ $3,400 embedded",$60/$85 (ded waived),35%,"$8,500/ $17,000 embedded; includes ded",$300 (2-4); $25/$80/ $115/30%
+Blue Shield,PPO,Gold,Gold Tandem PPO Savings 1750/15% HDHP PrevRx OffEx,"$1,750; $3,300/ $3,500 embedded",15%,15%,"$4,000/ $8,000 embedded; includes ded",MED (1-4); $15/30/50; $20/50/80; T4-30%
+Blue Shield,PPO,Gold,Virtual Blue Gold Tandem PPO 1500/45 OffEx,"$1,500/ $3,000 embedded",$45/$60 (ded waived),20%,"$8,000/ $16,000 embedded; includes ded",$300 (2-4); $10/40/70; $15/$60/$100; T4-30%
+Blue Shield,PPO,Silver,Blue Shield Silver 70 PPO 2500/55 PCP + Child Dental(Mirror),"$2,500/ $5,000 embedded",$55/$90 (ded waived),35%,"$8,600/ $17,200 embedded; includes ded",$300 (2-4); $20/$75/ $105/30%
+Blue Shield,PPO,Gold,Gold Tandem PPO 1000/30 OffEx,"$1,000/ $2,000 embedded ",$30/$50 (ded waived),20%,"$7,900/ $15,800 embedded; includes ded",$250 (2-4); $15/50/80; $20/70/110; T4-30%
+Blue Shield,PPO,Gold,Gold Tandem PPO 750/30 OffEx,"$750/$1,500 embedded",$30/$60 (ded waived),20%,"$7,900/ $15,800 embedded; includes ded",$250 (2-4); $15/50/80; $20/70/110; T4-30%
+Blue Shield,PPO,Gold,Gold Tandem PPO 0/35 OffEx,$0/$0,$35/$60,30%,"$7,900/$15,800 embedded",$25/$50/$70/30% ; $30/$70/$100/30%
+Blue Shield,PPO,Gold,Gold Tandem PPO 500/30 OffEx,"$500/$1,000 embedded",$30/$60 (ded waived),20%,"$7,900/$15,800 embedded; includes ded",$150 (2-4); $15/50/80; $20/70/110; T4-30%
+Blue Shield,PPO,Gold,Gold Full PPO Savings 1750/15% HDHP PrevRx OffEx,"$1,750; $3,300/ $3,500 embedded",15%,15%,"$4,000/ $8,000 embedded; includes ded",MED (1-4); $15/$30/$50/30%
+Blue Shield,PPO,Gold,Gold Full PPO 1000/30 OffEx,"$1,000/ $2,000 embedded ",$30/$50 (ded waived),20%,"$7,900/ $15,800 embedded; includes ded",$250 (2-4); $15/$50/ $80/30%
+Blue Shield,PPO,Gold,Gold Full PPO 750/30 OffEx,"$750/$1,500 embedded",$30/$60 (ded waived),20%,"$7,900/ $15,800 embedded; includes ded",$250 (2-4); $15/$50/ $80/30%
+Blue Shield,PPO,Gold,Gold Full PPO 0/35 OffEx,$0/$0,$35/$60,30%,"$7,900/$15,800 embedded",$25/$50/$70/30%
+Blue Shield,PPO,Gold,Gold Full PPO 500/30 OffEx,"$500/$1,000 embedded",$30/$60 (ded waived),20%,"$7,900/$15,800 embedded; includes ded",$150 (2-4); $15/$50/$80/30%
+Blue Shield,PPO,Gold,Blue Shield Gold 80 PPO 350/25 PCP + Child Dental(Mirror),$350/$700 embedded,$25/$50 (ded waived),20%,"$7,800/ $15,600 embedded; includes ded",$15/$50/ $80/20%
+Blue Shield,PPO,Platinum,Platinum Tandem PPO 250/15 OffEx ,$250/$500 embedded,$15/$35 (ded waived),10%,"$4,300/ $8,600 embedded; includes ded",$10/$35/$55; $15/$50/$75; T4-30%
+Blue Shield,PPO,Platinum,Platinum Tandem PPO 0/10 OffEx ,$0/$0,$10/$35,10%,"$4,700/$9,400 embedded",$10/$35/$55; $15/$50/$75; T4-30%
+Blue Shield,PPO,Platinum,Virtual Blue Platinum Tandem PPO 250/20 OffEx,$250/$500 embedded,$20/$45 (ded waived),10%,"$4,500/ $9,000 embedded; includes ded",$5/$30/$50; $10/$45/$70; T4-30%
+Blue Shield,PPO,Platinum,Platinum Tandem PPO 250/10 OffEx,$250/$500 embedded,$10/$35 (ded waived),10%,"$3,500/ $7,000 embedded; includes ded",$10/$35/$55; $15/$50/$75; T4-20%
+Blue Shield,PPO,Platinum,Platinum Tandem PPO 0/0 OffEx ,$0/$0,$0/$45,10%,"$5,000/ $10,000 embedded",$0/$35/$55; $0/$50/$75; T4-30%
+Blue Shield,PPO,Platinum,Platinum Full PPO 250/15 OffEx,$250/$500 embedded,$15/$35 (ded waived),10%,"$4,300/ $8,600 embedded; includes ded",$10/$35/$55/30%
+Blue Shield,PPO,Platinum,Platinum Full PPO 0/10 OffEx,$0/$0,$10/$35,10%,"$4,700/$9,400 embedded",$10/$35/$55/30%
+Blue Shield,PPO,Platinum,Platinum Full PPO 250/10 OffEx,$250/$500 embedded,$10/$35 (ded waived),10%,"$3,500/ $7,000 embedded; includes ded",$10/$35/$55/20%
+Blue Shield,PPO,Platinum,Blue Shield Platinum 90 PPO 0/15 PCP + Child Dental(Mirror),$0/$0,$15/$30,10%,"$4,500/ $9,000 embedded",$10/$25/$40/10%
+Blue Shield,PPO,Platinum,Platinum Full PPO 0/0 OffEx,$0/$0,$0/$45,10%,"$5,000/$10,000 embedded",$0/$35/$55/30%
+CaliforniaChoice,PPO,Bronze,Bronze PPO D Anthem Blue Cross - Select PPO,"$6,000/ $12,000 embedded",$65/$85,40%,"$8,500/ $17,000 embedded; includes ded","$650/$1,300 (2-4); $20/90/160/30%; $20/100/170/40%"
+CaliforniaChoice,PPO,Bronze,Bronze PPO B (HSA) Anthem Blue Cross - Select PPO,"$6,250/ $12,500 embedded",35%,35%,"$7,350/ $14,700 embedded; includes ded",MedDed (1-4); $20/90/160/30%; $20/100/170/40%
+CaliforniaChoice,PPO,Bronze,Bronze PPO C Anthem Blue Cross - Prudent Buyer - Small Group,"$6,000/ $12,000 embedded",$65/$85,40%,"$8,500/ $17,000 embedded; includes ded","$650/$1,300 (2-4); $20/90/160/30%; $20/100/170/40%"
+CaliforniaChoice,PPO,Bronze,Bronze PPO A (HSA) Anthem Blue Cross - Prudent Buyer - Small Group,"$6,250/ $12,500 embedded",35%,35%,"$7,350/ $14,700 embedded; includes ded",MedDed (1-4); $20/90/160/30%; $20/100/170/40%
+CaliforniaChoice,PPO,Silver,Silver PPO E (HSA) Anthem Blue Cross - Select PPO,"$2,000/ $3,300/ $4,000 embedded",35%,35%,"$7,700/ $15,400 embedded; includes ded",MedDed (1-4); $15/70/110/30%; $20/80/120/40%
+CaliforniaChoice,PPO,Silver,Silver PPO B Anthem Blue Cross - Select PPO,"$1,700/ $3,400 embedded",$50/$95 (ded waived),40%,"$9,100/$18,200 embedded; includes ded",$300/$600 (2-4); $15/70/110/30%; $20/80/120/40%
+CaliforniaChoice,PPO,Silver,Silver PPO D (HSA) Anthem Blue Cross - Prudent Buyer - Small Group,"$2,000/ $3,300/ $4,000 embedded",35%,35%,"$7,700/ $15,400 embedded; includes ded",MedDed (1-4); $15/70/110/30%; $20/80/120/40%
+CaliforniaChoice,PPO,Silver,Silver PPO C Anthem Blue Cross - Prudent Buyer - Small Group,"$1,700/$3,400 embedded",$50/$95 (ded waived),40%,"$9,100/$18,200 embedded; includes ded",$300/$600 (2-4); $15/70/110/30%; $20/80/120/40%
+CaliforniaChoice,PPO,Gold,Gold PPO D Anthem Blue Cross - Select PPO,"$1,500/$3,000 embedded",$30/$60 (ded waived),25%,"$6,600/ $13,200 embedded; includes ded",$250/$500 Ded (2-4); $10/50/90/30%; $20/60/100/40%
+CaliforniaChoice,PPO,Gold,Gold PPO B Anthem Blue Cross - Select PPO,"$1,000/$3,000 embedded",$25/$50 (ded waived),25%,"$7,800/ $15,600 embedded; includes ded",$250/$500 Ded (2-4); $10/50/90/30%; $20/60/100/40%
+CaliforniaChoice,PPO,Gold,Gold PPO C Anthem Blue Cross - Select PPO,"$500/$1,500 embedded",$30/$60 (ded waived),20%,"$7,700/ $15,400 embedded; includes ded",$10/50/90/30%; $20/60/100/40%
+CaliforniaChoice,PPO,Gold,Gold PPO E Anthem Blue Cross - Prudent Buyer - Small Group,"$500/$1,500 embedded",$30/$60 (ded waived),20%,"$7,700/ $15,400 embedded; includes ded",$10/50/90/30%; $20/60/100/40%
+CaliforniaChoice,PPO,Platinum,Platinum PPO A Anthem Blue Cross - Prudent Buyer - Small Group,$0/$0,$10/$35,10%,"$8,000/$16,000 embedded",$5/15/45/30%; $15/25/55/40%
+Covered CA,PPO,Bronze,BSCA Bronze 60 HDHP PPO 7500/0% PCP + Child Dental Alt,"$7,500/ $15,000",0%,0%,"$7,500/ $15,000 includes ded",MedDed (1-4); 0%
+Covered CA,PPO,Bronze,BSCA Bronze 60 PPO 5800/60 PCP + Child Dental,"$5,800/ $11,600",$60 (ded waived)/$95,40%,"$8,850/ $17,700 includes ded",$450/$900 (2-4); $19/40%/40%/40%
+Covered CA,PPO,Silver,BSCA Silver 70 HDHP PPO 2300/30% PCP + Child Dental Alt,"$2,300; $3,300/ $4,600",30%,30%,"$7,900/ $15,800 includes ded",MedDed  (1-4); $25/$75/ $100/30%
+Covered CA,PPO,Silver,BSCA Silver 70 PPO 2500/55 PCP + Child Dental,"$2,500/ $5,000",$55/$90 (ded waived),35%,"$8,600/ $17,200 includes ded",$300/$600 Ded  (2-4); $20/$75/ $105/30%
+Covered CA,PPO,Gold,BSCA Gold 80 PPO 350/25 PCP + Child Dental,$350/ $700,$25/$50 (ded waived),20%,"$7,800/ $15,600 includes ded",$15/$50/$80/20%
+Covered CA,PPO,Platinum,BSCA Platinum 90 PPO 0/15 PCP + Child Dental,$0/$0,$15/$30,10%,"$4,500/ $9,000",$10/$25/$40/10%
+Health Net,PPO,Bronze,Bronze HDHP PPO 6650/0%,"$6,650/ $13,300",0%,0%,"$6,650/ $13,300 Includes ded",MedDed (1-4); 0%
+Health Net,PPO,Bronze,Bronze PPO 5800/60,"$5,800/ $11,600",$60 (ded waived)/$95 (First 3 visits ded waived) ,40%,"$8,850/ $17,700 includes ded",$450/$900 (2-4); $19/40%/40%/40%
+Health Net,PPO,Silver,Silver HDHP PPO 1650/50%,"$1,650; $3,300/ $3,300",50%,50%,"$7,500/ $15,000 includes ded",MedDed (1-4); $20/$70/$100/50%
+Health Net,PPO,Silver,Silver PPO 2500/50,"$2,500/ $5,000",$50 (ded waived)/$75,40%,"$9,200/ $18,400 includes ded",$300/$600 (2-4); $20/$65/$100/40%
+Health Net,PPO,Silver,Silver PPO 1700/50,"$1,700/ $3,400",$50 (ded waived)/$75,40%,"$9,200/ $18,400 includes ded",$300/$600 (2-4); $20/$65/$100/40%
+Health Net,PPO,Silver,Silver PPO 2250/60,"$2,250/ $4,500",$60/$85 (ded waived),40%,"$9,100/ $18,200 includes ded",$350/$700 (2-4); $20/$65/$85/40%
+Health Net,PPO,Silver,Silver PPO 2500/55,"$2,500/ $5,000",$55/$90 (ded waived),35%,"$8,600/ $17,200 includes ded",$300/$600 (2-4); $20/$75/$105/30%
+Health Net,PPO,Gold,Gold HDHP PPO 1650/20%,"$1,650; $3,300/ $3,300",20%,20%,"$4,000/ $8,000 includes ded",MedDed (1-4); $15/$30/$50/20%
+Health Net,PPO,Gold,Gold PPO 1500/20,"$1,500/ $3,000",$20/$50 (ded waived),30%,"$8,000/ $16,000 includes ded",$250/$500 (2-4); $5/$50/$90/30%
+Health Net,PPO,Gold,Gold PPO 750/15,"$750/ $1,500",$15 (ded waived)/$30,30%,"$8,200/ $16,400 includes ded",MedDed (2-4); $15/$40/$70/30%
+Health Net,PPO,Gold,Gold PPO 1000/35,"$1,000/ $2,000",$35/$55 (ded waived),30%,"$7,400/ $14,800 includes ded",$250/$500 (2-4); $15/$40/$70/30%
+Health Net,PPO,Gold,Gold PPO 500/20,"$500/ $1,000",$20/$40 (ded waived),30%,"$7,800/ $15,600 includes ded",$250/$500 (2-4); $15/$40/$70/30%
+Health Net,PPO,Gold,Gold PPO 0/35,$0/$0,$35/$55,30%,"$8,300/ $16,600",$20/$40/$70/30%
+Health Net,PPO,Gold,Gold PPO 350/25,$350/ $700,$25/$50 (ded waived),20%,"$7,800/ $15,600 includes ded",$15/$50/$80/20%
+Health Net,PPO,Platinum,Platinum PPO 250/15,$250/ $500,$15/$30 (ded waived),20%,"$3,800/ $7,600 includes ded",$10/$35/$60/20%
+Health Net,PPO,Platinum,Platinum PPO 0/5,$0/$0,$5/$30,10%,"$3,000/ $6,000",$10/$35/$60/10%
+Health Net,PPO,Platinum,Platinum PPO 0/15,$0/$0,$15/$30,10%,"$4,500/ $9,000",$10/$25/$40/10%

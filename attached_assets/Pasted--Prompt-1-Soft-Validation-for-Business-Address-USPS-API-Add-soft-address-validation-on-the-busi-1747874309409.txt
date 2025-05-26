@@ -1,0 +1,66 @@
+🧭 Prompt 1: Soft Validation for Business Address (USPS API)
+Add soft address validation on the business info page using the USPS Address Verification API.
+
+When a user inputs a business address and moves focus out of the address field (on blur), call the USPS API.
+
+If a correction or suggested format is returned, display a modal or inline prompt:
+"Did you mean: 1234 Corrected St, Fresno, CA 93711?"
+
+Allow the user to either accept the suggestion or keep their original.
+
+Do not block submission — this is soft validation only.
+
+🔧 Notes:
+
+Use USPS Address Matching API or SmartyStreets API.
+
+This must support edge cases like P.O. Boxes and Suite numbers.
+
+🧭 Prompt 2: Phone Number Masking in Contact & Ownership Sections
+Apply an input mask to all phone number fields in both:
+
+Authorized Contact section
+
+Business Ownership section
+
+Format: XXX-XXX-XXXX (U.S. 10-digit only)
+
+Prevent entry of non-numeric characters
+
+Automatically insert dashes as the user types
+
+🔧 Use libraries like react-input-mask or format handlers on onChange.
+
+🧭 Prompt 3: Fix Error on Save from Contact Page to Employee Page
+Fix the error when saving the Authorized Contact section:
+“Failed to save contact. JSON: unexpected character at line 1 column 1 of JSON data”
+
+Confirm that the frontend is properly encoding the contact form as valid JSON.
+
+On submission, inspect the POST request to /api/companies/:companyId/contacts (or relevant route).
+
+Ensure the server expects application/json and isn't receiving an empty string or malformed payload.
+
+🔧 This likely means JSON.stringify(data) is missing or malformed — check the body before submission.
+
+🧭 Prompt 4: Hide Employee Section Temporarily
+Temporarily hide or disable the Employee section of the enrollment flow:
+
+Do not show the “Employees” step in the progress bar or left nav
+
+Do not allow navigation to /enrollment/employees
+
+If manually visited, redirect to /enrollment/documents with a message like “This step will be available in a future version.”
+
+🔧 Wrap the navigation and route in a feature flag (e.g., if (features.employeesEnabled)) for easier enablement later.
+
+🧭 Prompt 5: Fix Document Upload UI to Allow Multiple Uploads
+Fix the document upload behavior in the Documents section:
+
+After uploading one document, the drop area disappears and cannot be used again unless you refresh or navigate away
+
+The upload dropbox should remain visible after an upload, allowing users to upload additional documents without refreshing the page
+
+Provide a button for uploading manually if needed
+
+🔧 Likely caused by a state reset or conditional render(null) after file upload. Ensure component resets to “idle” state after successful upload.

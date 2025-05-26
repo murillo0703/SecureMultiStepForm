@@ -1,0 +1,86 @@
+You said:
+Give me the prompt we need to have it build out the broker and admin UI this way.  I am curious as to if this layout would benefit the application process as well. 
+
+
+ChatGPT said:
+Absolutely, Mo — here's your Replit prompt to build the modular UI layout using a left-hand table of contents (TOC) and dynamic main panel rendering, first for the Broker/Admin dashboard, but scalable to employer application flow if desired.
+
+🧩 Replit Prompt – TOC + Main Panel UI Layout for Broker & Admin Interfaces
+Build a reusable two-panel layout for the broker and admin dashboards using React and Tailwind CSS.
+The layout should include a persistent left-hand navigation panel (table of contents) and a main content panel on the right that dynamically loads components based on user selection.
+
+This layout will be reused across admin and broker flows and may later apply to the employer application wizard.
+
+✅ 1. Layout Framework
+Use a full-screen flex layout:
+
+Left column: fixed width w-64, height 100vh
+
+Right column: flexible flex-1 with scrollable content
+
+tsx
+Copy
+Edit
+<div className="flex min-h-screen">
+  <Sidebar />
+  <main className="flex-1 p-6 overflow-y-auto">
+    {activeTab === "users" && <UserManagement />}
+    {activeTab === "plans" && <PlanUpload />}
+    ...
+  </main>
+</div>
+✅ 2. Sidebar Component (Sidebar.tsx)
+List all admin dashboard modules:
+
+Dashboard Overview
+
+User Management
+
+Broker Accounts
+
+Plan Uploads
+
+PDF Templates
+
+Audit Logs
+
+Add onClick logic to update the activeTab in parent layout
+
+Use icons (optional) and active highlight state
+
+Use Tailwind styling: bg-white border-r h-full, highlight active tab
+
+✅ 3. Main Panel Routing Logic
+Store the current panel view in state (activeTab)
+
+Show only the corresponding component in the right panel
+
+You may use Wouter or internal state for routing
+
+Optional: remember active tab using localStorage
+
+✅ 4. Role-Specific Access
+Render specific sidebar links based on user role:
+
+admin: access all modules
+
+brokerOwner: hide user management
+
+staff: hide PDF mapping and plan uploads
+
+✅ 5. Future Enhancement Hooks (Do not build yet)
+Add breadcrumb header inside the main panel
+
+Add responsive collapse of the sidebar on mobile/tablet
+
+Add route-based navigation (e.g. /admin/pdf-templates)
+
+Consider applying this layout style to the employer onboarding flow using section-based wizard instead of page-by-page routing
+
+🔄 Reusing This Layout in the Employer Application Flow?
+Yes — it’s a smart idea, especially if you want to:
+Show application progress in the sidebar
+
+Let users jump between sections (like “Company Info”, “Docs”, “Plans”)
+
+Keep UI consistent between brokers and employers

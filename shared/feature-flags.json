@@ -1,0 +1,27 @@
+{
+  "documentValidation": {
+    "enabled": true,
+    "strict": false,
+    "description": "Controls document validation enforcement"
+  },
+  "brokerOverride": {
+    "enabled": true,
+    "description": "Allows brokers to override document requirements"
+  },
+  "adminOverride": {
+    "enabled": true,
+    "description": "Allows admins to override document requirements"
+  },
+  "smartDocuments": {
+    "enabled": true,
+    "description": "Enables smart conditional document validation"
+  },
+  "aiDocumentScanning": {
+    "enabled": false,
+    "description": "AI-powered document content detection (future feature)"
+  },
+  "autoDocumentMatching": {
+    "enabled": false,
+    "description": "Automatic document type detection (future feature)"
+  }
+}

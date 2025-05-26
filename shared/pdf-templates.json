@@ -1,0 +1,234 @@
+{
+  "anthem": {
+    "formName": "Anthem Group Application",
+    "fieldMappings": [
+      {
+        "fieldName": "company_name",
+        "dataSource": "company",
+        "dataField": "name",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "company_address",
+        "dataSource": "company", 
+        "dataField": "address",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "company_city",
+        "dataSource": "company",
+        "dataField": "city", 
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "company_state",
+        "dataSource": "company",
+        "dataField": "state",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "company_zip",
+        "dataSource": "company",
+        "dataField": "zip",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "employee_count",
+        "dataSource": "company",
+        "dataField": "employeeCount",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "owner_name",
+        "dataSource": "owner",
+        "dataField": "firstName",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "owner_title",
+        "dataSource": "owner",
+        "dataField": "title",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "effective_date",
+        "dataSource": "application",
+        "dataField": "effectiveDate",
+        "fieldType": "date",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "signature",
+        "dataSource": "application",
+        "dataField": "signature",
+        "fieldType": "signature",
+        "pageNumber": 2,
+        "xPosition": 100,
+        "yPosition": 150,
+        "width": 150,
+        "height": 50
+      }
+    ]
+  },
+  "ccsb": {
+    "formName": "CCSB Enrollment Application",
+    "fieldMappings": [
+      {
+        "fieldName": "employer_name",
+        "dataSource": "company",
+        "dataField": "name",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "business_address",
+        "dataSource": "company",
+        "dataField": "address",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "contact_person",
+        "dataSource": "owner",
+        "dataField": "firstName",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "contact_email",
+        "dataSource": "owner",
+        "dataField": "email",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "total_employees",
+        "dataSource": "company",
+        "dataField": "employeeCount",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "authorized_signature",
+        "dataSource": "application",
+        "dataField": "signature",
+        "fieldType": "signature",
+        "pageNumber": 1,
+        "xPosition": 400,
+        "yPosition": 100,
+        "width": 120,
+        "height": 40
+      }
+    ]
+  },
+  "blue_shield": {
+    "formName": "Blue Shield Group Application",
+    "fieldMappings": [
+      {
+        "fieldName": "group_name",
+        "dataSource": "company",
+        "dataField": "name",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "principal_address",
+        "dataSource": "company",
+        "dataField": "address",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "city_state_zip",
+        "dataSource": "company",
+        "dataField": "fullAddress",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "group_administrator",
+        "dataSource": "owner",
+        "dataField": "firstName",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "phone_number",
+        "dataSource": "owner",
+        "dataField": "phone",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "digital_signature",
+        "dataSource": "application",
+        "dataField": "signature",
+        "fieldType": "signature",
+        "pageNumber": 3,
+        "xPosition": 50,
+        "yPosition": 200,
+        "width": 200,
+        "height": 60
+      }
+    ]
+  },
+  "kaiser": {
+    "formName": "Kaiser Permanente Application",
+    "fieldMappings": [
+      {
+        "fieldName": "organization_name",
+        "dataSource": "company",
+        "dataField": "name",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "mailing_address",
+        "dataSource": "company",
+        "dataField": "address",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "authorized_rep",
+        "dataSource": "owner",
+        "dataField": "firstName",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "rep_title",
+        "dataSource": "owner",
+        "dataField": "title",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "enrollment_count",
+        "dataSource": "company",
+        "dataField": "employeeCount",
+        "fieldType": "text",
+        "pageNumber": 1
+      },
+      {
+        "fieldName": "applicant_signature",
+        "dataSource": "application",
+        "dataField": "signature",
+        "fieldType": "signature",
+        "pageNumber": 2,
+        "xPosition": 300,
+        "yPosition": 500,
+        "width": 180,
+        "height": 45
+      }
+    ]
+  }
+}
