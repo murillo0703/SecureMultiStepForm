@@ -133,7 +133,7 @@ export default function ApplicationInitiator() {
         title: 'Information saved',
         description: 'Proceeding to company information...',
       });
-      setLocation('/enrollment/company-information');
+      setLocation('/enrollment/company-info');
     },
     onError: (error: any) => {
       toast({
