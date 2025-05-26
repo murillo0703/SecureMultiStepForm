@@ -9,7 +9,7 @@ import AdminControlCenter from '@/pages/admin/control-center';
 import BrokerDashboard from '@/pages/broker-dashboard';
 import ApplicationInitiator from '@/pages/enrollment/application-initiator';
 import CarriersPage from '@/pages/enrollment/carriers';
-import CompanyInfo from '@/pages/enrollment/company-info';
+import CompanyInformation from '@/pages/enrollment/company-information';
 
 
 import OwnershipInfo from '@/pages/enrollment/ownership-info-consistent';
@@ -43,8 +43,8 @@ function Router() {
       {/* Enrollment Routes */}
       <ProtectedRoute path="/enrollment/application-initiator" component={ApplicationInitiator} />
       <ProtectedRoute path="/enrollment/carriers" component={CarriersPage} />
-      <ProtectedRoute path="/enrollment/company" component={CompanyInfo} />
-      <ProtectedRoute path="/enrollment/company-info" component={CompanyInfo} />
+      <ProtectedRoute path="/enrollment/company" component={CompanyInformation} />
+      <ProtectedRoute path="/enrollment/company-info" component={CompanyInformation} />
 
       <ProtectedRoute path="/enrollment/ownership" component={OwnershipInfo} />
       <ProtectedRoute path="/enrollment/ownership-info" component={OwnershipInfo} />
