@@ -10,6 +10,8 @@ import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { EnrollmentLayout } from '@/components/layout/enrollment-layout';
+import { Header } from '@/components/layout/header';
+import { ProgressBar } from '@/components/layout/progress-bar';
 import { AddressValidator } from '@/components/address-validator';
 import {
   Form,
