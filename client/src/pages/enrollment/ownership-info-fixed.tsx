@@ -108,10 +108,38 @@ export default function OwnershipInfo() {
     }
   }, [initiator, owners, form]);
 
+  // Create company if it doesn't exist
+  const createCompanyMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest('POST', '/api/companies', {
+        name: `${initiator?.firstName || 'New'} Company`,
+        address: '',
+        city: '',
+        state: '',
+        zip: '',
+        phone: initiator?.phone || '',
+        email: initiator?.email || '',
+        employeeCount: 1,
+        effectiveDate: new Date().toISOString().split('T')[0],
+      });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/companies'] });
+    },
+  });
+
   // Create owner mutation
   const createMutation = useMutation({
     mutationFn: async (values: OwnerFormValues) => {
-      const res = await apiRequest('POST', `/api/companies/${companyId}/owners`, values);
+      // If no company exists, create one first
+      let currentCompanyId = companyId;
+      if (!currentCompanyId) {
+        const newCompany = await createCompanyMutation.mutateAsync();
+        currentCompanyId = newCompany.id;
+      }
+      
+      const res = await apiRequest('POST', `/api/companies/${currentCompanyId}/owners`, values);
       return await res.json();
     },
     onSuccess: () => {
