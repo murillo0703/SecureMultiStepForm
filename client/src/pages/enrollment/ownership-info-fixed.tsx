@@ -97,30 +97,70 @@ export default function OwnershipInfo() {
   }, [companyId, form]);
 
   // Auto-populate owner information if initiator is an owner
+  // Auto-create the initiator as the first owner if they are marked as owner
+  const autoCreateOwnerMutation = useMutation({
+    mutationFn: async (ownerData: OwnerFormValues) => {
+      // If no company exists, create one first
+      let currentCompanyId = companyId;
+      if (!currentCompanyId) {
+        const newCompany = await createCompanyMutation.mutateAsync();
+        currentCompanyId = newCompany.id;
+      }
+      
+      const res = await apiRequest('POST', `/api/companies/${currentCompanyId}/owners`, ownerData);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/owners`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/companies'] });
+    },
+  });
+
   useEffect(() => {
     if (initiator && (initiator as any).isOwner && owners.length === 0) {
-      form.setValue('firstName', (initiator as any).firstName || '');
-      form.setValue('lastName', (initiator as any).lastName || '');
-      form.setValue('email', (initiator as any).email || '');
-      form.setValue('phone', (initiator as any).phone || '');
-      form.setValue('title', (initiator as any).title || '');
-      form.setValue('ownershipPercentage', 100);
+      // Auto-create the initiator as the first owner
+      const ownerData = {
+        companyId: companyId || 0,
+        firstName: (initiator as any).firstName || '',
+        lastName: (initiator as any).lastName || '',
+        email: (initiator as any).email || '',
+        phone: (initiator as any).phone || '',
+        title: (initiator as any).title || 'Owner',
+        ownershipPercentage: 100,
+        isEligibleForCoverage: true,
+      };
+      
+      autoCreateOwnerMutation.mutate(ownerData);
     }
-  }, [initiator, owners, form]);
+  }, [initiator, owners.length]);
+
+  // Reset form for adding additional owners
+  useEffect(() => {
+    form.reset({
+      companyId: companyId || 0,
+      firstName: '',
+      lastName: '',
+      title: '',
+      email: '',
+      phone: '',
+      ownershipPercentage: 0,
+      isEligibleForCoverage: false,
+    });
+  }, [companyId, form]);
 
   // Create company if it doesn't exist
   const createCompanyMutation = useMutation({
     mutationFn: async () => {
+      // Use real data from the user's application
       const res = await apiRequest('POST', '/api/companies', {
-        name: `${initiator?.firstName || 'New'} Company`,
-        address: '',
-        city: '',
-        state: '',
-        zip: '',
-        phone: initiator?.phone || '',
-        email: initiator?.email || '',
-        employeeCount: 1,
-        effectiveDate: new Date().toISOString().split('T')[0],
+        name: `${(initiator as any)?.firstName || ''} ${(initiator as any)?.lastName || ''} Company`.trim(),
+        address: 'TBD', // Will be completed in company information step
+        city: 'TBD',
+        state: 'CA',
+        zip: '00000',
+        phone: (initiator as any)?.phone || '',
+        taxId: '00-0000000', // Will be completed in company information step
+        industry: 'TBD', // Will be completed in company information step
       });
       return await res.json();
     },
