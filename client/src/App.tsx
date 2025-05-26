@@ -11,7 +11,7 @@ import ApplicationInitiator from '@/pages/enrollment/application-initiator';
 import CarriersPage from '@/pages/enrollment/carriers';
 import CompanyInfo from '@/pages/enrollment/company-info';
 
-import CoverageInformation from '@/pages/enrollment/coverage-information';
+
 import OwnershipInfo from '@/pages/enrollment/ownership-info-consistent';
 import AuthorizedContact from '@/pages/enrollment/authorized-contact';
 import EmployeeInfo from '@/pages/enrollment/employee-info';
@@ -45,7 +45,7 @@ function Router() {
       <ProtectedRoute path="/enrollment/carriers" component={CarriersPage} />
       <ProtectedRoute path="/enrollment/company" component={CompanyInfo} />
       <ProtectedRoute path="/enrollment/company-info" component={CompanyInfo} />
-      <ProtectedRoute path="/enrollment/coverage-information" component={CoverageInformation} />
+
       <ProtectedRoute path="/enrollment/ownership" component={OwnershipInfo} />
       <ProtectedRoute path="/enrollment/ownership-info" component={OwnershipInfo} />
       <ProtectedRoute path="/enrollment/authorized-contact" component={AuthorizedContact} />
