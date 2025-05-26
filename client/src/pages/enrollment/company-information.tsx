@@ -266,7 +266,11 @@ export default function CompanyInformation() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <ProgressBar currentStep={2} totalSteps={steps.length} />
+        <ProgressBar 
+          steps={steps} 
+          currentStep="company-information" 
+          completedSteps={application?.completedSteps || []} 
+        />
         <div className="flex items-center justify-center min-h-[400px]">
           <Loader2 className="h-8 w-8 animate-spin text-border" />
         </div>
@@ -277,7 +281,11 @@ export default function CompanyInformation() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <ProgressBar currentStep={2} totalSteps={steps.length} />
+      <ProgressBar 
+        steps={steps} 
+        currentStep="company-information" 
+        completedSteps={application?.completedSteps || []} 
+      />
       
       <div className="flex">
         {/* Sidebar */}
