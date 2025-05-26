@@ -198,11 +198,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user!.id;
       const coverageInfo = { ...req.body, userId };
 
-      // For now, we'll store this as a simple JSON response
-      // In a full implementation, this would save to database
+      // Check if user already has a company, if not create one
+      const existingCompanies = await storage.getCompaniesByUserId(userId);
+      let company;
+      
+      if (existingCompanies.length === 0) {
+        // Create a basic company record using application initiator data
+        const initiator = await storage.getApplicationInitiatorByUserId(userId);
+        company = await storage.createCompany({
+          userId,
+          name: `${initiator?.firstName || 'New'} Company`, // Temporary name
+          address: '',
+          city: '',
+          state: '',
+          zip: '',
+          phone: initiator?.phone || '',
+          email: initiator?.email || '',
+          employeeCount: coverageInfo.fullTimeEmployees || 0,
+          effectiveDate: new Date().toISOString().split('T')[0],
+        });
+      } else {
+        company = existingCompanies[0];
+      }
+
       res.status(201).json({
         message: 'Coverage information saved successfully',
         data: coverageInfo,
+        companyId: company.id,
       });
     } catch (error) {
       next(error);
