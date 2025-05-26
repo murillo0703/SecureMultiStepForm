@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 import { Owner } from '@shared/schema';
 import { ownerValidationSchema } from '@/utils/form-validators';
 import { formatPhoneNumber } from '@/utils/format-masks';
@@ -48,6 +49,7 @@ export default function OwnershipInfo() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [selectedOwnerId, setSelectedOwnerId] = useState<number | null>(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -161,6 +163,7 @@ export default function OwnershipInfo() {
         phone: formatPhoneNumber((initiator as any)?.phone || '5551234567'),
         taxId: '12-3456789',
         industry: 'Professional Services',
+        userId: user?.id || 1, // Include the required userId field
       });
       return await res.json();
     },
@@ -482,7 +485,14 @@ export default function OwnershipInfo() {
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          placeholder="XXX-XXX-XXXX" 
+                          {...field}
+                          onChange={(e) => {
+                            const formatted = formatPhoneNumber(e.target.value);
+                            field.onChange(formatted);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
