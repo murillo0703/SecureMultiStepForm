@@ -393,11 +393,11 @@ export default function AuthorizedContactSimple() {
                     Back to Ownership
                   </Button>
                   <Button
-                    onClick={() => setLocation('/enrollment/employees')}
+                    onClick={() => setLocation('/enrollment/documents')}
                     className="flex items-center gap-2"
                     disabled={!canContinue}
                   >
-                    Continue to Employees
+                    Continue to Documents
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
