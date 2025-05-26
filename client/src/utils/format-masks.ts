@@ -3,7 +3,7 @@
  */
 
 /**
- * Formats a phone number input as (XXX) XXX-XXXX
+ * Formats a phone number input as XXX-XXX-XXXX
  * @param value The input value to format
  * @returns The formatted phone number
  */
@@ -15,9 +15,9 @@ export function formatPhoneNumber(value: string): string {
   if (digits.length <= 3) {
     return digits;
   } else if (digits.length <= 6) {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
   } else {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
   }
 }
 

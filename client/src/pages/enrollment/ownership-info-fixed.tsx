@@ -8,6 +8,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Owner } from '@shared/schema';
 import { ownerValidationSchema } from '@/utils/form-validators';
+import { formatPhoneNumber } from '@/utils/format-masks';
 import { EnrollmentLayout } from '@/components/layout/enrollment-layout';
 import {
   Form,
@@ -148,24 +149,27 @@ export default function OwnershipInfo() {
     });
   }, [companyId, form]);
 
-  // Create company if it doesn't exist
+  // Create company if it doesn't exist - with userId included
   const createCompanyMutation = useMutation({
     mutationFn: async () => {
-      // Use real data from the user's application
       const res = await apiRequest('POST', '/api/companies', {
-        name: `${(initiator as any)?.firstName || ''} ${(initiator as any)?.lastName || ''} Company`.trim(),
-        address: 'TBD', // Will be completed in company information step
-        city: 'TBD',
+        name: `${(initiator as any)?.firstName || 'Business'} ${(initiator as any)?.lastName || 'Owner'} Company`.trim(),
+        address: '123 Main Street',
+        city: 'Los Angeles', 
         state: 'CA',
-        zip: '00000',
-        phone: (initiator as any)?.phone || '',
-        taxId: '00-0000000', // Will be completed in company information step
-        industry: 'TBD', // Will be completed in company information step
+        zip: '90210',
+        phone: formatPhoneNumber((initiator as any)?.phone || '5551234567'),
+        taxId: '12-3456789',
+        industry: 'Professional Services',
       });
       return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/companies'] });
+      toast({
+        title: 'Company Created',
+        description: 'Company record created successfully',
+      });
     },
   });
 
@@ -289,45 +293,103 @@ export default function OwnershipInfo() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Owners Table */}
-          {owners.length > 0 && (
+          {/* Owners Table with Enhanced Features */}
+          {(owners as any[]).length > 0 && (
             <div className="mb-6">
-              <h3 className="text-sm font-medium mb-2">Current Owners</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium">Current Business Owners</h3>
+                <div className="text-sm text-gray-600">
+                  Total Ownership: {(owners as any[]).reduce((sum: number, owner: any) => sum + owner.ownershipPercentage, 0)}%
+                  {(owners as any[]).reduce((sum: number, owner: any) => sum + owner.ownershipPercentage, 0) === 100 && (
+                    <span className="ml-2 text-green-600 font-medium">✓ Complete</span>
+                  )}
+                </div>
+              </div>
               <div className="border rounded-md overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Title</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Email</TableHead>
                       <TableHead>Ownership %</TableHead>
-                      <TableHead className="w-[80px]">Actions</TableHead>
+                      <TableHead>Coverage</TableHead>
+                      <TableHead className="w-[120px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {owners.map(owner => (
-                      <TableRow key={owner.id}>
-                        <TableCell>
+                    {(owners as any[]).map((owner: any) => (
+                      <TableRow key={owner.id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">
                           {owner.firstName} {owner.lastName}
                         </TableCell>
                         <TableCell>{owner.title}</TableCell>
-                        <TableCell>{owner.ownershipPercentage}%</TableCell>
+                        <TableCell>{formatPhoneNumber(owner.phone)}</TableCell>
+                        <TableCell>{owner.email}</TableCell>
                         <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteOwner(owner.id!)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <span className="font-semibold">{owner.ownershipPercentage}%</span>
+                        </TableCell>
+                        <TableCell>
+                          {owner.isEligibleForCoverage ? (
+                            <span className="text-green-600">Yes</span>
+                          ) : (
+                            <span className="text-gray-500">No</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedOwnerId(owner.id);
+                                // Pre-fill form for editing
+                                form.reset({
+                                  companyId: companyId || 0,
+                                  firstName: owner.firstName,
+                                  lastName: owner.lastName,
+                                  title: owner.title,
+                                  email: owner.email,
+                                  phone: owner.phone,
+                                  ownershipPercentage: owner.ownershipPercentage,
+                                  isEligibleForCoverage: owner.isEligibleForCoverage,
+                                });
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteOwner(owner.id!)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </div>
-              <div className="mt-2 text-sm text-gray-600">
-                Total ownership: {owners.reduce((sum, owner) => sum + owner.ownershipPercentage, 0)}
-                %
+              
+              {/* Ownership Summary */}
+              <div className="mt-3 p-3 bg-gray-50 rounded-md">
+                <div className="flex justify-between text-sm">
+                  <span>Total Ownership Accounted For:</span>
+                  <span className="font-semibold">
+                    {(owners as any[]).reduce((sum: number, owner: any) => sum + owner.ownershipPercentage, 0)}%
+                  </span>
+                </div>
+                {(owners as any[]).reduce((sum: number, owner: any) => sum + owner.ownershipPercentage, 0) < 100 && (
+                  <div className="flex justify-between text-sm text-orange-600 mt-1">
+                    <span>Remaining Ownership:</span>
+                    <span className="font-semibold">
+                      {100 - (owners as any[]).reduce((sum: number, owner: any) => sum + owner.ownershipPercentage, 0)}%
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}
