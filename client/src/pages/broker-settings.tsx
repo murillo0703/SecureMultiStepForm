@@ -1,19 +1,13 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Header } from "@/components/layout/header";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { Header } from '@/components/layout/header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import {
   Upload,
   Eye,
@@ -26,9 +20,9 @@ import {
   Calendar,
   Hash,
   Palette,
-} from "lucide-react";
-import { Broker, User } from "@shared/schema";
-import { format } from "date-fns";
+} from 'lucide-react';
+import { Broker, User } from '@shared/schema';
+import { format } from 'date-fns';
 
 export default function BrokerSettingsPage() {
   const { user } = useAuth();
@@ -36,23 +30,23 @@ export default function BrokerSettingsPage() {
 
   // State for form data
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string>("");
-  const [primaryColor, setPrimaryColor] = useState("#3b82f6");
-  const [secondaryColor, setSecondaryColor] = useState("#1e40af");
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"owner" | "staff">("staff");
+  const [logoPreview, setLogoPreview] = useState<string>('');
+  const [primaryColor, setPrimaryColor] = useState('#3b82f6');
+  const [secondaryColor, setSecondaryColor] = useState('#1e40af');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<'owner' | 'staff'>('staff');
   const [showUserManagement, setShowUserManagement] = useState(false);
 
   // Fetch broker information
   const { data: broker, isLoading: isLoadingBroker } = useQuery<Broker>({
-    queryKey: ["/api/broker"],
-    enabled: !!user && user.role === "owner",
+    queryKey: ['/api/broker'],
+    enabled: !!user && user.role === 'owner',
   });
 
   // Fetch broker users
   const { data: brokerUsers = [], isLoading: isLoadingUsers } = useQuery<User[]>({
-    queryKey: ["/api/broker/users"],
-    enabled: !!user && user.role === "owner",
+    queryKey: ['/api/broker/users'],
+    enabled: !!user && user.role === 'owner',
   });
 
   // Initialize form with broker data
@@ -70,33 +64,33 @@ export default function BrokerSettingsPage() {
   const uploadLogoMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
-      formData.append("logo", file);
-      
-      const res = await fetch("/api/broker/logo", {
-        method: "POST",
+      formData.append('logo', file);
+
+      const res = await fetch('/api/broker/logo', {
+        method: 'POST',
         body: formData,
       });
-      
+
       if (!res.ok) {
         const error = await res.text();
         throw new Error(error);
       }
-      
+
       return await res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       setLogoPreview(data.logoUrl);
-      queryClient.invalidateQueries({ queryKey: ["/api/broker"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/broker'] });
       toast({
-        title: "Logo uploaded",
-        description: "Your agency logo has been uploaded successfully.",
+        title: 'Logo uploaded',
+        description: 'Your agency logo has been uploaded successfully.',
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Upload failed",
+        title: 'Upload failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -104,21 +98,21 @@ export default function BrokerSettingsPage() {
   // Update broker mutation
   const updateBrokerMutation = useMutation({
     mutationFn: async (updates: { colorPrimary: string; colorSecondary: string }) => {
-      const res = await apiRequest("PATCH", "/api/broker", updates);
+      const res = await apiRequest('PATCH', '/api/broker', updates);
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/broker"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/broker'] });
       toast({
-        title: "Settings saved",
-        description: "Your broker settings have been updated successfully.",
+        title: 'Settings saved',
+        description: 'Your broker settings have been updated successfully.',
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Save failed",
+        title: 'Save failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -126,23 +120,23 @@ export default function BrokerSettingsPage() {
   // Invite user mutation
   const inviteUserMutation = useMutation({
     mutationFn: async (userData: { email: string; role: string }) => {
-      const res = await apiRequest("POST", "/api/broker/invite", userData);
+      const res = await apiRequest('POST', '/api/broker/invite', userData);
       return await res.json();
     },
     onSuccess: () => {
-      setInviteEmail("");
-      setInviteRole("staff");
-      queryClient.invalidateQueries({ queryKey: ["/api/broker/users"] });
+      setInviteEmail('');
+      setInviteRole('staff');
+      queryClient.invalidateQueries({ queryKey: ['/api/broker/users'] });
       toast({
-        title: "User invited",
-        description: "Invitation sent successfully.",
+        title: 'User invited',
+        description: 'Invitation sent successfully.',
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Invitation failed",
+        title: 'Invitation failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -154,25 +148,25 @@ export default function BrokerSettingsPage() {
       // Validate file size (1MB max)
       if (file.size > 1024 * 1024) {
         toast({
-          title: "File too large",
-          description: "Logo must be smaller than 1MB.",
-          variant: "destructive",
+          title: 'File too large',
+          description: 'Logo must be smaller than 1MB.',
+          variant: 'destructive',
         });
         return;
       }
 
       // Validate file type
-      if (!["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
+      if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
         toast({
-          title: "Invalid file type",
-          description: "Logo must be PNG or JPG format.",
-          variant: "destructive",
+          title: 'Invalid file type',
+          description: 'Logo must be PNG or JPG format.',
+          variant: 'destructive',
         });
         return;
       }
 
       setLogoFile(file);
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onload = () => {
@@ -201,9 +195,9 @@ export default function BrokerSettingsPage() {
   const handleInviteUser = () => {
     if (!inviteEmail) {
       toast({
-        title: "Email required",
-        description: "Please enter an email address.",
-        variant: "destructive",
+        title: 'Email required',
+        description: 'Please enter an email address.',
+        variant: 'destructive',
       });
       return;
     }
@@ -215,7 +209,7 @@ export default function BrokerSettingsPage() {
   };
 
   // Check if user has owner access
-  if (user?.role !== "owner") {
+  if (user?.role !== 'owner') {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Header />
@@ -223,9 +217,7 @@ export default function BrokerSettingsPage() {
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle>Access Denied</CardTitle>
-              <CardDescription>
-                Only broker owners can access these settings.
-              </CardDescription>
+              <CardDescription>Only broker owners can access these settings.</CardDescription>
             </CardHeader>
           </Card>
         </main>
@@ -247,15 +239,13 @@ export default function BrokerSettingsPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Broker Branding / Settings Page
           </h1>
-          <p className="mt-1 text-gray-600">
-            Manage your agency branding and user access
-          </p>
+          <p className="mt-1 text-gray-600">Manage your agency branding and user access</p>
         </div>
 
         <div className="space-y-6">
@@ -267,10 +257,12 @@ export default function BrokerSettingsPage() {
                 Logo Upload
               </CardTitle>
               <CardDescription className="text-sm text-gray-600">
-                Upload agency logo<br />
-                - Max size: 1MB<br />
-                - Accepted: PNG, JPG<br />
-                - Preview after upload
+                Upload agency logo
+                <br />
+                - Max size: 1MB
+                <br />
+                - Accepted: PNG, JPG
+                <br />- Preview after upload
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -292,10 +284,10 @@ export default function BrokerSettingsPage() {
                   disabled={!logoFile || uploadLogoMutation.isPending}
                   className="w-full sm:w-auto"
                 >
-                  {uploadLogoMutation.isPending ? "Uploading..." : "Upload Logo"}
+                  {uploadLogoMutation.isPending ? 'Uploading...' : 'Upload Logo'}
                 </Button>
               </div>
-              
+
               {logoPreview && (
                 <div className="mt-4">
                   <Label className="text-sm font-medium">Preview:</Label>
@@ -319,9 +311,10 @@ export default function BrokerSettingsPage() {
                 Color Scheme
               </CardTitle>
               <CardDescription className="text-sm text-gray-600">
-                Enter Primary & Secondary HEX colors<br />
-                - Optional color picker<br />
-                - Live preview of UI color update
+                Enter Primary & Secondary HEX colors
+                <br />
+                - Optional color picker
+                <br />- Live preview of UI color update
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -333,19 +326,19 @@ export default function BrokerSettingsPage() {
                       id="primary-color"
                       type="text"
                       value={primaryColor}
-                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      onChange={e => setPrimaryColor(e.target.value)}
                       placeholder="#3b82f6"
                       className="flex-1"
                     />
                     <Input
                       type="color"
                       value={primaryColor}
-                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      onChange={e => setPrimaryColor(e.target.value)}
                       className="w-12 h-10 p-1 cursor-pointer"
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="secondary-color">Secondary Color</Label>
                   <div className="flex gap-2 mt-1">
@@ -353,20 +346,20 @@ export default function BrokerSettingsPage() {
                       id="secondary-color"
                       type="text"
                       value={secondaryColor}
-                      onChange={(e) => setSecondaryColor(e.target.value)}
+                      onChange={e => setSecondaryColor(e.target.value)}
                       placeholder="#1e40af"
                       className="flex-1"
                     />
                     <Input
                       type="color"
                       value={secondaryColor}
-                      onChange={(e) => setSecondaryColor(e.target.value)}
+                      onChange={e => setSecondaryColor(e.target.value)}
                       className="w-12 h-10 p-1 cursor-pointer"
                     />
                   </div>
                 </div>
               </div>
-              
+
               {/* Live Preview */}
               <div className="mt-4">
                 <Label className="text-sm font-medium">Live Preview:</Label>
@@ -404,14 +397,14 @@ export default function BrokerSettingsPage() {
                 <span className="text-sm font-medium">Agency Name (read-only if verified):</span>
               </div>
               <div className="pl-6">
-                <span className="text-sm">{broker?.agencyName || "Murillo Insurance Agency"}</span>
+                <span className="text-sm">{broker?.agencyName || 'Murillo Insurance Agency'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Hash className="h-4 w-4 text-gray-500" />
                 <span className="text-sm font-medium">Broker ID:</span>
               </div>
               <div className="pl-6">
-                <span className="text-sm font-mono">{broker?.id || "Loading..."}</span>
+                <span className="text-sm font-mono">{broker?.id || 'Loading...'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-gray-500" />
@@ -419,7 +412,7 @@ export default function BrokerSettingsPage() {
               </div>
               <div className="pl-6">
                 <span className="text-sm">
-                  {broker?.createdAt ? format(new Date(broker.createdAt), "PPP") : "Loading..."}
+                  {broker?.createdAt ? format(new Date(broker.createdAt), 'PPP') : 'Loading...'}
                 </span>
               </div>
             </CardContent>
@@ -433,10 +426,12 @@ export default function BrokerSettingsPage() {
                 Manage Users
               </CardTitle>
               <CardDescription className="text-sm text-gray-600">
-                Invite users by email<br />
-                - Select role: owner or staff<br />
-                - Show existing users<br />
-                - Remove or reset password
+                Invite users by email
+                <br />
+                - Select role: owner or staff
+                <br />
+                - Show existing users
+                <br />- Remove or reset password
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -447,12 +442,12 @@ export default function BrokerSettingsPage() {
                     type="email"
                     placeholder="user@example.com"
                     value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
+                    onChange={e => setInviteEmail(e.target.value)}
                     className="sm:col-span-2"
                   />
                   <select
                     value={inviteRole}
-                    onChange={(e) => setInviteRole(e.target.value as "owner" | "staff")}
+                    onChange={e => setInviteRole(e.target.value as 'owner' | 'staff')}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <option value="staff">Staff</option>
@@ -465,7 +460,7 @@ export default function BrokerSettingsPage() {
                   className="w-full sm:w-auto"
                 >
                   <UserPlus className="h-4 w-4 mr-2" />
-                  {inviteUserMutation.isPending ? "Sending..." : "Invite User"}
+                  {inviteUserMutation.isPending ? 'Sending...' : 'Invite User'}
                 </Button>
               </div>
 
@@ -479,16 +474,16 @@ export default function BrokerSettingsPage() {
                     onClick={() => setShowUserManagement(!showUserManagement)}
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    {showUserManagement ? "Hide" : "Show"} Users
+                    {showUserManagement ? 'Hide' : 'Show'} Users
                   </Button>
                 </div>
-                
+
                 {showUserManagement && (
                   <div className="space-y-2">
                     {isLoadingUsers ? (
                       <div className="text-sm text-gray-500">Loading users...</div>
                     ) : brokerUsers.length > 0 ? (
-                      brokerUsers.map((brokerUser) => (
+                      brokerUsers.map(brokerUser => (
                         <div
                           key={brokerUser.id}
                           className="flex items-center justify-between p-3 border rounded-lg bg-white"
@@ -528,7 +523,8 @@ export default function BrokerSettingsPage() {
                 Save Changes
               </CardTitle>
               <CardDescription className="text-sm text-gray-600">
-                Primary action button to save all settings<br />
+                Primary action button to save all settings
+                <br />
                 Visible only to broker owner
               </CardDescription>
             </CardHeader>
@@ -540,7 +536,7 @@ export default function BrokerSettingsPage() {
                 size="lg"
               >
                 <Save className="h-4 w-4 mr-2" />
-                {updateBrokerMutation.isPending ? "Saving..." : "Save All Settings"}
+                {updateBrokerMutation.isPending ? 'Saving...' : 'Save All Settings'}
               </Button>
             </CardContent>
           </Card>

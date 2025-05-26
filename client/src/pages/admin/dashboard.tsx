@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Application } from "@shared/schema";
-import { AdminHeader } from "@/components/layout/header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Application } from '@shared/schema';
+import { AdminHeader } from '@/components/layout/header';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   Pagination,
   PaginationContent,
@@ -27,45 +27,45 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Search, Download } from "lucide-react";
+} from '@/components/ui/pagination';
+import { Search, Download } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   // Fetch all applications
   const { data: applications = [], isLoading } = useQuery<
     (Application & { name: string; email: string })[]
   >({
-    queryKey: ["/api/admin/applications"],
+    queryKey: ['/api/admin/applications'],
   });
 
   // Filter applications based on search term and status
-  const filteredApplications = applications.filter((app) => {
+  const filteredApplications = applications.filter(app => {
     const matchesSearch =
       app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
 
   // Format date for display
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
   // Format time for display
   const formatTime = (date: Date) => {
-    return new Date(date).toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
+    return new Date(date).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
       hour12: true,
     });
   };
@@ -76,9 +76,7 @@ export default function AdminDashboard() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Applications Dashboard
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Applications Dashboard</h1>
           <p className="mt-1 text-sm text-gray-600">
             Manage employer group enrollment applications
           </p>
@@ -95,7 +93,7 @@ export default function AdminDashboard() {
                 <Input
                   placeholder="Search applications..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="pl-9"
                 />
               </div>
@@ -108,9 +106,7 @@ export default function AdminDashboard() {
                   <SelectContent>
                     <SelectItem value="all">All Statuses</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="pending_review">
-                      Pending Review
-                    </SelectItem>
+                    <SelectItem value="pending_review">Pending Review</SelectItem>
                     <SelectItem value="submitted">Submitted</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                   </SelectContent>
@@ -149,13 +145,11 @@ export default function AdminDashboard() {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        filteredApplications.map((app) => (
+                        filteredApplications.map(app => (
                           <TableRow key={app.id} className="hover:bg-gray-50">
                             <TableCell>
                               <div className="font-medium">{app.name}</div>
-                              <div className="text-sm text-gray-500">
-                                ID: {app.id}
-                              </div>
+                              <div className="text-sm text-gray-500">ID: {app.id}</div>
                             </TableCell>
                             <TableCell>
                               <div>{app.email}</div>
@@ -168,22 +162,22 @@ export default function AdminDashboard() {
                             </TableCell>
                             <TableCell>
                               <div className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize">
-                                {app.status === "in_progress" && (
+                                {app.status === 'in_progress' && (
                                   <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
                                     In Progress
                                   </span>
                                 )}
-                                {app.status === "pending_review" && (
+                                {app.status === 'pending_review' && (
                                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                                     Pending Review
                                   </span>
                                 )}
-                                {app.status === "submitted" && (
+                                {app.status === 'submitted' && (
                                   <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
                                     Submitted
                                   </span>
                                 )}
-                                {app.status === "approved" && (
+                                {app.status === 'approved' && (
                                   <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
                                     Approved
                                   </span>
@@ -200,8 +194,7 @@ export default function AdminDashboard() {
                                 ></div>
                               </div>
                               <div className="text-xs text-gray-500 mt-1">
-                                {(app.completedSteps as string[]).length}/7
-                                steps
+                                {(app.completedSteps as string[]).length}/7 steps
                               </div>
                             </TableCell>
                             <TableCell>

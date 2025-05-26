@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { Employee } from "@shared/schema";
-import { employeeValidationSchema } from "@/utils/form-validators";
-import { Header } from "@/components/layout/header";
-import { ProgressBar } from "@/components/layout/progress-bar";
-import { EnrollmentChecklist } from "@/components/enrollment/checklist";
-import { FileUpload } from "@/components/ui/file-upload";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { Employee } from '@shared/schema';
+import { employeeValidationSchema } from '@/utils/form-validators';
+import { Header } from '@/components/layout/header';
+import { ProgressBar } from '@/components/layout/progress-bar';
+import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { FileUpload } from '@/components/ui/file-upload';
 import {
   Form,
   FormControl,
@@ -19,9 +19,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -29,7 +29,7 @@ import {
   CardHeader,
   CardFooter,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -37,7 +37,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,18 +47,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  CheckCircle, 
-  ArrowRight, 
-  ArrowLeft, 
-  Plus, 
-  Trash2, 
-  Upload, 
+} from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  CheckCircle,
+  ArrowRight,
+  ArrowLeft,
+  Plus,
+  Trash2,
+  Upload,
   FileText,
-  AlertCircle
-} from "lucide-react";
+  AlertCircle,
+} from 'lucide-react';
 
 // Form schema
 type EmployeeFormValues = z.infer<typeof employeeValidationSchema>;
@@ -67,14 +67,14 @@ export default function EmployeeInfo() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [location, navigate] = useLocation();
-  const [activeTab, setActiveTab] = useState("add-manually");
+  const [activeTab, setActiveTab] = useState('add-manually');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   // Fetch companies for this user
   const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
-    queryKey: ["/api/companies"],
+    queryKey: ['/api/companies'],
   });
 
   // Get the first company
@@ -83,7 +83,7 @@ export default function EmployeeInfo() {
   // Redirect if no company exists
   useEffect(() => {
     if (!isLoadingCompanies && !companyId) {
-      navigate("/enrollment/company");
+      navigate('/enrollment/company');
     }
   }, [companyId, isLoadingCompanies, navigate]);
 
@@ -92,13 +92,13 @@ export default function EmployeeInfo() {
     queryKey: [`/api/companies/${companyId}/employees`],
     enabled: !!companyId,
   });
-  
+
   // Fetch company owners
   const { data: owners = [], isLoading: isLoadingOwners } = useQuery({
     queryKey: [`/api/companies/${companyId}/owners`],
     enabled: !!companyId,
   });
-  
+
   // Fetch authorized contact
   const { data: authorizedContact, isLoading: isLoadingContact } = useQuery({
     queryKey: [`/api/companies/${companyId}/authorized-contact`],
@@ -113,14 +113,14 @@ export default function EmployeeInfo() {
 
   // Steps configuration for progress bar
   const steps = [
-    { id: "company", label: "Company", href: "/enrollment/company" },
-    { id: "ownership", label: "Owners", href: "/enrollment/ownership" },
-    { id: "authorized-contact", label: "Contact", href: "/enrollment/authorized-contact" },
-    { id: "employees", label: "Employees", href: "/enrollment/employees" },
-    { id: "documents", label: "Documents", href: "/enrollment/documents" },
-    { id: "plans", label: "Plans", href: "/enrollment/plans" },
-    { id: "contributions", label: "Contributions", href: "/enrollment/contributions" },
-    { id: "review", label: "Submit", href: "/enrollment/review" },
+    { id: 'company', label: 'Company', href: '/enrollment/company' },
+    { id: 'ownership', label: 'Owners', href: '/enrollment/ownership' },
+    { id: 'authorized-contact', label: 'Contact', href: '/enrollment/authorized-contact' },
+    { id: 'employees', label: 'Employees', href: '/enrollment/employees' },
+    { id: 'documents', label: 'Documents', href: '/enrollment/documents' },
+    { id: 'plans', label: 'Plans', href: '/enrollment/plans' },
+    { id: 'contributions', label: 'Contributions', href: '/enrollment/contributions' },
+    { id: 'review', label: 'Submit', href: '/enrollment/review' },
   ];
 
   // Form setup
@@ -128,58 +128,58 @@ export default function EmployeeInfo() {
     resolver: zodResolver(employeeValidationSchema),
     defaultValues: {
       companyId: companyId || 0,
-      firstName: "",
-      lastName: "",
-      dob: "",
-      ssn: "",
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
-      email: "",
-      phone: "",
+      firstName: '',
+      lastName: '',
+      dob: '',
+      ssn: '',
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
+      email: '',
+      phone: '',
     },
   });
 
   // Update companyId when it's available
   useEffect(() => {
     if (companyId) {
-      form.setValue("companyId", companyId);
+      form.setValue('companyId', companyId);
     }
   }, [companyId, form]);
 
   // Mutation for creating an employee
   const createMutation = useMutation({
     mutationFn: async (values: EmployeeFormValues) => {
-      const res = await apiRequest("POST", `/api/companies/${companyId}/employees`, values);
+      const res = await apiRequest('POST', `/api/companies/${companyId}/employees`, values);
       return res.json();
     },
     onSuccess: () => {
       form.reset({
         companyId: companyId || 0,
-        firstName: "",
-        lastName: "",
-        dob: "",
-        ssn: "",
-        address: "",
-        city: "",
-        state: "",
-        zip: "",
-        email: "",
-        phone: "",
+        firstName: '',
+        lastName: '',
+        dob: '',
+        ssn: '',
+        address: '',
+        city: '',
+        state: '',
+        zip: '',
+        email: '',
+        phone: '',
       });
       toast({
-        title: "Employee added",
-        description: "The employee has been added successfully.",
+        title: 'Employee added',
+        description: 'The employee has been added successfully.',
       });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/employees`] });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/application`] });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: `Failed to add employee: ${error.message}`,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -187,21 +187,21 @@ export default function EmployeeInfo() {
   // Mutation for deleting an employee
   const deleteMutation = useMutation({
     mutationFn: async (employeeId: number) => {
-      await apiRequest("DELETE", `/api/companies/${companyId}/employees/${employeeId}`);
+      await apiRequest('DELETE', `/api/companies/${companyId}/employees/${employeeId}`);
     },
     onSuccess: () => {
       toast({
-        title: "Employee deleted",
-        description: "The employee has been removed.",
+        title: 'Employee deleted',
+        description: 'The employee has been removed.',
       });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/employees`] });
       setSelectedEmployeeId(null);
     },
-    onError: (error) => {
+    onError: error => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: `Failed to delete employee: ${error.message}`,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -210,34 +210,34 @@ export default function EmployeeInfo() {
   const uploadCensusMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
-      formData.append("file", file);
-      formData.append("type", "employee_census");
+      formData.append('file', file);
+      formData.append('type', 'employee_census');
 
       const response = await fetch(`/api/companies/${companyId}/upload-census`, {
-        method: "POST",
+        method: 'POST',
         body: formData,
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        throw new Error("Failed to upload employee census");
+        throw new Error('Failed to upload employee census');
       }
 
       return response.json();
     },
     onSuccess: () => {
       toast({
-        title: "Census uploaded",
-        description: "Your employee census has been successfully uploaded.",
+        title: 'Census uploaded',
+        description: 'Your employee census has been successfully uploaded.',
       });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/employees`] });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/application`] });
     },
     onError: (error: Error) => {
       toast({
-        title: "Upload failed",
+        title: 'Upload failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -262,7 +262,7 @@ export default function EmployeeInfo() {
     if (employees.length === 0) {
       setConfirmDialogOpen(true);
     } else {
-      navigate("/enrollment/documents");
+      navigate('/enrollment/documents');
     }
   };
 
@@ -276,14 +276,14 @@ export default function EmployeeInfo() {
       companyId: companyId || 0,
       firstName: owner.firstName,
       lastName: owner.lastName,
-      dob: owner.dateOfBirth || "", // Convert if available
-      ssn: "", // Removed from owner data as requested
-      address: owner.address || "",
-      city: owner.city || "",
-      state: owner.state || "",
-      zip: owner.zip || "",
-      email: owner.email || "",
-      phone: owner.phone || "",
+      dob: owner.dateOfBirth || '', // Convert if available
+      ssn: '', // Removed from owner data as requested
+      address: owner.address || '',
+      city: owner.city || '',
+      state: owner.state || '',
+      zip: owner.zip || '',
+      email: owner.email || '',
+      phone: owner.phone || '',
     };
     createMutation.mutate(employeeData);
   };
@@ -294,34 +294,39 @@ export default function EmployeeInfo() {
       companyId: companyId || 0,
       firstName: contact.firstName,
       lastName: contact.lastName,
-      dob: "", // May not be available in contact data
-      ssn: "",
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
-      email: contact.email || "",
-      phone: contact.phone || "",
+      dob: '', // May not be available in contact data
+      ssn: '',
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
+      email: contact.email || '',
+      phone: contact.phone || '',
     };
     createMutation.mutate(employeeData);
   };
 
   // Loading state
-  const isLoading = isLoadingCompanies || isLoadingEmployees || isLoadingApplication || 
-                    isLoadingOwners || isLoadingContact || createMutation.isPending;
+  const isLoading =
+    isLoadingCompanies ||
+    isLoadingEmployees ||
+    isLoadingApplication ||
+    isLoadingOwners ||
+    isLoadingContact ||
+    createMutation.isPending;
 
   if (!companyId) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Bar */}
-        <ProgressBar 
-          steps={steps} 
-          currentStep="employees" 
-          completedSteps={application?.completedSteps as string[] || []}
+        <ProgressBar
+          steps={steps}
+          currentStep="employees"
+          completedSteps={(application?.completedSteps as string[]) || []}
         />
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -344,7 +349,9 @@ export default function EmployeeInfo() {
                 {/* Employees Table */}
                 {employees.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-sm font-medium mb-2">Current Employees ({employees.length})</h3>
+                    <h3 className="text-sm font-medium mb-2">
+                      Current Employees ({employees.length})
+                    </h3>
                     <div className="border rounded-md overflow-auto">
                       <Table>
                         <TableHeader>
@@ -356,7 +363,7 @@ export default function EmployeeInfo() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {employees.map((employee) => (
+                          {employees.map(employee => (
                             <TableRow key={employee.id}>
                               <TableCell>
                                 {employee.firstName} {employee.lastName}
@@ -384,9 +391,9 @@ export default function EmployeeInfo() {
                 )}
 
                 {/* Add Employee Tabs */}
-                <Tabs 
-                  defaultValue="add-manually" 
-                  value={activeTab} 
+                <Tabs
+                  defaultValue="add-manually"
+                  value={activeTab}
                   onValueChange={setActiveTab}
                   className="mt-6"
                 >
@@ -395,16 +402,17 @@ export default function EmployeeInfo() {
                     <TabsTrigger value="import-eligible">Import Eligible</TabsTrigger>
                     <TabsTrigger value="upload-census">Upload Census</TabsTrigger>
                   </TabsList>
-                  
+
                   <TabsContent value="import-eligible">
                     <div className="space-y-6">
                       <div className="bg-gray-50 p-4 rounded-md border mb-4">
                         <p className="text-sm text-gray-600 mb-2">
-                          Import eligible business owners and authorized contacts as employees with a single click. 
-                          This speeds up the enrollment process by re-using information already in the system.
+                          Import eligible business owners and authorized contacts as employees with
+                          a single click. This speeds up the enrollment process by re-using
+                          information already in the system.
                         </p>
                       </div>
-                      
+
                       {/* Eligible owners section */}
                       <div className="mb-6">
                         <h3 className="text-sm font-medium mb-3">Eligible Owners</h3>
@@ -420,26 +428,28 @@ export default function EmployeeInfo() {
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {owners.filter(owner => owner.isEligibleForCoverage).map((owner) => (
-                                  <TableRow key={owner.id}>
-                                    <TableCell>
-                                      {owner.firstName} {owner.lastName}
-                                    </TableCell>
-                                    <TableCell>{owner.email || "—"}</TableCell>
-                                    <TableCell>{owner.phone || "—"}</TableCell>
-                                    <TableCell>
-                                      <Button 
-                                        size="sm" 
-                                        variant="secondary"
-                                        onClick={() => importOwnerAsEmployee(owner)}
-                                        disabled={createMutation.isPending}
-                                      >
-                                        <Plus className="h-4 w-4 mr-1" />
-                                        Import
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
+                                {owners
+                                  .filter(owner => owner.isEligibleForCoverage)
+                                  .map(owner => (
+                                    <TableRow key={owner.id}>
+                                      <TableCell>
+                                        {owner.firstName} {owner.lastName}
+                                      </TableCell>
+                                      <TableCell>{owner.email || '—'}</TableCell>
+                                      <TableCell>{owner.phone || '—'}</TableCell>
+                                      <TableCell>
+                                        <Button
+                                          size="sm"
+                                          variant="secondary"
+                                          onClick={() => importOwnerAsEmployee(owner)}
+                                          disabled={createMutation.isPending}
+                                        >
+                                          <Plus className="h-4 w-4 mr-1" />
+                                          Import
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
                               </TableBody>
                             </Table>
                           </div>
@@ -449,7 +459,7 @@ export default function EmployeeInfo() {
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Authorized Contact */}
                       {authorizedContact && authorizedContact.isEligibleForCoverage && (
                         <div className="mb-6">
@@ -471,12 +481,16 @@ export default function EmployeeInfo() {
                                   </TableCell>
                                   <TableCell>{authorizedContact.title}</TableCell>
                                   <TableCell>
-                                    {authorizedContact.email && <div>{authorizedContact.email}</div>}
-                                    {authorizedContact.phone && <div>{authorizedContact.phone}</div>}
+                                    {authorizedContact.email && (
+                                      <div>{authorizedContact.email}</div>
+                                    )}
+                                    {authorizedContact.phone && (
+                                      <div>{authorizedContact.phone}</div>
+                                    )}
                                   </TableCell>
                                   <TableCell>
-                                    <Button 
-                                      size="sm" 
+                                    <Button
+                                      size="sm"
                                       variant="secondary"
                                       onClick={() => importContactAsEmployee(authorizedContact)}
                                       disabled={createMutation.isPending}
@@ -491,23 +505,26 @@ export default function EmployeeInfo() {
                           </div>
                         </div>
                       )}
-                      
-                      {!owners.some(owner => owner.isEligibleForCoverage) && 
-                       (!authorizedContact || !authorizedContact.isEligibleForCoverage) && (
-                        <div className="bg-amber-50 p-4 rounded-md border border-amber-200 flex items-start gap-3">
-                          <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <h4 className="font-medium text-amber-800">No eligible contacts found</h4>
-                            <p className="text-sm text-amber-700 mt-1">
-                              There are no business owners or authorized contacts marked as eligible for coverage. 
-                              Go back to the previous sections to mark eligible individuals.
-                            </p>
+
+                      {!owners.some(owner => owner.isEligibleForCoverage) &&
+                        (!authorizedContact || !authorizedContact.isEligibleForCoverage) && (
+                          <div className="bg-amber-50 p-4 rounded-md border border-amber-200 flex items-start gap-3">
+                            <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <h4 className="font-medium text-amber-800">
+                                No eligible contacts found
+                              </h4>
+                              <p className="text-sm text-amber-700 mt-1">
+                                There are no business owners or authorized contacts marked as
+                                eligible for coverage. Go back to the previous sections to mark
+                                eligible individuals.
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </TabsContent>
-                  
+
                   <TabsContent value="add-manually">
                     <Form {...form}>
                       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -657,23 +674,26 @@ export default function EmployeeInfo() {
                         <div className="flex justify-end">
                           <Button type="submit" disabled={createMutation.isPending}>
                             <Plus className="mr-2 h-4 w-4" />
-                            {createMutation.isPending ? "Adding..." : "Add Employee"}
+                            {createMutation.isPending ? 'Adding...' : 'Add Employee'}
                           </Button>
                         </div>
                       </form>
                     </Form>
                   </TabsContent>
-                  
+
                   <TabsContent value="upload-census">
                     <div className="space-y-4">
                       <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
                         <div className="flex">
                           <FileText className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
                           <div>
-                            <h4 className="text-sm font-medium text-blue-800">Census File Requirements</h4>
+                            <h4 className="text-sm font-medium text-blue-800">
+                              Census File Requirements
+                            </h4>
                             <p className="text-sm text-blue-700 mt-1">
-                              Please upload an Excel or CSV file with the following columns: First Name, Last Name, 
-                              Date of Birth, SSN, Address, City, State, ZIP, Email (optional), Phone (optional).
+                              Please upload an Excel or CSV file with the following columns: First
+                              Name, Last Name, Date of Birth, SSN, Address, City, State, ZIP, Email
+                              (optional), Phone (optional).
                             </p>
                             <div className="mt-2">
                               <Button variant="link" className="text-blue-700 p-0 h-auto text-sm">
@@ -694,7 +714,7 @@ export default function EmployeeInfo() {
                 </Tabs>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="outline" onClick={() => navigate("/enrollment/ownership")}>
+                <Button variant="outline" onClick={() => navigate('/enrollment/ownership')}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Previous: Ownership
                 </Button>
@@ -705,7 +725,7 @@ export default function EmployeeInfo() {
               </CardFooter>
             </Card>
           </div>
-          
+
           {/* Sidebar */}
           <div className="lg:w-80">
             <EnrollmentChecklist companyId={companyId} />
@@ -718,12 +738,13 @@ export default function EmployeeInfo() {
             <AlertDialogHeader>
               <AlertDialogTitle>Continue without employees?</AlertDialogTitle>
               <AlertDialogDescription>
-                You haven't added any employees. Your enrollment requires employee information. Are you sure you want to continue?
+                You haven't added any employees. Your enrollment requires employee information. Are
+                you sure you want to continue?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => navigate("/enrollment/documents")}>
+              <AlertDialogAction onClick={() => navigate('/enrollment/documents')}>
                 Continue
               </AlertDialogAction>
             </AlertDialogFooter>

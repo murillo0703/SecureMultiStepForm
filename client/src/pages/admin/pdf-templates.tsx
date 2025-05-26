@@ -1,26 +1,32 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { 
-  Upload, 
-  FileText, 
-  Settings, 
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import {
+  Upload,
+  FileText,
+  Settings,
   Download,
   Eye,
   Plus,
   Trash2,
   Calendar,
-  User
-} from "lucide-react";
+  User,
+} from 'lucide-react';
 
 interface PdfTemplate {
   id: number;
@@ -46,42 +52,42 @@ export default function PdfTemplatesPage() {
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [templateForm, setTemplateForm] = useState({
-    carrierName: "",
-    formName: "",
-    version: "1.0"
+    carrierName: '',
+    formName: '',
+    version: '1.0',
   });
   const [selectedTemplate, setSelectedTemplate] = useState<PdfTemplate | null>(null);
   const [showMappingEditor, setShowMappingEditor] = useState(false);
 
   // Fetch PDF templates
   const { data: templates = [], isLoading } = useQuery({
-    queryKey: ["/api/admin/pdf-templates"],
+    queryKey: ['/api/admin/pdf-templates'],
   });
 
   // Upload PDF template mutation
   const uploadMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const res = await fetch("/api/admin/pdf-templates/upload", {
-        method: "POST",
+      const res = await fetch('/api/admin/pdf-templates/upload', {
+        method: 'POST',
         body: data,
       });
-      if (!res.ok) throw new Error("Upload failed");
+      if (!res.ok) throw new Error('Upload failed');
       return await res.json();
     },
     onSuccess: () => {
       toast({
-        title: "Success",
-        description: "PDF template uploaded successfully!",
+        title: 'Success',
+        description: 'PDF template uploaded successfully!',
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/pdf-templates"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/pdf-templates'] });
       setSelectedFile(null);
-      setTemplateForm({ carrierName: "", formName: "", version: "1.0" });
+      setTemplateForm({ carrierName: '', formName: '', version: '1.0' });
     },
     onError: (error: Error) => {
       toast({
-        title: "Upload failed",
+        title: 'Upload failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -89,9 +95,9 @@ export default function PdfTemplatesPage() {
   // Generate PDF mutation
   const generateMutation = useMutation({
     mutationFn: async ({ templateId, companyId }: { templateId: number; companyId: number }) => {
-      const res = await apiRequest("POST", "/api/admin/pdf-templates/generate", {
+      const res = await apiRequest('POST', '/api/admin/pdf-templates/generate', {
         templateId,
-        companyId
+        companyId,
       });
       return await res.blob();
     },
@@ -105,23 +111,23 @@ export default function PdfTemplatesPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
+
       toast({
-        title: "PDF Generated",
-        description: "Carrier application form generated successfully!",
+        title: 'PDF Generated',
+        description: 'Carrier application form generated successfully!',
       });
-    }
+    },
   });
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && file.type === "application/pdf") {
+    if (file && file.type === 'application/pdf') {
       setSelectedFile(file);
     } else {
       toast({
-        title: "Invalid file",
-        description: "Please select a PDF file",
-        variant: "destructive",
+        title: 'Invalid file',
+        description: 'Please select a PDF file',
+        variant: 'destructive',
       });
     }
   };
@@ -129,23 +135,23 @@ export default function PdfTemplatesPage() {
   const handleUpload = () => {
     if (!selectedFile || !templateForm.carrierName || !templateForm.formName) {
       toast({
-        title: "Missing information",
-        description: "Please fill all fields and select a PDF file",
-        variant: "destructive",
+        title: 'Missing information',
+        description: 'Please fill all fields and select a PDF file',
+        variant: 'destructive',
       });
       return;
     }
 
     const formData = new FormData();
-    formData.append("pdf", selectedFile);
-    formData.append("carrierName", templateForm.carrierName);
-    formData.append("formName", templateForm.formName);
-    formData.append("version", templateForm.version);
+    formData.append('pdf', selectedFile);
+    formData.append('carrierName', templateForm.carrierName);
+    formData.append('formName', templateForm.formName);
+    formData.append('version', templateForm.version);
 
     uploadMutation.mutate(formData);
   };
 
-  const carriers = ["Anthem", "CCSB", "Blue Shield", "Kaiser", "Aetna", "Cigna"];
+  const carriers = ['Anthem', 'CCSB', 'Blue Shield', 'Kaiser', 'Aetna', 'Cigna'];
 
   return (
     <div className="space-y-6">
@@ -174,9 +180,9 @@ export default function PdfTemplatesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="carrier">Carrier</Label>
-              <Select 
-                value={templateForm.carrierName} 
-                onValueChange={(value) => setTemplateForm(prev => ({ ...prev, carrierName: value }))}
+              <Select
+                value={templateForm.carrierName}
+                onValueChange={value => setTemplateForm(prev => ({ ...prev, carrierName: value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select carrier" />
@@ -197,7 +203,7 @@ export default function PdfTemplatesPage() {
                 id="formName"
                 placeholder="e.g., Group Application Form"
                 value={templateForm.formName}
-                onChange={(e) => setTemplateForm(prev => ({ ...prev, formName: e.target.value }))}
+                onChange={e => setTemplateForm(prev => ({ ...prev, formName: e.target.value }))}
               />
             </div>
 
@@ -207,7 +213,7 @@ export default function PdfTemplatesPage() {
                 id="version"
                 placeholder="1.0"
                 value={templateForm.version}
-                onChange={(e) => setTemplateForm(prev => ({ ...prev, version: e.target.value }))}
+                onChange={e => setTemplateForm(prev => ({ ...prev, version: e.target.value }))}
               />
             </div>
           </div>
@@ -230,12 +236,12 @@ export default function PdfTemplatesPage() {
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={handleUpload}
             disabled={uploadMutation.isPending || !selectedFile}
             className="w-full md:w-auto"
           >
-            {uploadMutation.isPending ? "Uploading..." : "Upload Template"}
+            {uploadMutation.isPending ? 'Uploading...' : 'Upload Template'}
           </Button>
         </CardContent>
       </Card>
@@ -252,9 +258,7 @@ export default function PdfTemplatesPage() {
           {isLoading ? (
             <div className="text-center py-8">Loading templates...</div>
           ) : templates.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No PDF templates uploaded yet
-            </div>
+            <div className="text-center py-8 text-gray-500">No PDF templates uploaded yet</div>
           ) : (
             <div className="space-y-4">
               {templates.map((template: PdfTemplate) => (
@@ -270,7 +274,7 @@ export default function PdfTemplatesPage() {
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
@@ -280,8 +284,8 @@ export default function PdfTemplatesPage() {
                           <Calendar className="h-3 w-3" />
                           {new Date(template.uploadedAt).toLocaleDateString()}
                         </span>
-                        <Badge variant={template.isActive ? "default" : "secondary"}>
-                          {template.isActive ? "Active" : "Inactive"}
+                        <Badge variant={template.isActive ? 'default' : 'secondary'}>
+                          {template.isActive ? 'Active' : 'Inactive'}
                         </Badge>
                       </div>
                     </div>
@@ -295,7 +299,7 @@ export default function PdfTemplatesPage() {
                         <Eye className="h-4 w-4 mr-1" />
                         Preview
                       </Button>
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
@@ -311,10 +315,12 @@ export default function PdfTemplatesPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => generateMutation.mutate({ 
-                          templateId: template.id, 
-                          companyId: 1 // Demo company ID
-                        })}
+                        onClick={() =>
+                          generateMutation.mutate({
+                            templateId: template.id,
+                            companyId: 1, // Demo company ID
+                          })
+                        }
                         disabled={generateMutation.isPending}
                       >
                         <Download className="h-4 w-4 mr-1" />
@@ -333,8 +339,9 @@ export default function PdfTemplatesPage() {
       <Alert>
         <FileText className="h-4 w-4" />
         <AlertDescription>
-          <strong>PDF Generation Process:</strong> Upload carrier PDF templates → Map form fields to data sources → 
-          Auto-generate completed forms with company data and digital signatures during enrollment submission.
+          <strong>PDF Generation Process:</strong> Upload carrier PDF templates → Map form fields to
+          data sources → Auto-generate completed forms with company data and digital signatures
+          during enrollment submission.
         </AlertDescription>
       </Alert>
     </div>

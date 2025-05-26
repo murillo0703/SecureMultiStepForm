@@ -50,11 +50,11 @@ export class PDFGenerator {
     const uploadsDir = path.join(process.cwd(), 'uploads');
     const pdfsDir = path.join(uploadsDir, 'pdfs');
     const generatedDir = path.join(uploadsDir, 'generated');
-    
+
     return Promise.all([
       fs.mkdir(uploadsDir, { recursive: true }),
       fs.mkdir(pdfsDir, { recursive: true }),
-      fs.mkdir(generatedDir, { recursive: true })
+      fs.mkdir(generatedDir, { recursive: true }),
     ]);
   }
 
@@ -70,15 +70,15 @@ export class PDFGenerator {
     // Read the template PDF
     const templateBytes = await fs.readFile(templatePath);
     const pdfDoc = await PDFDocument.load(templateBytes);
-    
+
     // Get the form from the PDF
     const form = pdfDoc.getForm();
-    
+
     // Combine all data sources
     const dataMap = {
       company: companyData,
       owner: ownerData,
-      application: applicationData
+      application: applicationData,
     };
 
     // Fill form fields based on mappings
@@ -86,7 +86,7 @@ export class PDFGenerator {
       try {
         const sourceData = dataMap[mapping.dataSource as keyof typeof dataMap];
         const value = sourceData?.[mapping.dataField];
-        
+
         if (value !== undefined && value !== null) {
           await this.fillField(form, pdfDoc, mapping, value);
         }
@@ -106,16 +106,11 @@ export class PDFGenerator {
 
     return {
       filePath: outputPath,
-      fileName: fileName
+      fileName: fileName,
     };
   }
 
-  private async fillField(
-    form: PDFForm,
-    pdfDoc: PDFDocument,
-    mapping: FieldMapping,
-    value: any
-  ) {
+  private async fillField(form: PDFForm, pdfDoc: PDFDocument, mapping: FieldMapping, value: any) {
     const stringValue = String(value);
 
     switch (mapping.fieldType) {
@@ -179,7 +174,7 @@ export class PDFGenerator {
   ) {
     const pages = pdfDoc.getPages();
     const page = pages[pageNumber - 1];
-    
+
     if (page) {
       page.drawText(text, {
         x: x,
@@ -202,12 +197,12 @@ export class PDFGenerator {
     try {
       const pages = pdfDoc.getPages();
       const page = pages[pageNumber - 1];
-      
+
       if (page && signatureData.startsWith('data:image/')) {
         // Extract base64 data
         const base64Data = signatureData.split(',')[1];
         const imageBytes = Buffer.from(base64Data, 'base64');
-        
+
         // Embed the signature image
         let image;
         if (signatureData.includes('png')) {
@@ -215,7 +210,7 @@ export class PDFGenerator {
         } else {
           image = await pdfDoc.embedJpg(imageBytes);
         }
-        
+
         // Draw the signature
         page.drawImage(image, {
           x: x,
@@ -244,7 +239,7 @@ export class PDFGenerator {
       const templateBytes = await fs.readFile(templatePath);
       const pdfDoc = await PDFDocument.load(templateBytes);
       const form = pdfDoc.getForm();
-      
+
       const fields = form.getFields();
       return fields.map(field => field.getName());
     } catch (error) {

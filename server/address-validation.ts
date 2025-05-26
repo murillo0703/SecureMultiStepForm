@@ -1,14 +1,14 @@
-import { Request, Response } from "express";
-import fetch from "node-fetch";
-import { z } from "zod";
-import { XMLParser } from "fast-xml-parser";
+import { Request, Response } from 'express';
+import fetch from 'node-fetch';
+import { z } from 'zod';
+import { XMLParser } from 'fast-xml-parser';
 
 // Validation schema for address input
 const addressValidationSchema = z.object({
-  street: z.string().min(1, "Street address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().length(2, "State must be a 2-letter code"),
-  zip: z.string().regex(/^\d{5}(-\d{4})?$/, "ZIP code must be in format 12345 or 12345-6789"),
+  street: z.string().min(1, 'Street address is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().length(2, 'State must be a 2-letter code'),
+  zip: z.string().regex(/^\d{5}(-\d{4})?$/, 'ZIP code must be in format 12345 or 12345-6789'),
 });
 
 // USPS API integration
@@ -16,8 +16,8 @@ async function validateWithUSPS(address: z.infer<typeof addressValidationSchema>
   // Check if USPS API key is available
   const uspsUserId = process.env.USPS_USER_ID;
   if (!uspsUserId) {
-    console.warn("USPS_USER_ID not found in environment variables");
-    return { success: false, message: "Address validation service not configured" };
+    console.warn('USPS_USER_ID not found in environment variables');
+    return { success: false, message: 'Address validation service not configured' };
   }
 
   try {
@@ -39,7 +39,7 @@ async function validateWithUSPS(address: z.infer<typeof addressValidationSchema>
     // Call USPS API
     const response = await fetch(
       `https://secure.shippingapis.com/ShippingAPI.dll?API=Verify&XML=${encodeURIComponent(xmlRequest)}`,
-      { method: "GET" }
+      { method: 'GET' }
     );
 
     if (!response.ok) {
@@ -54,14 +54,14 @@ async function validateWithUSPS(address: z.infer<typeof addressValidationSchema>
     if (result.Error) {
       return {
         success: false,
-        message: result.Error.Description || "Address validation failed",
+        message: result.Error.Description || 'Address validation failed',
       };
     }
 
     // Parse successful response
     if (result.AddressValidateResponse && result.AddressValidateResponse.Address) {
       const validatedAddress = result.AddressValidateResponse.Address;
-      const isDifferent = 
+      const isDifferent =
         validatedAddress.Address2 !== address.street ||
         validatedAddress.City !== address.city ||
         validatedAddress.State !== address.state ||
@@ -71,24 +71,26 @@ async function validateWithUSPS(address: z.infer<typeof addressValidationSchema>
         success: true,
         valid: true,
         corrected: isDifferent,
-        correctedAddress: isDifferent ? {
-          street: validatedAddress.Address2 || address.street,
-          city: validatedAddress.City || address.city,
-          state: validatedAddress.State || address.state,
-          zip: `${validatedAddress.Zip5 || ''}${validatedAddress.Zip4 ? '-' + validatedAddress.Zip4 : ''}`,
-        } : null,
+        correctedAddress: isDifferent
+          ? {
+              street: validatedAddress.Address2 || address.street,
+              city: validatedAddress.City || address.city,
+              state: validatedAddress.State || address.state,
+              zip: `${validatedAddress.Zip5 || ''}${validatedAddress.Zip4 ? '-' + validatedAddress.Zip4 : ''}`,
+            }
+          : null,
       };
     }
 
     return {
       success: false,
-      message: "Unable to validate address format",
+      message: 'Unable to validate address format',
     };
   } catch (error) {
-    console.error("USPS address validation error:", error);
+    console.error('USPS address validation error:', error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Address validation service error",
+      message: error instanceof Error ? error.message : 'Address validation service error',
     };
   }
 }
@@ -96,14 +98,14 @@ async function validateWithUSPS(address: z.infer<typeof addressValidationSchema>
 // Express route handler
 export async function validateAddress(req: Request, res: Response) {
   try {
-    console.log("Validating address:", req.body);
-    
+    console.log('Validating address:', req.body);
+
     // Validate request body
     const validationResult = addressValidationSchema.safeParse(req.body);
     if (!validationResult.success) {
       return res.status(400).json({
         success: false,
-        message: "Invalid address format",
+        message: 'Invalid address format',
         errors: validationResult.error.format(),
       });
     }
@@ -113,61 +115,61 @@ export async function validateAddress(req: Request, res: Response) {
     function basicAddressValidation(address: z.infer<typeof addressValidationSchema>) {
       const zipPattern = /^\d{5}(-\d{4})?$/;
       const statePattern = /^[A-Z]{2}$/;
-      
+
       let isValid = true;
-      let validationMessage = "";
-      
+      let validationMessage = '';
+
       // Validate ZIP code
       if (!zipPattern.test(address.zip)) {
         isValid = false;
-        validationMessage = "ZIP code must be in format 12345 or 12345-6789";
+        validationMessage = 'ZIP code must be in format 12345 or 12345-6789';
       }
-      
+
       // Validate state
       if (!statePattern.test(address.state)) {
         isValid = false;
-        validationMessage = "State must be a 2-letter code";
+        validationMessage = 'State must be a 2-letter code';
       }
-      
+
       // Basic validation for required fields
       if (!address.street || address.street.length < 3) {
         isValid = false;
-        validationMessage = "Street address is too short or missing";
+        validationMessage = 'Street address is too short or missing';
       }
-      
+
       if (!address.city || address.city.length < 2) {
         isValid = false;
-        validationMessage = "City name is too short or missing";
+        validationMessage = 'City name is too short or missing';
       }
-      
+
       return {
         isValid,
         message: validationMessage,
-        address: address
+        address: address,
       };
     }
-    
+
     // First perform basic validation
     const basicValidation = basicAddressValidation(validationResult.data);
     if (!basicValidation.isValid) {
-      console.log("Basic validation failed:", basicValidation.message);
+      console.log('Basic validation failed:', basicValidation.message);
       return res.status(200).json({
         valid: false,
         warning: true,
-        message: basicValidation.message || "Address appears to be invalid"
+        message: basicValidation.message || 'Address appears to be invalid',
       });
     }
 
     // Try USPS API validation
     const uspsResult = await validateWithUSPS(validationResult.data);
-    console.log("USPS validation result:", uspsResult);
-    
+    console.log('USPS validation result:', uspsResult);
+
     if (!uspsResult.success) {
       // If USPS validation fails, we'll use our basic validation but still warn the user
       return res.status(200).json({
         valid: basicValidation.isValid,
         warning: true,
-        message: uspsResult.message || "Address format validated, but couldn't verify with USPS"
+        message: uspsResult.message || "Address format validated, but couldn't verify with USPS",
       });
     }
 
@@ -177,10 +179,10 @@ export async function validateAddress(req: Request, res: Response) {
       correctedAddress: uspsResult.correctedAddress,
     });
   } catch (error) {
-    console.error("Address validation handler error:", error);
+    console.error('Address validation handler error:', error);
     return res.status(500).json({
       success: false,
-      message: "Internal server error during address validation",
+      message: 'Internal server error during address validation',
     });
   }
 }

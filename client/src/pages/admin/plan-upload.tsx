@@ -1,19 +1,13 @@
-import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Header } from "@/components/layout/header";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { Header } from '@/components/layout/header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import {
   Upload,
   FileSpreadsheet,
@@ -22,21 +16,21 @@ import {
   Filter,
   Calendar,
   Building,
-} from "lucide-react";
-import { Plan } from "@shared/schema";
-import { format } from "date-fns";
+} from 'lucide-react';
+import { Plan } from '@shared/schema';
+import { format } from 'date-fns';
 
 export default function AdminPlanUpload() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [selectedCarrier, setSelectedCarrier] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedCarrier, setSelectedCarrier] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
   // Fetch existing plans
   const { data: plans = [], isLoading: isLoadingPlans } = useQuery<Plan[]>({
-    queryKey: ["/api/admin/plans"],
-    enabled: !!user && user.role === "admin",
+    queryKey: ['/api/admin/plans'],
+    enabled: !!user && user.role === 'admin',
   });
 
   // Get unique carriers from existing plans
@@ -46,33 +40,33 @@ export default function AdminPlanUpload() {
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
-      formData.append("planFile", file);
-      
-      const res = await fetch("/api/admin/plans/upload", {
-        method: "POST",
+      formData.append('planFile', file);
+
+      const res = await fetch('/api/admin/plans/upload', {
+        method: 'POST',
         body: formData,
       });
-      
+
       if (!res.ok) {
         const error = await res.text();
         throw new Error(error);
       }
-      
+
       return await res.json();
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/plans"] });
+    onSuccess: data => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/plans'] });
       toast({
-        title: "Plans uploaded successfully",
+        title: 'Plans uploaded successfully',
         description: `${data.count} plans have been added to the system.`,
       });
       setUploadFile(null);
     },
     onError: (error: Error) => {
       toast({
-        title: "Upload failed",
+        title: 'Upload failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -84,9 +78,9 @@ export default function AdminPlanUpload() {
       // Validate file type
       if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
         toast({
-          title: "Invalid file type",
-          description: "Please select an Excel file (.xlsx or .xls).",
-          variant: "destructive",
+          title: 'Invalid file type',
+          description: 'Please select an Excel file (.xlsx or .xls).',
+          variant: 'destructive',
         });
         return;
       }
@@ -115,7 +109,7 @@ export default function AdminPlanUpload() {
   });
 
   // Check if user has admin access
-  if (user?.role !== "admin") {
+  if (user?.role !== 'admin') {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Header />
@@ -123,9 +117,7 @@ export default function AdminPlanUpload() {
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle>Access Denied</CardTitle>
-              <CardDescription>
-                Only administrators can access plan upload.
-              </CardDescription>
+              <CardDescription>Only administrators can access plan upload.</CardDescription>
             </CardHeader>
           </Card>
         </main>
@@ -136,12 +128,10 @@ export default function AdminPlanUpload() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Plan Management
-          </h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Plan Management</h1>
           <p className="mt-1 text-gray-600">
             Upload Excel files with plan data and manage carrier-specific plans
           </p>
@@ -180,21 +170,21 @@ export default function AdminPlanUpload() {
                     className="cursor-pointer"
                   />
                 </div>
-                
+
                 {uploadFile && (
                   <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
                     <FileSpreadsheet className="h-4 w-4 text-blue-600" />
                     <span className="text-sm text-blue-800">{uploadFile.name}</span>
                   </div>
                 )}
-                
+
                 <Button
                   onClick={handleUpload}
                   disabled={!uploadFile || uploadMutation.isPending}
                   className="w-full"
                   size="lg"
                 >
-                  {uploadMutation.isPending ? "Uploading..." : "Upload Plans"}
+                  {uploadMutation.isPending ? 'Uploading...' : 'Upload Plans'}
                 </Button>
               </div>
 
@@ -231,25 +221,25 @@ export default function AdminPlanUpload() {
                   <select
                     id="carrier-filter"
                     value={selectedCarrier}
-                    onChange={(e) => setSelectedCarrier(e.target.value)}
+                    onChange={e => setSelectedCarrier(e.target.value)}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <option value="">All Carriers</option>
-                    {carriers.map((carrier) => (
+                    {carriers.map(carrier => (
                       <option key={carrier} value={carrier}>
                         {carrier}
                       </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="date-filter">Coverage Date</Label>
                   <Input
                     id="date-filter"
                     type="date"
                     value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
+                    onChange={e => setSelectedDate(e.target.value)}
                   />
                 </div>
               </div>
@@ -259,11 +249,8 @@ export default function AdminPlanUpload() {
                 {isLoadingPlans ? (
                   <div className="text-sm text-gray-500">Loading plans...</div>
                 ) : filteredPlans.length > 0 ? (
-                  filteredPlans.map((plan) => (
-                    <div
-                      key={plan.id}
-                      className="p-3 border rounded-lg bg-white space-y-1"
-                    >
+                  filteredPlans.map(plan => (
+                    <div key={plan.id} className="p-3 border rounded-lg bg-white space-y-1">
                       <div className="flex items-center justify-between">
                         <div className="font-medium text-sm">{plan.planName}</div>
                         <div className="text-xs text-gray-500">{plan.metalTier}</div>
@@ -274,12 +261,11 @@ export default function AdminPlanUpload() {
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-600">
                         <Calendar className="h-3 w-3" />
-                        {format(new Date(plan.effectiveStart), "MMM d, yyyy")} - {format(new Date(plan.effectiveEnd), "MMM d, yyyy")}
+                        {format(new Date(plan.effectiveStart), 'MMM d, yyyy')} -{' '}
+                        {format(new Date(plan.effectiveEnd), 'MMM d, yyyy')}
                       </div>
                       {plan.contractCode && (
-                        <div className="text-xs text-gray-500">
-                          Contract: {plan.contractCode}
-                        </div>
+                        <div className="text-xs text-gray-500">Contract: {plan.contractCode}</div>
                       )}
                     </div>
                   ))

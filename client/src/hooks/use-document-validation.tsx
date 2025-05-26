@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import documentRules from "@shared/document-rules.json";
+import { useState, useEffect, useMemo } from 'react';
+import documentRules from '@shared/document-rules.json';
 
 interface DocumentRequirement {
   type: string;
@@ -32,12 +32,12 @@ export function useDocumentValidation(companyData: CompanyData) {
   // Evaluate conditions based on company data
   const evaluateCondition = (condition: string): boolean => {
     switch (condition) {
-      case "hasPriorCoverage":
+      case 'hasPriorCoverage':
         return companyData.hasPriorCoverage === true;
-      case "employeeCount > 50":
+      case 'employeeCount > 50':
         return (companyData.employeeCount || 0) > 50;
-      case "missingDE9C":
-        return !uploadedDocs.includes("DE9C");
+      case 'missingDE9C':
+        return !uploadedDocs.includes('DE9C');
       default:
         return false;
     }
@@ -49,29 +49,29 @@ export function useDocumentValidation(companyData: CompanyData) {
 
     // Always required: Pay proof and business docs
     groups.push({
-      id: "payProof",
+      id: 'payProof',
       label: documentRules.payProof.label,
       description: documentRules.payProof.description,
       requirements: documentRules.payProof.oneOf,
-      oneOf: true
+      oneOf: true,
     });
 
     groups.push({
-      id: "businessDocs", 
+      id: 'businessDocs',
       label: documentRules.businessDocs.label,
       description: documentRules.businessDocs.description,
       requirements: documentRules.businessDocs.oneOf,
-      oneOf: true
+      oneOf: true,
     });
 
     // Conditional: Prior coverage
     if (evaluateCondition(documentRules.priorCoverage.condition)) {
       groups.push({
-        id: "priorCoverage",
+        id: 'priorCoverage',
         label: documentRules.priorCoverage.label,
         description: documentRules.priorCoverage.description,
         requirements: documentRules.priorCoverage.required,
-        condition: documentRules.priorCoverage.condition
+        condition: documentRules.priorCoverage.condition,
       });
     }
 
@@ -79,23 +79,21 @@ export function useDocumentValidation(companyData: CompanyData) {
     if (companyData.selectedCarrier && documentRules.carrierSpecific[companyData.selectedCarrier]) {
       const carrierDocs = documentRules.carrierSpecific[companyData.selectedCarrier];
       groups.push({
-        id: "carrierSpecific",
+        id: 'carrierSpecific',
         label: `${companyData.selectedCarrier} Requirements`,
         description: `Additional documents required by ${companyData.selectedCarrier}`,
-        requirements: carrierDocs.filter(doc => 
-          !doc.condition || evaluateCondition(doc.condition)
-        )
+        requirements: carrierDocs.filter(doc => !doc.condition || evaluateCondition(doc.condition)),
       });
     }
 
     // Employee count based requirements
     if (evaluateCondition(documentRules.employeeCount.condition)) {
       groups.push({
-        id: "employeeCount",
+        id: 'employeeCount',
         label: documentRules.employeeCount.label,
         description: documentRules.employeeCount.description,
         requirements: documentRules.employeeCount.required,
-        condition: documentRules.employeeCount.condition
+        condition: documentRules.employeeCount.condition,
       });
     }
 
@@ -120,12 +118,12 @@ export function useDocumentValidation(companyData: CompanyData) {
     const totalGroups = requiredGroups.length;
     const satisfiedGroups = requiredGroups.filter(isGroupSatisfied).length;
     const isComplete = satisfiedGroups === totalGroups;
-    
+
     return {
       isComplete,
       satisfiedGroups,
       totalGroups,
-      missingGroups: requiredGroups.filter(group => !isGroupSatisfied(group))
+      missingGroups: requiredGroups.filter(group => !isGroupSatisfied(group)),
     };
   }, [requiredGroups, uploadedDocs]);
 
@@ -148,9 +146,9 @@ export function useDocumentValidation(companyData: CompanyData) {
   const getDocumentStatus = (docType: string) => {
     return {
       isUploaded: uploadedDocs.includes(docType),
-      isRequired: requiredGroups.some(group => 
+      isRequired: requiredGroups.some(group =>
         group.requirements.some(req => req.type === docType)
-      )
+      ),
     };
   };
 
@@ -162,6 +160,6 @@ export function useDocumentValidation(companyData: CompanyData) {
     markDocumentUploaded,
     removeDocument,
     getDocumentStatus,
-    evaluateCondition
+    evaluateCondition,
   };
 }

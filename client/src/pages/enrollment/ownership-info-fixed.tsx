@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { Owner } from "@shared/schema";
-import { ownerValidationSchema } from "@/utils/form-validators";
-import { EnrollmentLayout } from "@/components/layout/enrollment-layout";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { Owner } from '@shared/schema';
+import { ownerValidationSchema } from '@/utils/form-validators';
+import { EnrollmentLayout } from '@/components/layout/enrollment-layout';
 import {
   Form,
   FormControl,
@@ -16,16 +16,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -33,7 +27,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,11 +37,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Users, ArrowRight, ArrowLeft, CheckCircle, AlertCircle, Edit, Trash2 
-} from "lucide-react";
+} from '@/components/ui/alert-dialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Users, ArrowRight, ArrowLeft, CheckCircle, AlertCircle, Edit, Trash2 } from 'lucide-react';
 
 type OwnerFormValues = z.infer<typeof ownerValidationSchema>;
 
@@ -61,7 +53,7 @@ export default function OwnershipInfo() {
 
   // Fetch companies for this user
   const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
-    queryKey: ["/api/companies"],
+    queryKey: ['/api/companies'],
   });
 
   const companyId = companies.length > 0 ? companies[0].id : null;
@@ -80,18 +72,18 @@ export default function OwnershipInfo() {
 
   // Fetch application initiator
   const { data: initiator } = useQuery({
-    queryKey: ["/api/application-initiator"],
+    queryKey: ['/api/application-initiator'],
   });
 
   const form = useForm<OwnerFormValues>({
     resolver: zodResolver(ownerValidationSchema),
     defaultValues: {
       companyId: companyId || 0,
-      firstName: "",
-      lastName: "",
-      title: "",
-      email: "",
-      phone: "",
+      firstName: '',
+      lastName: '',
+      title: '',
+      email: '',
+      phone: '',
       ownershipPercentage: 0,
       isEligibleForCoverage: false,
     },
@@ -100,50 +92,50 @@ export default function OwnershipInfo() {
   // Update companyId when available
   useEffect(() => {
     if (companyId) {
-      form.setValue("companyId", companyId);
+      form.setValue('companyId', companyId);
     }
   }, [companyId, form]);
 
   // Auto-populate owner information if initiator is an owner
   useEffect(() => {
     if (initiator && (initiator as any).isOwner && owners.length === 0) {
-      form.setValue("firstName", (initiator as any).firstName || "");
-      form.setValue("lastName", (initiator as any).lastName || "");
-      form.setValue("email", (initiator as any).email || "");
-      form.setValue("phone", (initiator as any).phone || "");
-      form.setValue("title", (initiator as any).title || "");
-      form.setValue("ownershipPercentage", 100);
+      form.setValue('firstName', (initiator as any).firstName || '');
+      form.setValue('lastName', (initiator as any).lastName || '');
+      form.setValue('email', (initiator as any).email || '');
+      form.setValue('phone', (initiator as any).phone || '');
+      form.setValue('title', (initiator as any).title || '');
+      form.setValue('ownershipPercentage', 100);
     }
   }, [initiator, owners, form]);
 
   // Create owner mutation
   const createMutation = useMutation({
     mutationFn: async (values: OwnerFormValues) => {
-      const res = await apiRequest("POST", `/api/companies/${companyId}/owners`, values);
+      const res = await apiRequest('POST', `/api/companies/${companyId}/owners`, values);
       return await res.json();
     },
     onSuccess: () => {
       form.reset({
         companyId: companyId || 0,
-        firstName: "",
-        lastName: "",
-        title: "",
-        email: "",
-        phone: "",
+        firstName: '',
+        lastName: '',
+        title: '',
+        email: '',
+        phone: '',
         ownershipPercentage: 0,
         isEligibleForCoverage: false,
       });
       toast({
-        title: "Owner added",
-        description: "The business owner has been added successfully.",
+        title: 'Owner added',
+        description: 'The business owner has been added successfully.',
       });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/owners`] });
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: `Failed to add owner: ${error.message}`,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -151,21 +143,21 @@ export default function OwnershipInfo() {
   // Delete owner mutation
   const deleteMutation = useMutation({
     mutationFn: async (ownerId: number) => {
-      await apiRequest("DELETE", `/api/companies/${companyId}/owners/${ownerId}`);
+      await apiRequest('DELETE', `/api/companies/${companyId}/owners/${ownerId}`);
     },
     onSuccess: () => {
       toast({
-        title: "Owner deleted",
-        description: "The business owner has been removed.",
+        title: 'Owner deleted',
+        description: 'The business owner has been removed.',
       });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/owners`] });
       setSelectedOwnerId(null);
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: `Failed to delete owner: ${error.message}`,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -176,17 +168,17 @@ export default function OwnershipInfo() {
 
   const handleContinue = () => {
     const totalPercentage = owners.reduce((sum, owner) => sum + owner.ownershipPercentage, 0);
-    
+
     if (owners.length === 0) {
       setConfirmDialogOpen(true);
     } else if (Math.abs(totalPercentage - 100) > 0.01) {
       toast({
-        title: "Ownership percentage error",
+        title: 'Ownership percentage error',
         description: `Total ownership must equal 100%. Current total: ${totalPercentage}%`,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } else {
-      navigate("/enrollment/authorized-contact");
+      navigate('/enrollment/authorized-contact');
     }
   };
 
@@ -231,7 +223,7 @@ export default function OwnershipInfo() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {owners.map((owner) => (
+                    {owners.map(owner => (
                       <TableRow key={owner.id}>
                         <TableCell>
                           {owner.firstName} {owner.lastName}
@@ -253,7 +245,8 @@ export default function OwnershipInfo() {
                 </Table>
               </div>
               <div className="mt-2 text-sm text-gray-600">
-                Total ownership: {owners.reduce((sum, owner) => sum + owner.ownershipPercentage, 0)}%
+                Total ownership: {owners.reduce((sum, owner) => sum + owner.ownershipPercentage, 0)}
+                %
               </div>
             </div>
           )}
@@ -311,12 +304,12 @@ export default function OwnershipInfo() {
                     <FormItem>
                       <FormLabel>Ownership Percentage</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input
                           type="number"
                           min={0}
                           max={100}
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                          onChange={e => field.onChange(parseFloat(e.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -360,28 +353,23 @@ export default function OwnershipInfo() {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        Eligible for coverage
-                      </FormLabel>
+                      <FormLabel>Eligible for coverage</FormLabel>
                     </div>
                   </FormItem>
                 )}
               />
 
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Adding..." : "Add Owner"}
+                {createMutation.isPending ? 'Adding...' : 'Add Owner'}
               </Button>
             </form>
           </Form>
 
           <div className="flex justify-between mt-8">
-            <Button variant="outline" onClick={() => navigate("/enrollment/coverage-information")}>
+            <Button variant="outline" onClick={() => navigate('/enrollment/coverage-information')}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Previous: Coverage
             </Button>
@@ -404,7 +392,7 @@ export default function OwnershipInfo() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => navigate("/enrollment/authorized-contact")}>
+            <AlertDialogAction onClick={() => navigate('/enrollment/authorized-contact')}>
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>

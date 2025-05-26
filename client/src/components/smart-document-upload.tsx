@@ -1,20 +1,12 @@
-import { useState, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useDocumentValidation } from "@/hooks/use-document-validation";
-import { 
-  Upload, 
-  CheckCircle, 
-  AlertCircle, 
-  FileText, 
-  X,
-  Eye,
-  Download
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useDocumentValidation } from '@/hooks/use-document-validation';
+import { Upload, CheckCircle, AlertCircle, FileText, X, Eye, Download } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SmartDocumentUploadProps {
   companyData: {
@@ -39,14 +31,14 @@ interface DocumentUploadProps {
   onRemove: () => void;
 }
 
-function DocumentUploadCard({ 
-  docType, 
-  label, 
-  description, 
-  isUploaded, 
-  isRequired, 
-  onUpload, 
-  onRemove 
+function DocumentUploadCard({
+  docType,
+  label,
+  description,
+  isUploaded,
+  isRequired,
+  onUpload,
+  onRemove,
 }: DocumentUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -70,20 +62,28 @@ function DocumentUploadCard({
   };
 
   return (
-    <div className={cn(
-      "border-2 border-dashed rounded-lg p-4 transition-colors",
-      dragOver ? "border-blue-400 bg-blue-50" : "border-gray-300",
-      isUploaded ? "border-green-400 bg-green-50" : ""
-    )}
-    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-    onDragLeave={() => setDragOver(false)}
-    onDrop={handleDrop}
+    <div
+      className={cn(
+        'border-2 border-dashed rounded-lg p-4 transition-colors',
+        dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300',
+        isUploaded ? 'border-green-400 bg-green-50' : ''
+      )}
+      onDragOver={e => {
+        e.preventDefault();
+        setDragOver(true);
+      }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={handleDrop}
     >
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <h4 className="font-medium text-sm">{label}</h4>
-            {isRequired && <Badge variant="outline" className="text-xs">Required</Badge>}
+            {isRequired && (
+              <Badge variant="outline" className="text-xs">
+                Required
+              </Badge>
+            )}
             {isUploaded && <CheckCircle className="h-4 w-4 text-green-600" />}
           </div>
           <p className="text-xs text-gray-600">{description}</p>
@@ -111,14 +111,8 @@ function DocumentUploadCard({
       ) : (
         <div className="text-center">
           <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-gray-600 mb-2">
-            Drag & drop or click to upload
-          </p>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-          >
+          <p className="text-sm text-gray-600 mb-2">Drag & drop or click to upload</p>
+          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
             Select File
           </Button>
           <input
@@ -134,18 +128,18 @@ function DocumentUploadCard({
   );
 }
 
-export function SmartDocumentUpload({ 
-  companyData, 
-  onDocumentUpload, 
-  onDocumentRemove, 
-  className 
+export function SmartDocumentUpload({
+  companyData,
+  onDocumentUpload,
+  onDocumentRemove,
+  className,
 }: SmartDocumentUploadProps) {
   const {
     requiredGroups,
     validationStatus,
     isGroupSatisfied,
     getDocumentStatus,
-    markDocumentUploaded
+    markDocumentUploaded,
   } = useDocumentValidation(companyData);
 
   const handleDocumentUpload = (docType: string, file: File) => {
@@ -158,20 +152,20 @@ export function SmartDocumentUpload({
   };
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn('space-y-6', className)}>
       {/* Progress Overview */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Document Upload Progress</span>
-            <Badge variant={validationStatus.isComplete ? "default" : "secondary"}>
+            <Badge variant={validationStatus.isComplete ? 'default' : 'secondary'}>
               {validationStatus.satisfiedGroups}/{validationStatus.totalGroups} Complete
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Progress 
-            value={(validationStatus.satisfiedGroups / validationStatus.totalGroups) * 100} 
+          <Progress
+            value={(validationStatus.satisfiedGroups / validationStatus.totalGroups) * 100}
             className="mb-4"
           />
           {!validationStatus.isComplete && (
@@ -186,7 +180,7 @@ export function SmartDocumentUpload({
       </Card>
 
       {/* Dynamic Document Groups */}
-      {requiredGroups.map((group) => (
+      {requiredGroups.map(group => (
         <Card key={group.id}>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -211,16 +205,17 @@ export function SmartDocumentUpload({
             {group.oneOf && (
               <Alert className="mt-3">
                 <AlertDescription>
-                  <strong>Upload any one</strong> of the following documents to satisfy this requirement.
+                  <strong>Upload any one</strong> of the following documents to satisfy this
+                  requirement.
                 </AlertDescription>
               </Alert>
             )}
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {group.requirements.map((req) => {
+              {group.requirements.map(req => {
                 const docStatus = getDocumentStatus(req.type);
-                
+
                 return (
                   <DocumentUploadCard
                     key={req.type}
@@ -229,7 +224,7 @@ export function SmartDocumentUpload({
                     description={req.description}
                     isUploaded={docStatus.isUploaded}
                     isRequired={req.required !== false}
-                    onUpload={(file) => handleDocumentUpload(req.type, file)}
+                    onUpload={file => handleDocumentUpload(req.type, file)}
                     onRemove={() => handleDocumentRemove(req.type)}
                   />
                 );
@@ -250,11 +245,11 @@ export function SmartDocumentUpload({
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {validationStatus.missingGroups.map((group) => (
+              {validationStatus.missingGroups.map(group => (
                 <li key={group.id} className="flex items-center gap-2 text-sm text-orange-700">
                   <div className="w-2 h-2 bg-orange-400 rounded-full" />
                   {group.label}
-                  {group.oneOf && " (upload any one option)"}
+                  {group.oneOf && ' (upload any one option)'}
                 </li>
               ))}
             </ul>

@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { FormattedInputField } from "@/components/ui/form-formatted-input";
-import { getEnabledEnrollmentSteps } from "@/utils/enrollment-steps";
-import { Header } from "@/components/layout/header";
-import { ProgressBar } from "@/components/layout/progress-bar";
-import { EnrollmentChecklist } from "@/components/enrollment/checklist";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { FormattedInputField } from '@/components/ui/form-formatted-input';
+import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
+import { Header } from '@/components/layout/header';
+import { ProgressBar } from '@/components/layout/progress-bar';
+import { EnrollmentChecklist } from '@/components/enrollment/checklist';
 import {
   Form,
   FormControl,
@@ -19,27 +19,24 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CheckCircle, ArrowRight, ArrowLeft, AlertCircle } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // Form schema for authorized contact
 const authorizedContactSchema = z.object({
   companyId: z.number(),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  title: z.string().min(1, "Title is required"),
-  email: z.string().email("Invalid email format").min(1, "Email is required"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits").min(1, "Phone number is required"),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  title: z.string().min(1, 'Title is required'),
+  email: z.string().email('Invalid email format').min(1, 'Email is required'),
+  phone: z
+    .string()
+    .min(10, 'Phone number must be at least 10 digits')
+    .min(1, 'Phone number is required'),
   isEligibleForCoverage: z.boolean().default(false),
 });
 
@@ -53,7 +50,7 @@ export default function AuthorizedContact() {
 
   // Fetch companies for this user
   const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
-    queryKey: ["/api/companies"],
+    queryKey: ['/api/companies'],
   });
 
   // Get the first company
@@ -62,7 +59,7 @@ export default function AuthorizedContact() {
   // Redirect if no company exists
   useEffect(() => {
     if (!isLoadingCompanies && !companyId) {
-      navigate("/enrollment/company");
+      navigate('/enrollment/company');
     }
   }, [companyId, isLoadingCompanies, navigate]);
 
@@ -80,11 +77,11 @@ export default function AuthorizedContact() {
     resolver: zodResolver(authorizedContactSchema),
     defaultValues: {
       companyId: companyId || 0,
-      firstName: "",
-      lastName: "",
-      title: "",
-      email: "",
-      phone: "",
+      firstName: '',
+      lastName: '',
+      title: '',
+      email: '',
+      phone: '',
       isEligibleForCoverage: false,
     },
   });
@@ -92,7 +89,7 @@ export default function AuthorizedContact() {
   // Update companyId when it's available
   useEffect(() => {
     if (companyId) {
-      form.setValue("companyId", companyId);
+      form.setValue('companyId', companyId);
     }
   }, [companyId, form]);
 
@@ -105,31 +102,35 @@ export default function AuthorizedContact() {
         companyId: Number(values.companyId),
         isEligibleForCoverage: Boolean(values.isEligibleForCoverage),
         // Ensure phone is formatted properly as a string
-        phone: String(values.phone)
+        phone: String(values.phone),
       };
-      
-      const res = await apiRequest("POST", `/api/companies/${companyId}/authorized-contact`, formattedValues);
+
+      const res = await apiRequest(
+        'POST',
+        `/api/companies/${companyId}/authorized-contact`,
+        formattedValues
+      );
       if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(errorText || "Failed to save contact information");
+        throw new Error(errorText || 'Failed to save contact information');
       }
       return {};
     },
     onSuccess: () => {
       toast({
-        title: "Contact saved",
-        description: "The authorized contact has been saved successfully.",
+        title: 'Contact saved',
+        description: 'The authorized contact has been saved successfully.',
       });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/application`] });
-      
+
       // Navigate to the documents page (skipping employees)
-      navigate("/enrollment/documents");
+      navigate('/enrollment/documents');
     },
-    onError: (error) => {
+    onError: error => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: `Failed to save contact: ${error.message}`,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -146,13 +147,13 @@ export default function AuthorizedContact() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Bar */}
-        <ProgressBar 
-          steps={steps} 
-          currentStep="authorized-contact" 
-          completedSteps={application?.completedSteps as string[] || []}
+        <ProgressBar
+          steps={steps}
+          currentStep="authorized-contact"
+          completedSteps={(application?.completedSteps as string[]) || []}
         />
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -168,7 +169,8 @@ export default function AuthorizedContact() {
               <CardHeader>
                 <CardTitle>Authorized Contact Information</CardTitle>
                 <CardDescription>
-                  Provide details for the primary contact person authorized to make decisions for this benefits submission.
+                  Provide details for the primary contact person authorized to make decisions for
+                  this benefits submission.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -239,17 +241,14 @@ export default function AuthorizedContact() {
                         )}
                       />
                     </div>
-                    
+
                     <FormField
                       control={form.control}
                       name="isEligibleForCoverage"
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                           <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
+                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                           </FormControl>
                           <div className="space-y-1 leading-none">
                             <FormLabel>Eligible for Coverage</FormLabel>
@@ -269,12 +268,12 @@ export default function AuthorizedContact() {
                     )}
 
                     <div className="flex justify-between mt-8">
-                      <Button variant="outline" onClick={() => navigate("/enrollment/ownership")}>
+                      <Button variant="outline" onClick={() => navigate('/enrollment/ownership')}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Previous: Ownership
                       </Button>
                       <Button type="submit" disabled={saveMutation.isPending}>
-                        {saveMutation.isPending ? "Saving..." : "Save & Continue"}
+                        {saveMutation.isPending ? 'Saving...' : 'Save & Continue'}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
@@ -283,7 +282,7 @@ export default function AuthorizedContact() {
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Sidebar */}
           <div className="lg:w-80">
             <EnrollmentChecklist companyId={companyId} />

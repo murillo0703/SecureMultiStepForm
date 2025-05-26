@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle, AlertTriangle } from "lucide-react";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 
 interface AddressValidatorProps {
   address: string;
@@ -36,9 +36,9 @@ export function AddressValidator({
     state: string;
     zip: string;
   } | null>(null);
-  const [validationStatus, setValidationStatus] = useState<
-    "none" | "valid" | "warning" | "error"
-  >("none");
+  const [validationStatus, setValidationStatus] = useState<'none' | 'valid' | 'warning' | 'error'>(
+    'none'
+  );
 
   // Formats address for validation API
   const formatAddressForValidation = () => {
@@ -54,9 +54,9 @@ export function AddressValidator({
   const validateAddress = async () => {
     if (!address || !city || !state || !zip) {
       toast({
-        title: "Missing Address Information",
-        description: "Please provide complete address details to validate.",
-        variant: "destructive",
+        title: 'Missing Address Information',
+        description: 'Please provide complete address details to validate.',
+        variant: 'destructive',
       });
       return;
     }
@@ -66,10 +66,10 @@ export function AddressValidator({
 
     try {
       // Call API endpoint for address validation
-      const response = await fetch("/api/validate-address", {
-        method: "POST",
+      const response = await fetch('/api/validate-address', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(formatAddressForValidation()),
       });
@@ -77,7 +77,7 @@ export function AddressValidator({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Address validation failed");
+        throw new Error(data.message || 'Address validation failed');
       }
 
       if (data.valid) {
@@ -89,10 +89,10 @@ export function AddressValidator({
             state: data.correctedAddress.state,
             zip: data.correctedAddress.zip,
           });
-          setValidationStatus("warning");
+          setValidationStatus('warning');
         } else {
           // Address is valid as-is
-          setValidationStatus("valid");
+          setValidationStatus('valid');
           onValidatedAddress({
             address,
             city,
@@ -103,7 +103,7 @@ export function AddressValidator({
         }
       } else {
         // Address is not valid
-        setValidationStatus("error");
+        setValidationStatus('error');
         onValidatedAddress({
           address,
           city,
@@ -113,14 +113,13 @@ export function AddressValidator({
         });
       }
     } catch (error) {
-      console.error("Address validation error:", error);
+      console.error('Address validation error:', error);
       // Soft failure - allow user to continue even if validation fails
-      setValidationStatus("error");
+      setValidationStatus('error');
       toast({
-        title: "Validation Service Unavailable",
-        description:
-          "We couldn't validate your address, but you can continue with submission.",
-        variant: "destructive",
+        title: 'Validation Service Unavailable',
+        description: "We couldn't validate your address, but you can continue with submission.",
+        variant: 'destructive',
       });
     } finally {
       setIsValidating(false);
@@ -129,15 +128,15 @@ export function AddressValidator({
 
   const acceptSuggestion = () => {
     if (suggestion) {
-      onAddressChange("address", suggestion.address);
-      onAddressChange("city", suggestion.city);
-      onAddressChange("state", suggestion.state);
-      onAddressChange("zip", suggestion.zip);
+      onAddressChange('address', suggestion.address);
+      onAddressChange('city', suggestion.city);
+      onAddressChange('state', suggestion.state);
+      onAddressChange('zip', suggestion.zip);
       onValidatedAddress({
         ...suggestion,
         isValid: true,
       });
-      setValidationStatus("valid");
+      setValidationStatus('valid');
       setSuggestion(null);
     }
   };
@@ -150,7 +149,7 @@ export function AddressValidator({
       zip,
       isValid: false, // Not validated as correct, but user chose to keep it
     });
-    setValidationStatus("warning");
+    setValidationStatus('warning');
     setSuggestion(null);
   };
 
@@ -171,16 +170,16 @@ export function AddressValidator({
               zip,
               isValid: true,
             });
-            setValidationStatus("valid");
+            setValidationStatus('valid');
           }}
           disabled={!address || !city || !state || !zip}
         >
-          {"Accept Address"}
+          {'Accept Address'}
         </Button>
       </div>
 
       {/* Validation Status */}
-      {validationStatus === "valid" && (
+      {validationStatus === 'valid' && (
         <Alert className="bg-green-50 border-green-200">
           <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
           <AlertDescription className="text-green-700">
@@ -190,7 +189,7 @@ export function AddressValidator({
       )}
 
       {/* Address Correction Suggestion */}
-      {validationStatus === "warning" && suggestion && (
+      {validationStatus === 'warning' && suggestion && (
         <Alert className="bg-yellow-50 border-yellow-200">
           <AlertTriangle className="h-4 w-4 text-yellow-500 mr-2" />
           <div className="flex flex-col space-y-2">
@@ -211,12 +210,7 @@ export function AddressValidator({
               >
                 Use Suggested Address
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-yellow-700"
-                onClick={keepOriginal}
-              >
+              <Button size="sm" variant="ghost" className="text-yellow-700" onClick={keepOriginal}>
                 Keep My Address
               </Button>
             </div>
@@ -225,12 +219,12 @@ export function AddressValidator({
       )}
 
       {/* Validation Error */}
-      {validationStatus === "error" && (
+      {validationStatus === 'error' && (
         <Alert className="bg-red-50 border-red-200">
           <AlertTriangle className="h-4 w-4 text-red-500 mr-2" />
           <AlertDescription className="text-red-700">
-            We couldn't validate this address. Please double-check your entry or
-            continue with your current address.
+            We couldn't validate this address. Please double-check your entry or continue with your
+            current address.
           </AlertDescription>
         </Alert>
       )}

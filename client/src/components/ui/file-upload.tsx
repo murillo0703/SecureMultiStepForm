@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
-import { UploadCloud, File, Trash2, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { useState, useRef, useEffect } from 'react';
+import { UploadCloud, File, Trash2, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void;
@@ -14,10 +14,10 @@ interface FileUploadProps {
 
 export function FileUpload({
   onFileUpload,
-  fileType = "document",
-  accept = ".pdf,.doc,.docx,.jpg,.jpeg,.png",
+  fileType = 'document',
+  accept = '.pdf,.doc,.docx,.jpg,.jpeg,.png',
   maxSize = 10, // Default 10MB
-  className = "",
+  className = '',
   documentType,
 }: FileUploadProps) {
   const [isDragActive, setIsDragActive] = useState(false);
@@ -55,15 +55,15 @@ export function FileUpload({
   const validateAndSetFile = (file: File) => {
     // Check file type
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
-    const acceptedExtensions = accept.split(',').map(ext => 
-      ext.startsWith('.') ? ext.substring(1) : ext
-    );
+    const acceptedExtensions = accept
+      .split(',')
+      .map(ext => (ext.startsWith('.') ? ext.substring(1) : ext));
 
     if (!acceptedExtensions.includes(fileExtension || '')) {
       toast({
-        title: "Invalid file type",
+        title: 'Invalid file type',
         description: `Please upload a file of type: ${accept}`,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -72,35 +72,35 @@ export function FileUpload({
     const fileSizeInMB = file.size / (1024 * 1024);
     if (fileSizeInMB > maxSize) {
       toast({
-        title: "File too large",
+        title: 'File too large',
         description: `File size should be less than ${maxSize}MB`,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
 
     setSelectedFile(file);
-    
+
     // Display document type in console for debugging
     if (documentType) {
       console.log(`Uploading ${fileType} with document type: ${documentType}`);
     }
-    
+
     onFileUpload(file);
   };
 
   const removeFile = () => {
     setSelectedFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
     }
   };
-  
+
   // Reset file selection from outside component
   useEffect(() => {
     if (!selectedFile) {
       if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        fileInputRef.current.value = '';
       }
     }
   }, [selectedFile]);
@@ -120,11 +120,11 @@ export function FileUpload({
         accept={accept}
         onChange={handleFileInput}
       />
-      
+
       {!selectedFile ? (
         <div
           className={`drag-drop-zone rounded-lg p-6 text-center cursor-pointer ${
-            isDragActive ? "active" : ""
+            isDragActive ? 'active' : ''
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -132,9 +132,7 @@ export function FileUpload({
           onClick={handleBrowseFiles}
         >
           <UploadCloud className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-sm text-gray-500">
-            Drag and drop your {fileType} here or
-          </p>
+          <p className="mt-2 text-sm text-gray-500">Drag and drop your {fileType} here or</p>
           <Button
             type="button"
             variant="ghost"
@@ -143,7 +141,7 @@ export function FileUpload({
             Browse files
           </Button>
           <p className="mt-1 text-xs text-gray-400">
-            Supported formats: {accept.replace(/\./g, "")} (Max {maxSize}MB)
+            Supported formats: {accept.replace(/\./g, '')} (Max {maxSize}MB)
           </p>
         </div>
       ) : (
@@ -191,7 +189,7 @@ export function RequiredDocumentsList({
             Uploaded Documents ({documents.length})
           </h4>
           <ul className="divide-y divide-gray-200 border border-gray-200 rounded-md overflow-hidden">
-            {documents.map((doc) => (
+            {documents.map(doc => (
               <li key={doc.id} className="py-3 px-4 flex justify-between items-center">
                 <div className="flex items-center">
                   <File className="h-5 w-5 text-gray-400" />

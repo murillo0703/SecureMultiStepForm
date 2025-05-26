@@ -3,7 +3,7 @@
  * Uses feature flags to control which steps are enabled
  */
 
-import { isFeatureEnabled } from "@/config/feature-flags";
+import { isFeatureEnabled } from '@/config/feature-flags';
 
 export type EnrollmentStep = {
   id: string;
@@ -15,15 +15,26 @@ export type EnrollmentStep = {
 
 // The complete set of enrollment steps (including disabled ones)
 export const ALL_ENROLLMENT_STEPS: EnrollmentStep[] = [
-  { id: "carriers", label: "Carriers", href: "/enrollment/carriers", enabled: true },
-  { id: "company", label: "Company", href: "/enrollment/company", enabled: true },
-  { id: "ownership", label: "Owners", href: "/enrollment/ownership", enabled: true },
-  { id: "authorized-contact", label: "Contact", href: "/enrollment/authorized-contact", enabled: true },
-  { id: "employees", label: "Employees", href: "/enrollment/employees", enabled: false, featureFlag: "EMPLOYEE_MANAGEMENT" },
-  { id: "documents", label: "Documents", href: "/enrollment/documents", enabled: true },
-  { id: "plans", label: "Plans", href: "/enrollment/plans", enabled: true },
-  { id: "contributions", label: "Contributions", href: "/enrollment/contributions", enabled: true },
-  { id: "review", label: "Submit", href: "/enrollment/review", enabled: true },
+  { id: 'carriers', label: 'Carriers', href: '/enrollment/carriers', enabled: true },
+  { id: 'company', label: 'Company', href: '/enrollment/company', enabled: true },
+  { id: 'ownership', label: 'Owners', href: '/enrollment/ownership', enabled: true },
+  {
+    id: 'authorized-contact',
+    label: 'Contact',
+    href: '/enrollment/authorized-contact',
+    enabled: true,
+  },
+  {
+    id: 'employees',
+    label: 'Employees',
+    href: '/enrollment/employees',
+    enabled: false,
+    featureFlag: 'EMPLOYEE_MANAGEMENT',
+  },
+  { id: 'documents', label: 'Documents', href: '/enrollment/documents', enabled: true },
+  { id: 'plans', label: 'Plans', href: '/enrollment/plans', enabled: true },
+  { id: 'contributions', label: 'Contributions', href: '/enrollment/contributions', enabled: true },
+  { id: 'review', label: 'Submit', href: '/enrollment/review', enabled: true },
 ];
 
 // Get only the enabled steps

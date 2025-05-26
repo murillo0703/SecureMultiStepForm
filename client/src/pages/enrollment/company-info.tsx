@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useAuth } from "@/hooks/use-auth";
-import { companyValidationSchema } from "@/utils/form-validators";
-import { getEnabledEnrollmentSteps } from "@/utils/enrollment-steps";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { EnrollmentLayout } from "@/components/layout/enrollment-layout";
-import { AddressValidator } from "@/components/address-validator";
+import { useEffect, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useAuth } from '@/hooks/use-auth';
+import { companyValidationSchema } from '@/utils/form-validators';
+import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { EnrollmentLayout } from '@/components/layout/enrollment-layout';
+import { AddressValidator } from '@/components/address-validator';
 import {
   Form,
   FormControl,
@@ -19,19 +19,19 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
-import { FormattedInputField } from "@/components/ui/form-formatted-input";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { 
+} from '@/components/ui/form';
+import { FormattedInputField } from '@/components/ui/form-formatted-input';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Card,
   CardContent,
@@ -39,31 +39,31 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { 
-  CheckCircle, 
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import {
+  CheckCircle,
   ArrowRight,
   Info,
   AlertTriangle,
   Building2,
   CalendarDays,
   Users,
-  ShieldAlert
-} from "lucide-react";
-import { format, addMonths, startOfMonth, addBusinessDays, isWithinInterval } from "date-fns";
+  ShieldAlert,
+} from 'lucide-react';
+import { format, addMonths, startOfMonth, addBusinessDays, isWithinInterval } from 'date-fns';
 
 // Form schema
 type CompanyFormValues = z.infer<typeof companyValidationSchema>;
 
 // Company structure options
 const COMPANY_STRUCTURES = [
-  "Sole Proprietor",
-  "Corporation",
-  "Partnership",
-  "Limited Liability Partnership",
-  "Limited Partnership",
-  "LLC",
+  'Sole Proprietor',
+  'Corporation',
+  'Partnership',
+  'Limited Liability Partnership',
+  'Limited Partnership',
+  'LLC',
 ];
 
 export default function CompanyInfo() {
@@ -74,7 +74,7 @@ export default function CompanyInfo() {
 
   // Fetch companies for this user
   const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
-    queryKey: ["/api/companies"],
+    queryKey: ['/api/companies'],
   });
 
   // Get the first company if exists
@@ -93,45 +93,43 @@ export default function CompanyInfo() {
   const today = new Date();
   const isNearFirstOfMonth = isWithinInterval(today, {
     start: startOfMonth(today),
-    end: addBusinessDays(startOfMonth(today), 5)
+    end: addBusinessDays(startOfMonth(today), 5),
   });
-  
+
   // Default to 1st of current month if within 5 business days, otherwise offer choices
-  const defaultStartDate = isNearFirstOfMonth 
-    ? format(startOfMonth(today), "yyyy-MM-dd")
-    : "";
-  
+  const defaultStartDate = isNearFirstOfMonth ? format(startOfMonth(today), 'yyyy-MM-dd') : '';
+
   // Form setup
   const form = useForm<CompanyFormValues>({
     resolver: zodResolver(companyValidationSchema),
     defaultValues: {
       userId: user?.id || 0,
-      name: "",
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
-      phone: "",
-      taxId: "",
-      industry: "",
+      name: '',
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
+      phone: '',
+      taxId: '',
+      industry: '',
       companyStructure: undefined,
       startDate: defaultStartDate,
       totalEmployees: 1,
       fullTimeEmployees: 1,
       hadTwentyPlusEmployees: false,
       hasMedicalCoverage: false,
-      currentCarrier: "",
+      currentCarrier: '',
       mailingAddressSame: true,
-      mailingAddress: "",
-      mailingCity: "",
-      mailingState: "",
-      mailingZip: "",
+      mailingAddress: '',
+      mailingCity: '',
+      mailingState: '',
+      mailingZip: '',
     },
   });
-  
+
   // Watch values for conditional display
-  const hasMedicalCoverage = form.watch("hasMedicalCoverage");
-  const mailingAddressSame = form.watch("mailingAddressSame");
+  const hasMedicalCoverage = form.watch('hasMedicalCoverage');
+  const mailingAddressSame = form.watch('mailingAddressSame');
 
   // Mutation for creating/updating company
   const mutation = useMutation({
@@ -139,26 +137,26 @@ export default function CompanyInfo() {
       try {
         if (companyId) {
           // Update existing company
-          const res = await apiRequest("PATCH", `/api/companies/${companyId}`, values);
+          const res = await apiRequest('PATCH', `/api/companies/${companyId}`, values);
           return await res.json();
         } else {
           // Create new company
-          const res = await apiRequest("POST", "/api/companies", values);
+          const res = await apiRequest('POST', '/api/companies', values);
           const company = await res.json();
-          
+
           // If we have a selected carrier in localStorage, create application with it
-          const selectedCarrier = localStorage.getItem("selectedCarrier");
+          const selectedCarrier = localStorage.getItem('selectedCarrier');
           if (selectedCarrier) {
-            await apiRequest("POST", "/api/applications", {
+            await apiRequest('POST', '/api/applications', {
               companyId: company.id,
               selectedCarrier: selectedCarrier,
-              currentStep: "company",
-              completedSteps: ["carriers", "company"]
+              currentStep: 'company',
+              completedSteps: ['carriers', 'company'],
             });
             // Clear from localStorage since it's now saved in the application
-            localStorage.removeItem("selectedCarrier");
+            localStorage.removeItem('selectedCarrier');
           }
-          
+
           return company;
         }
       } catch (error) {
@@ -166,26 +164,26 @@ export default function CompanyInfo() {
         throw error;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast({
-        title: companyId ? "Company updated" : "Company created",
+        title: companyId ? 'Company updated' : 'Company created',
         description: companyId
-          ? "Your company information has been updated."
-          : "Your company has been successfully created.",
+          ? 'Your company information has been updated.'
+          : 'Your company has been successfully created.',
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/companies'] });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${data.id}/application`] });
-      
+
       // Add a small delay before navigation to ensure data is fully processed
       setTimeout(() => {
-        navigate("/enrollment/ownership-info");
+        navigate('/enrollment/ownership-info');
       }, 300);
     },
-    onError: (error) => {
+    onError: error => {
       toast({
-        title: "Error",
-        description: `Failed to ${companyId ? "update" : "create"} company information: ${error.message}`,
-        variant: "destructive",
+        title: 'Error',
+        description: `Failed to ${companyId ? 'update' : 'create'} company information: ${error.message}`,
+        variant: 'destructive',
       });
     },
   });
@@ -218,13 +216,13 @@ export default function CompanyInfo() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Bar */}
-        <ProgressBar 
-          steps={steps} 
-          currentStep="company" 
-          completedSteps={application?.completedSteps as string[] || []}
+        <ProgressBar
+          steps={steps}
+          currentStep="company"
+          completedSteps={(application?.completedSteps as string[]) || []}
         />
 
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
@@ -252,7 +250,7 @@ export default function CompanyInfo() {
                         <Building2 className="h-5 w-5 text-primary" />
                         <h3 className="text-lg font-medium">Basic Company Information</h3>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <FormField
                           control={form.control}
@@ -282,26 +280,21 @@ export default function CompanyInfo() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Company Structure</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select company structure" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {COMPANY_STRUCTURES.map((structure) => (
+                                {COMPANY_STRUCTURES.map(structure => (
                                   <SelectItem key={structure} value={structure}>
                                     {structure}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FormDescription>
-                              The legal structure of your business
-                            </FormDescription>
+                            <FormDescription>The legal structure of your business</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -351,7 +344,8 @@ export default function CompanyInfo() {
                                 <Input type="date" {...field} />
                               </FormControl>
                               <FormDescription>
-                                Since we're within 5 business days of the 1st, coverage can begin on the 1st of this month.
+                                Since we're within 5 business days of the 1st, coverage can begin on
+                                the 1st of this month.
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -372,18 +366,30 @@ export default function CompanyInfo() {
                                 >
                                   <FormItem className="flex items-center space-x-3 space-y-0">
                                     <FormControl>
-                                      <RadioGroupItem value={format(startOfMonth(addMonths(today, 1)), "yyyy-MM-dd")} />
+                                      <RadioGroupItem
+                                        value={format(
+                                          startOfMonth(addMonths(today, 1)),
+                                          'yyyy-MM-dd'
+                                        )}
+                                      />
                                     </FormControl>
                                     <FormLabel className="font-normal">
-                                      1st of next month ({format(startOfMonth(addMonths(today, 1)), "MMMM d, yyyy")})
+                                      1st of next month (
+                                      {format(startOfMonth(addMonths(today, 1)), 'MMMM d, yyyy')})
                                     </FormLabel>
                                   </FormItem>
                                   <FormItem className="flex items-center space-x-3 space-y-0">
                                     <FormControl>
-                                      <RadioGroupItem value={format(startOfMonth(addMonths(today, 2)), "yyyy-MM-dd")} />
+                                      <RadioGroupItem
+                                        value={format(
+                                          startOfMonth(addMonths(today, 2)),
+                                          'yyyy-MM-dd'
+                                        )}
+                                      />
                                     </FormControl>
                                     <FormLabel className="font-normal">
-                                      1st of the following month ({format(startOfMonth(addMonths(today, 2)), "MMMM d, yyyy")})
+                                      1st of the following month (
+                                      {format(startOfMonth(addMonths(today, 2)), 'MMMM d, yyyy')})
                                     </FormLabel>
                                   </FormItem>
                                 </RadioGroup>
@@ -394,7 +400,7 @@ export default function CompanyInfo() {
                         />
                       )}
                     </div>
-                    
+
                     <Separator className="my-6" />
 
                     {/* Employee Information */}
@@ -412,11 +418,11 @@ export default function CompanyInfo() {
                             <FormItem>
                               <FormLabel>Total Employees</FormLabel>
                               <FormControl>
-                                <Input 
-                                  type="number" 
+                                <Input
+                                  type="number"
                                   min={1}
                                   {...field}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                  onChange={e => field.onChange(parseInt(e.target.value))}
                                 />
                               </FormControl>
                               <FormDescription>
@@ -433,15 +439,15 @@ export default function CompanyInfo() {
                             <FormItem>
                               <FormLabel>Full-Time Employees</FormLabel>
                               <FormControl>
-                                <Input 
+                                <Input
                                   type="number"
                                   min={1}
-                                  max={form.watch("totalEmployees")}
+                                  max={form.watch('totalEmployees')}
                                   {...field}
-                                  onChange={(e) => {
-                                    const totalEmployees = form.watch("totalEmployees");
+                                  onChange={e => {
+                                    const totalEmployees = form.watch('totalEmployees');
                                     const value = parseInt(e.target.value);
-                                    
+
                                     // Ensure full-time employees don't exceed total
                                     if (value > totalEmployees) {
                                       field.onChange(totalEmployees);
@@ -477,12 +483,14 @@ export default function CompanyInfo() {
                                   htmlFor="hadTwentyPlusEmployees"
                                   className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                  Has your company had more than 20 full-time employees at any point in the last 6 months?
+                                  Has your company had more than 20 full-time employees at any point
+                                  in the last 6 months?
                                 </label>
                               </div>
                             </FormControl>
                             <FormDescription>
-                              This determines whether Federal COBRA or Cal-COBRA applies to your company
+                              This determines whether Federal COBRA or Cal-COBRA applies to your
+                              company
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -545,7 +553,8 @@ export default function CompanyInfo() {
                           />
                           <div className="mt-4">
                             <p className="text-sm text-muted-foreground mb-2">
-                              Please upload a copy of your current carrier bill in the Documents section.
+                              Please upload a copy of your current carrier bill in the Documents
+                              section.
                             </p>
                           </div>
                         </div>
@@ -616,25 +625,25 @@ export default function CompanyInfo() {
                           )}
                         />
                       </div>
-                      
+
                       <div className="mt-4">
-                        <AddressValidator 
-                          address={form.watch("address")}
-                          city={form.watch("city")}
-                          state={form.watch("state")}
-                          zip={form.watch("zip")}
+                        <AddressValidator
+                          address={form.watch('address')}
+                          city={form.watch('city')}
+                          state={form.watch('state')}
+                          zip={form.watch('zip')}
                           onAddressChange={(field, value) => {
                             form.setValue(field as any, value, { shouldValidate: true });
                           }}
-                          onValidatedAddress={(validatedAddress) => {
+                          onValidatedAddress={validatedAddress => {
                             toast({
-                              title: validatedAddress.isValid 
-                                ? "Address Validated" 
-                                : "Address Recorded",
-                              description: validatedAddress.isValid 
-                                ? "The address has been validated and saved." 
+                              title: validatedAddress.isValid
+                                ? 'Address Validated'
+                                : 'Address Recorded',
+                              description: validatedAddress.isValid
+                                ? 'The address has been validated and saved.'
                                 : "We've saved your address as entered.",
-                              variant: validatedAddress.isValid ? "default" : "destructive",
+                              variant: validatedAddress.isValid ? 'default' : 'destructive',
                             });
                           }}
                         />
@@ -738,7 +747,7 @@ export default function CompanyInfo() {
 
                     <div className="flex justify-end mt-8">
                       <Button type="submit" disabled={isLoading}>
-                        {isLoading ? "Saving..." : "Next: Ownership Information"}
+                        {isLoading ? 'Saving...' : 'Next: Ownership Information'}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
@@ -747,7 +756,7 @@ export default function CompanyInfo() {
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Sidebar */}
           <div className="lg:w-80">
             {companyId && <EnrollmentChecklist companyId={companyId} />}

@@ -1,14 +1,7 @@
-import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useLocation, Link } from "wouter";
-import { 
-  LogOut, 
-  User, 
-  Settings, 
-  ChevronDown, 
-  Menu,
-  Code,
-} from "lucide-react";
+import { useState } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import { useLocation, Link } from 'wouter';
+import { LogOut, User, Settings, ChevronDown, Menu, Code } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,11 +9,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 
 export function Header() {
   const { user, logoutMutation } = useAuth();
@@ -29,20 +22,25 @@ export function Header() {
 
   const roleSwitchMutation = useMutation({
     mutationFn: async (role: string) => {
-      const res = await apiRequest("POST", "/api/dev/switch-role", { role });
+      const res = await apiRequest('POST', '/api/dev/switch-role', { role });
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
       window.location.reload(); // Refresh to update the interface
     },
   });
 
   if (!user) return null;
 
-  const isAdmin = user.role === "admin";
-  const userInitials = user.companyName 
-    ? user.companyName.split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase()
+  const isAdmin = user.role === 'admin';
+  const userInitials = user.companyName
+    ? user.companyName
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
     : user.username.slice(0, 2).toUpperCase();
 
   return (
@@ -51,10 +49,10 @@ export function Header() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <svg 
-                viewBox="0 0 24 24" 
-                width="32" 
-                height="32" 
+              <svg
+                viewBox="0 0 24 24"
+                width="32"
+                height="32"
                 className="text-primary"
                 fill="currentColor"
               >
@@ -87,7 +85,7 @@ export function Header() {
                   </div>
                   <div className="pt-4 border-t">
                     {isAdmin && (
-                      <Link 
+                      <Link
                         href="/admin/dashboard"
                         className="flex items-center p-2 rounded-md hover:bg-gray-100"
                         onClick={() => setIsMenuOpen(false)}
@@ -95,14 +93,14 @@ export function Header() {
                         Admin Dashboard
                       </Link>
                     )}
-                    <Link 
+                    <Link
                       href="/"
                       className="flex items-center p-2 rounded-md hover:bg-gray-100"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Submission Portal
                     </Link>
-                    <button 
+                    <button
                       onClick={() => logoutMutation.mutate()}
                       className="flex items-center p-2 text-red-600 rounded-md hover:bg-red-50 w-full text-left"
                     >
@@ -147,15 +145,11 @@ export function Header() {
                   <DropdownMenuSeparator />
                   {isAdmin && (
                     <DropdownMenuItem className="cursor-pointer">
-                      <Link href="/admin/dashboard">
-                        Admin Dashboard
-                      </Link>
+                      <Link href="/admin/dashboard">Admin Dashboard</Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem className="cursor-pointer">
-                    <Link href="/">
-                      Submission Portal
-                    </Link>
+                    <Link href="/">Submission Portal</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
@@ -166,15 +160,17 @@ export function Header() {
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="text-xs text-gray-500">Developer Tools</DropdownMenuLabel>
-                  <DropdownMenuItem 
+                  <DropdownMenuLabel className="text-xs text-gray-500">
+                    Developer Tools
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
                     className="cursor-pointer text-blue-600"
                     onClick={() => roleSwitchMutation.mutate('admin')}
                   >
                     <Code className="mr-2 h-4 w-4" />
                     <span>Switch to Admin</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="cursor-pointer text-blue-600"
                     onClick={() => roleSwitchMutation.mutate('employer')}
                   >
@@ -182,7 +178,7 @@ export function Header() {
                     <span>Switch to Employer</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="text-red-600 focus:text-red-600 cursor-pointer"
                     onClick={() => logoutMutation.mutate()}
                   >
@@ -201,7 +197,7 @@ export function Header() {
 
 export function AdminHeader() {
   const { user, logoutMutation } = useAuth();
-  
+
   if (!user) return null;
 
   return (
@@ -211,28 +207,22 @@ export function AdminHeader() {
           <div className="flex items-center">
             <Link href="/admin/dashboard">
               <a className="flex items-center">
-                <svg 
-                  viewBox="0 0 24 24" 
-                  width="32" 
-                  height="32" 
+                <svg
+                  viewBox="0 0 24 24"
+                  width="32"
+                  height="32"
                   className="text-white"
                   fill="currentColor"
                 >
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                 </svg>
-                <span className="ml-2 font-semibold text-white text-lg">
-                  Admin Dashboard
-                </span>
+                <span className="ml-2 font-semibold text-white text-lg">Admin Dashboard</span>
               </a>
             </Link>
           </div>
           <div className="flex items-center">
             <span className="text-white text-sm mr-4">Hello, {user.username}</span>
-            <Button 
-              variant="secondary" 
-              size="sm"
-              onClick={() => logoutMutation.mutate()}
-            >
+            <Button variant="secondary" size="sm" onClick={() => logoutMutation.mutate()}>
               Logout
             </Button>
           </div>

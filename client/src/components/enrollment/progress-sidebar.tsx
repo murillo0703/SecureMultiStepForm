@@ -1,62 +1,62 @@
-import { useLocation } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
-import { Check, Circle, User, Building, Shield, FileText, CreditCard, PenTool } from "lucide-react";
+import { useLocation } from 'wouter';
+import { Card, CardContent } from '@/components/ui/card';
+import { Check, Circle, User, Building, Shield, FileText, CreditCard, PenTool } from 'lucide-react';
 
 const enrollmentSteps = [
   {
-    id: "application-initiator",
-    label: "Application Initiator",
+    id: 'application-initiator',
+    label: 'Application Initiator',
     description: "Who's completing this application",
     icon: User,
-    path: "/enrollment/application-initiator"
+    path: '/enrollment/application-initiator',
   },
   {
-    id: "company-information",
-    label: "Company Information", 
-    description: "Basic company details",
+    id: 'company-information',
+    label: 'Company Information',
+    description: 'Basic company details',
     icon: Building,
-    path: "/enrollment/company-information"
+    path: '/enrollment/company-information',
   },
   {
-    id: "coverage-information",
-    label: "Coverage Information",
-    description: "Benefits and employee count",
+    id: 'coverage-information',
+    label: 'Coverage Information',
+    description: 'Benefits and employee count',
     icon: Shield,
-    path: "/enrollment/coverage-information"
+    path: '/enrollment/coverage-information',
   },
   {
-    id: "ownership-info",
-    label: "Ownership Information",
-    description: "Company owners and contacts",
+    id: 'ownership-info',
+    label: 'Ownership Information',
+    description: 'Company owners and contacts',
     icon: User,
-    path: "/enrollment/ownership-info"
+    path: '/enrollment/ownership-info',
   },
   {
-    id: "document-upload",
-    label: "Document Upload",
-    description: "Required documentation",
+    id: 'document-upload',
+    label: 'Document Upload',
+    description: 'Required documentation',
     icon: FileText,
-    path: "/enrollment/document-upload"
+    path: '/enrollment/document-upload',
   },
   {
-    id: "contribution-setup",
-    label: "Contribution Setup",
-    description: "Payment and contribution rates",
+    id: 'contribution-setup',
+    label: 'Contribution Setup',
+    description: 'Payment and contribution rates',
     icon: CreditCard,
-    path: "/enrollment/contribution-setup"
+    path: '/enrollment/contribution-setup',
   },
   {
-    id: "digital-signature",
-    label: "Digital Signature",
-    description: "Final signature and submission",
+    id: 'digital-signature',
+    label: 'Digital Signature',
+    description: 'Final signature and submission',
     icon: PenTool,
-    path: "/enrollment/digital-signature"
-  }
+    path: '/enrollment/digital-signature',
+  },
 ];
 
 export function ProgressSidebar() {
   const [location] = useLocation();
-  
+
   const getCurrentStepIndex = () => {
     const currentStep = enrollmentSteps.findIndex(step => step.path === location);
     return currentStep >= 0 ? currentStep : 0;
@@ -65,9 +65,9 @@ export function ProgressSidebar() {
   const currentStepIndex = getCurrentStepIndex();
 
   const getStepStatus = (index: number) => {
-    if (index < currentStepIndex) return "completed";
-    if (index === currentStepIndex) return "current";
-    return "upcoming";
+    if (index < currentStepIndex) return 'completed';
+    if (index === currentStepIndex) return 'current';
+    return 'upcoming';
   };
 
   return (
@@ -84,22 +84,22 @@ export function ProgressSidebar() {
           {enrollmentSteps.map((step, index) => {
             const status = getStepStatus(index);
             const IconComponent = step.icon;
-            
+
             return (
               <div key={step.id} className="flex items-start gap-3">
                 <div className="flex flex-col items-center">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                      status === "completed"
-                        ? "bg-green-500 border-green-500 text-white"
-                        : status === "current"
-                        ? "bg-blue-500 border-blue-500 text-white"
-                        : "border-gray-300 text-gray-400"
+                      status === 'completed'
+                        ? 'bg-green-500 border-green-500 text-white'
+                        : status === 'current'
+                          ? 'bg-blue-500 border-blue-500 text-white'
+                          : 'border-gray-300 text-gray-400'
                     }`}
                   >
-                    {status === "completed" ? (
+                    {status === 'completed' ? (
                       <Check className="w-4 h-4" />
-                    ) : status === "current" ? (
+                    ) : status === 'current' ? (
                       <IconComponent className="w-4 h-4" />
                     ) : (
                       <Circle className="w-4 h-4" />
@@ -108,27 +108,25 @@ export function ProgressSidebar() {
                   {index < enrollmentSteps.length - 1 && (
                     <div
                       className={`w-0.5 h-8 mt-2 ${
-                        status === "completed" ? "bg-green-500" : "bg-gray-300"
+                        status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
                       }`}
                     />
                   )}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <h4
                     className={`font-medium text-sm ${
-                      status === "current"
-                        ? "text-blue-600"
-                        : status === "completed"
-                        ? "text-green-600"
-                        : "text-gray-500"
+                      status === 'current'
+                        ? 'text-blue-600'
+                        : status === 'completed'
+                          ? 'text-green-600'
+                          : 'text-gray-500'
                     }`}
                   >
                     {step.label}
                   </h4>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {step.description}
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{step.description}</p>
                 </div>
               </div>
             );
@@ -140,7 +138,7 @@ export function ProgressSidebar() {
             <div
               className="bg-blue-500 h-2 rounded-full transition-all duration-300"
               style={{
-                width: `${((currentStepIndex + 1) / enrollmentSteps.length) * 100}%`
+                width: `${((currentStepIndex + 1) / enrollmentSteps.length) * 100}%`,
               }}
             />
           </div>

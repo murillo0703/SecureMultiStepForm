@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
-import { Plan, Contribution } from "@shared/schema";
-import { contributionValidationSchema } from "@/utils/form-validators";
-import { Header } from "@/components/layout/header";
-import { ProgressBar } from "@/components/layout/progress-bar";
-import { EnrollmentChecklist } from "@/components/enrollment/checklist";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
+import { apiRequest } from '@/lib/queryClient';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useToast } from '@/hooks/use-toast';
+import { Plan, Contribution } from '@shared/schema';
+import { contributionValidationSchema } from '@/utils/form-validators';
+import { Header } from '@/components/layout/header';
+import { ProgressBar } from '@/components/layout/progress-bar';
+import { EnrollmentChecklist } from '@/components/enrollment/checklist';
 import {
   Form,
   FormControl,
@@ -19,10 +19,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
 import {
   Card,
   CardContent,
@@ -30,7 +30,7 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,13 +40,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  CheckCircle,
-  ArrowRight,
-  ArrowLeft,
-  AlertCircle
-} from "lucide-react";
+} from '@/components/ui/alert-dialog';
+import { CheckCircle, ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
 
 // Form schema
 type ContributionFormValues = z.infer<typeof contributionValidationSchema>;
@@ -60,7 +55,7 @@ export default function ContributionSetup() {
 
   // Fetch companies for this user
   const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
-    queryKey: ["/api/companies"],
+    queryKey: ['/api/companies'],
   });
 
   // Get the first company
@@ -69,12 +64,14 @@ export default function ContributionSetup() {
   // Redirect if no company exists
   useEffect(() => {
     if (!isLoadingCompanies && !companyId) {
-      navigate("/enrollment/company");
+      navigate('/enrollment/company');
     }
   }, [companyId, isLoadingCompanies, navigate]);
 
   // Fetch selected plans for this company
-  const { data: companyPlans = [], isLoading: isLoadingCompanyPlans } = useQuery<(Plan & { id: number })[]>({
+  const { data: companyPlans = [], isLoading: isLoadingCompanyPlans } = useQuery<
+    (Plan & { id: number })[]
+  >({
     queryKey: [`/api/companies/${companyId}/plans`],
     enabled: !!companyId,
   });
@@ -93,13 +90,13 @@ export default function ContributionSetup() {
 
   // Steps configuration for progress bar
   const steps = [
-    { id: "company", label: "Company", href: "/enrollment/company" },
-    { id: "ownership", label: "Owners", href: "/enrollment/ownership" },
-    { id: "employees", label: "Employees", href: "/enrollment/employees" },
-    { id: "documents", label: "Documents", href: "/enrollment/documents" },
-    { id: "plans", label: "Plans", href: "/enrollment/plans" },
-    { id: "contributions", label: "Contributions", href: "/enrollment/contributions" },
-    { id: "review", label: "Submit", href: "/enrollment/review" },
+    { id: 'company', label: 'Company', href: '/enrollment/company' },
+    { id: 'ownership', label: 'Owners', href: '/enrollment/ownership' },
+    { id: 'employees', label: 'Employees', href: '/enrollment/employees' },
+    { id: 'documents', label: 'Documents', href: '/enrollment/documents' },
+    { id: 'plans', label: 'Plans', href: '/enrollment/plans' },
+    { id: 'contributions', label: 'Contributions', href: '/enrollment/contributions' },
+    { id: 'review', label: 'Submit', href: '/enrollment/review' },
   ];
 
   // Initialize selected plan
@@ -128,16 +125,16 @@ export default function ContributionSetup() {
         contribution => contribution.planId === selectedPlanId
       );
 
-      form.setValue("companyId", companyId);
-      form.setValue("planId", selectedPlanId);
-      
+      form.setValue('companyId', companyId);
+      form.setValue('planId', selectedPlanId);
+
       if (existingContribution) {
-        form.setValue("employeeContribution", existingContribution.employeeContribution);
-        form.setValue("dependentContribution", existingContribution.dependentContribution);
+        form.setValue('employeeContribution', existingContribution.employeeContribution);
+        form.setValue('dependentContribution', existingContribution.dependentContribution);
       } else {
         // Reset to defaults if no existing contribution
-        form.setValue("employeeContribution", 50);
-        form.setValue("dependentContribution", 0);
+        form.setValue('employeeContribution', 50);
+        form.setValue('dependentContribution', 0);
       }
     }
   }, [companyId, selectedPlanId, contributions, form]);
@@ -145,22 +142,22 @@ export default function ContributionSetup() {
   // Mutation for saving contribution
   const contributionMutation = useMutation({
     mutationFn: async (values: ContributionFormValues) => {
-      const res = await apiRequest("POST", `/api/companies/${companyId}/contributions`, values);
+      const res = await apiRequest('POST', `/api/companies/${companyId}/contributions`, values);
       return res.json();
     },
     onSuccess: () => {
       toast({
-        title: "Contribution saved",
-        description: "Your contribution has been saved successfully.",
+        title: 'Contribution saved',
+        description: 'Your contribution has been saved successfully.',
       });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/contributions`] });
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/application`] });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: `Failed to save contribution: ${error.message}`,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -179,12 +176,12 @@ export default function ContributionSetup() {
     if (companyPlans.length > 0 && contributions.length === 0) {
       setConfirmDialogOpen(true);
     } else {
-      navigate("/enrollment/review");
+      navigate('/enrollment/review');
     }
   };
 
   // Check if the current selected plan has a contribution
-  const hasContribution = selectedPlanId 
+  const hasContribution = selectedPlanId
     ? contributions.some(contribution => contribution.planId === selectedPlanId)
     : false;
 
@@ -192,31 +189,31 @@ export default function ContributionSetup() {
   const selectedPlan = companyPlans.find(plan => plan.id === selectedPlanId);
 
   // Loading state
-  const isLoading = 
-    isLoadingCompanies || 
-    isLoadingCompanyPlans || 
-    isLoadingContributions || 
-    isLoadingApplication || 
+  const isLoading =
+    isLoadingCompanies ||
+    isLoadingCompanyPlans ||
+    isLoadingContributions ||
+    isLoadingApplication ||
     contributionMutation.isPending;
 
   if (!companyId) return null;
 
   // If no plans are selected, redirect to plan selection
   if (companyPlans.length === 0 && !isLoadingCompanyPlans) {
-    navigate("/enrollment/plans");
+    navigate('/enrollment/plans');
     return null;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Bar */}
-        <ProgressBar 
-          steps={steps} 
-          currentStep="contributions" 
-          completedSteps={application?.completedSteps as string[] || []}
+        <ProgressBar
+          steps={steps}
+          currentStep="contributions"
+          completedSteps={(application?.completedSteps as string[]) || []}
         />
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -232,7 +229,8 @@ export default function ContributionSetup() {
               <CardHeader>
                 <CardTitle>Contribution Setup</CardTitle>
                 <CardDescription>
-                  Define how much your company will contribute to employee health insurance premiums.
+                  Define how much your company will contribute to employee health insurance
+                  premiums.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -246,11 +244,12 @@ export default function ContributionSetup() {
                           type="button"
                           onClick={() => handlePlanSelect(plan.id)}
                           className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium 
-                            ${selectedPlanId === plan.id 
-                              ? 'bg-primary text-white' 
-                              : contributions.some(c => c.planId === plan.id)
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
+                            ${
+                              selectedPlanId === plan.id
+                                ? 'bg-primary text-white'
+                                : contributions.some(c => c.planId === plan.id)
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-gray-100 text-gray-800'
                             } transition-colors`}
                         >
                           {plan.name}
@@ -265,7 +264,9 @@ export default function ContributionSetup() {
                   {/* Selected Plan Details */}
                   {selectedPlan && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                      <h3 className="font-medium text-blue-800">Selected Plan: {selectedPlan.name}</h3>
+                      <h3 className="font-medium text-blue-800">
+                        Selected Plan: {selectedPlan.name}
+                      </h3>
                       <p className="text-sm text-blue-700 mt-1">
                         Plan Type: {selectedPlan.type} | Network: {selectedPlan.network}
                       </p>
@@ -291,7 +292,7 @@ export default function ContributionSetup() {
                                   min={50}
                                   max={100}
                                   step={1}
-                                  onValueChange={(vals) => field.onChange(vals[0])}
+                                  onValueChange={vals => field.onChange(vals[0])}
                                   className="flex-1"
                                 />
                               </FormControl>
@@ -301,7 +302,7 @@ export default function ContributionSetup() {
                                   min={50}
                                   max={100}
                                   value={field.value}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                  onChange={e => field.onChange(parseInt(e.target.value))}
                                 />
                               </div>
                               <span className="text-sm font-medium">%</span>
@@ -327,7 +328,7 @@ export default function ContributionSetup() {
                                   min={0}
                                   max={100}
                                   step={1}
-                                  onValueChange={(vals) => field.onChange(vals[0])}
+                                  onValueChange={vals => field.onChange(vals[0])}
                                   className="flex-1"
                                 />
                               </FormControl>
@@ -337,7 +338,7 @@ export default function ContributionSetup() {
                                   min={0}
                                   max={100}
                                   value={field.value}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                  onChange={e => field.onChange(parseInt(e.target.value))}
                                 />
                               </div>
                               <span className="text-sm font-medium">%</span>
@@ -351,11 +352,12 @@ export default function ContributionSetup() {
                       />
 
                       <div className="flex justify-end">
-                        <Button 
-                          type="submit" 
-                          disabled={contributionMutation.isPending}
-                        >
-                          {contributionMutation.isPending ? "Saving..." : hasContribution ? "Update Contribution" : "Save Contribution"}
+                        <Button type="submit" disabled={contributionMutation.isPending}>
+                          {contributionMutation.isPending
+                            ? 'Saving...'
+                            : hasContribution
+                              ? 'Update Contribution'
+                              : 'Save Contribution'}
                         </Button>
                       </div>
                     </form>
@@ -363,7 +365,7 @@ export default function ContributionSetup() {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="outline" onClick={() => navigate("/enrollment/plans")}>
+                <Button variant="outline" onClick={() => navigate('/enrollment/plans')}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Previous: Plans
                 </Button>
@@ -374,7 +376,7 @@ export default function ContributionSetup() {
               </CardFooter>
             </Card>
           </div>
-          
+
           {/* Sidebar */}
           <div className="lg:w-80">
             <EnrollmentChecklist companyId={companyId} />
@@ -387,12 +389,13 @@ export default function ContributionSetup() {
             <AlertDialogHeader>
               <AlertDialogTitle>Missing Contribution Information</AlertDialogTitle>
               <AlertDialogDescription>
-                You haven't defined contributions for your selected plans. This information is required for your application.
+                You haven't defined contributions for your selected plans. This information is
+                required for your application.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Stay on this page</AlertDialogCancel>
-              <AlertDialogAction onClick={() => navigate("/enrollment/review")}>
+              <AlertDialogAction onClick={() => navigate('/enrollment/review')}>
                 Continue anyway
               </AlertDialogAction>
             </AlertDialogFooter>

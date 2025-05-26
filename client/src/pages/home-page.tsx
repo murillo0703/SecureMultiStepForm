@@ -1,27 +1,21 @@
-import { useEffect } from "react";
-import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
-import { Header } from "@/components/layout/header";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription,
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { 
-  ChevronRight, 
-  FileText, 
-  Users, 
-  Building, 
-  Upload, 
-  CheckSquare, 
-  DollarSign, 
-  ClipboardCheck, 
-  Clock
-} from "lucide-react";
+import { useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/hooks/use-auth';
+import { Header } from '@/components/layout/header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  ChevronRight,
+  FileText,
+  Users,
+  Building,
+  Upload,
+  CheckSquare,
+  DollarSign,
+  ClipboardCheck,
+  Clock,
+} from 'lucide-react';
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -29,12 +23,12 @@ export default function HomePage() {
 
   // Fetch companies for this user
   const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
-    queryKey: ["/api/companies"],
+    queryKey: ['/api/companies'],
   });
 
   // If a company exists, get its application
   const companyId = companies.length > 0 ? companies[0].id : null;
-  
+
   const { data: application, isLoading: isLoadingApplication } = useQuery({
     queryKey: [`/api/companies/${companyId}/application`],
     enabled: !!companyId,
@@ -42,49 +36,49 @@ export default function HomePage() {
 
   useEffect(() => {
     // If user is admin, redirect to admin dashboard
-    if (user?.role === "admin") {
-      navigate("/admin/dashboard");
+    if (user?.role === 'admin') {
+      navigate('/admin/dashboard');
     }
   }, [user, navigate]);
 
   const continueEnrollment = () => {
     if (!application) return;
-    
+
     // Navigate to the current step or the first step
     const currentStep = application.currentStep;
-    
+
     switch (currentStep) {
-      case "carriers":
-        navigate("/enrollment/carriers");
+      case 'carriers':
+        navigate('/enrollment/carriers');
         break;
-      case "company":
-        navigate("/enrollment/company");
+      case 'company':
+        navigate('/enrollment/company');
         break;
-      case "ownership":
-        navigate("/enrollment/ownership");
+      case 'ownership':
+        navigate('/enrollment/ownership');
         break;
-      case "employees":
-        navigate("/enrollment/employees");
+      case 'employees':
+        navigate('/enrollment/employees');
         break;
-      case "documents":
-        navigate("/enrollment/documents");
+      case 'documents':
+        navigate('/enrollment/documents');
         break;
-      case "plans":
-        navigate("/enrollment/plans");
+      case 'plans':
+        navigate('/enrollment/plans');
         break;
-      case "contributions":
-        navigate("/enrollment/contributions");
+      case 'contributions':
+        navigate('/enrollment/contributions');
         break;
-      case "review":
-        navigate("/enrollment/review");
+      case 'review':
+        navigate('/enrollment/review');
         break;
       default:
-        navigate("/enrollment/carriers");
+        navigate('/enrollment/carriers');
     }
   };
 
   const startNewEnrollment = () => {
-    navigate("/enrollment/application-initiator");
+    navigate('/enrollment/application-initiator');
   };
 
   const isLoading = isLoadingCompanies || isLoadingApplication;
@@ -92,11 +86,15 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 sm:mb-8 text-center sm:text-left">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Welcome, {user?.companyName || user?.username}</h1>
-          <p className="mt-1 text-sm sm:text-base text-gray-600">Manage your health insurance enrollment application</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+            Welcome, {user?.companyName || user?.username}
+          </h1>
+          <p className="mt-1 text-sm sm:text-base text-gray-600">
+            Manage your health insurance enrollment application
+          </p>
         </div>
 
         {isLoading ? (
@@ -111,7 +109,10 @@ export default function HomePage() {
                   <CardHeader className="pb-2">
                     <CardTitle>Your Enrollment Application</CardTitle>
                     <CardDescription>
-                      Application Status: <span className="font-medium text-primary">{application.status.replace('_', ' ').toUpperCase()}</span>
+                      Application Status:{' '}
+                      <span className="font-medium text-primary">
+                        {application.status.replace('_', ' ').toUpperCase()}
+                      </span>
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -124,18 +125,20 @@ export default function HomePage() {
                           </div>
                         </div>
                         <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-secondary" 
-                            style={{ width: `${((application.completedSteps as string[]).length / 7) * 100}%` }}
+                          <div
+                            className="h-full bg-secondary"
+                            style={{
+                              width: `${((application.completedSteps as string[]).length / 7) * 100}%`,
+                            }}
                           ></div>
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-end">
                         <Button onClick={continueEnrollment} className="w-full sm:w-auto">
-                          {application.status === "in_progress" 
-                            ? "Continue Enrollment" 
-                            : "View Application"}
+                          {application.status === 'in_progress'
+                            ? 'Continue Enrollment'
+                            : 'View Application'}
                           <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
                       </div>
@@ -152,16 +155,19 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="font-medium mb-2">
-                      {application.status === "in_progress" && "In Progress"}
-                      {application.status === "pending_review" && "Pending Review"}
-                      {application.status === "submitted" && "Submitted"}
-                      {application.status === "approved" && "Approved"}
+                      {application.status === 'in_progress' && 'In Progress'}
+                      {application.status === 'pending_review' && 'Pending Review'}
+                      {application.status === 'submitted' && 'Submitted'}
+                      {application.status === 'approved' && 'Approved'}
                     </div>
                     <p className="text-sm text-gray-500">
-                      {application.status === "in_progress" && "Complete all steps to submit your application."}
-                      {application.status === "pending_review" && "Your application is being reviewed by our team."}
-                      {application.status === "submitted" && "Your application has been submitted successfully."}
-                      {application.status === "approved" && "Your application has been approved."}
+                      {application.status === 'in_progress' &&
+                        'Complete all steps to submit your application.'}
+                      {application.status === 'pending_review' &&
+                        'Your application is being reviewed by our team.'}
+                      {application.status === 'submitted' &&
+                        'Your application has been submitted successfully.'}
+                      {application.status === 'approved' && 'Your application has been approved.'}
                     </p>
                   </CardContent>
                 </Card>
@@ -175,13 +181,27 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {application.currentStep === "company" && <li className="text-sm">• Complete company information</li>}
-                      {application.currentStep === "ownership" && <li className="text-sm">• Add business owners</li>}
-                      {application.currentStep === "employees" && <li className="text-sm">• Upload employee census</li>}
-                      {application.currentStep === "documents" && <li className="text-sm">• Upload required documents</li>}
-                      {application.currentStep === "plans" && <li className="text-sm">• Select health plans</li>}
-                      {application.currentStep === "contributions" && <li className="text-sm">• Set up contributions</li>}
-                      {application.currentStep === "review" && <li className="text-sm">• Review and sign application</li>}
+                      {application.currentStep === 'company' && (
+                        <li className="text-sm">• Complete company information</li>
+                      )}
+                      {application.currentStep === 'ownership' && (
+                        <li className="text-sm">• Add business owners</li>
+                      )}
+                      {application.currentStep === 'employees' && (
+                        <li className="text-sm">• Upload employee census</li>
+                      )}
+                      {application.currentStep === 'documents' && (
+                        <li className="text-sm">• Upload required documents</li>
+                      )}
+                      {application.currentStep === 'plans' && (
+                        <li className="text-sm">• Select health plans</li>
+                      )}
+                      {application.currentStep === 'contributions' && (
+                        <li className="text-sm">• Set up contributions</li>
+                      )}
+                      {application.currentStep === 'review' && (
+                        <li className="text-sm">• Review and sign application</li>
+                      )}
                     </ul>
                   </CardContent>
                 </Card>
@@ -195,15 +215,27 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      <Button variant="outline" className="w-full justify-start" onClick={() => navigate("/enrollment/company")}>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => navigate('/enrollment/company')}
+                      >
                         <Building className="mr-2 h-4 w-4" />
                         Company Info
                       </Button>
-                      <Button variant="outline" className="w-full justify-start" onClick={() => navigate("/enrollment/documents")}>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => navigate('/enrollment/documents')}
+                      >
                         <Upload className="mr-2 h-4 w-4" />
                         Documents
                       </Button>
-                      <Button variant="outline" className="w-full justify-start" onClick={() => navigate("/enrollment/review")}>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => navigate('/enrollment/review')}
+                      >
                         <CheckSquare className="mr-2 h-4 w-4" />
                         Review & Submit
                       </Button>

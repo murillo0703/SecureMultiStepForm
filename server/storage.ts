@@ -1,19 +1,44 @@
-import { 
-  brokers, Broker, InsertBroker,
-  users, User, InsertUser, 
-  companies, Company, InsertCompany,
-  owners, Owner, InsertOwner,
-  employees, Employee, InsertEmployee,
-  documents, Document, InsertDocument,
-  plans, Plan, InsertPlan,
-  companyPlans, CompanyPlan, InsertCompanyPlan,
-  contributions, Contribution, InsertContribution,
-  applications, Application, InsertApplication, UpdateApplication,
-  applicationInitiators, ApplicationInitiator, InsertApplicationInitiator,
-  auditLogs, AuditAction, EntityType
-} from "@shared/schema";
-import createMemoryStore from "memorystore";
-import session from "express-session";
+import {
+  brokers,
+  Broker,
+  InsertBroker,
+  users,
+  User,
+  InsertUser,
+  companies,
+  Company,
+  InsertCompany,
+  owners,
+  Owner,
+  InsertOwner,
+  employees,
+  Employee,
+  InsertEmployee,
+  documents,
+  Document,
+  InsertDocument,
+  plans,
+  Plan,
+  InsertPlan,
+  companyPlans,
+  CompanyPlan,
+  InsertCompanyPlan,
+  contributions,
+  Contribution,
+  InsertContribution,
+  applications,
+  Application,
+  InsertApplication,
+  UpdateApplication,
+  applicationInitiators,
+  ApplicationInitiator,
+  InsertApplicationInitiator,
+  auditLogs,
+  AuditAction,
+  EntityType,
+} from '@shared/schema';
+import createMemoryStore from 'memorystore';
+import session from 'express-session';
 
 const MemoryStore = createMemoryStore(session);
 
@@ -23,7 +48,7 @@ export interface IStorage {
   createBroker(broker: InsertBroker): Promise<Broker>;
   updateBroker(id: string, updates: Partial<InsertBroker>): Promise<Broker>;
   getBrokerByUserId(userId: number): Promise<Broker | undefined>;
-  
+
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -33,26 +58,26 @@ export interface IStorage {
   getUsersByBrokerId(brokerId: string): Promise<User[]>;
   getAllUsers(): Promise<User[]>;
   getAllBrokers(): Promise<Broker[]>;
-  
+
   // Company operations
   createCompany(company: InsertCompany): Promise<Company>;
   getCompany(id: number): Promise<Company | undefined>;
   getCompaniesByUserId(userId: number): Promise<Company[]>;
-  
+
   // Owner operations
   createOwner(owner: InsertOwner): Promise<Owner>;
   getOwnersByCompanyId(companyId: number): Promise<Owner[]>;
-  
+
   // Employee operations
   createEmployee(employee: InsertEmployee): Promise<Employee>;
   getEmployeesByCompanyId(companyId: number): Promise<Employee[]>;
-  
+
   // Document operations
   createDocument(document: InsertDocument): Promise<Document>;
   getDocument(id: number): Promise<Document | undefined>;
   getDocumentsByCompanyId(companyId: number): Promise<Document[]>;
   deleteDocument(id: number): Promise<void>;
-  
+
   // Plan operations
   createPlan(plan: InsertPlan): Promise<Plan>;
   getAllPlans(): Promise<Plan[]>;
@@ -62,16 +87,16 @@ export interface IStorage {
   createCompanyPlan(companyPlan: InsertCompanyPlan): Promise<CompanyPlan>;
   getCompanyPlans(companyId: number): Promise<(CompanyPlan & Plan)[]>;
   deleteCompanyPlan(companyId: number, planId: number): Promise<void>;
-  
+
   // Contribution operations
   createContribution(contribution: InsertContribution): Promise<Contribution>;
   getContributionsByCompanyId(companyId: number): Promise<Contribution[]>;
-  
+
   // Application Initiator operations
   createApplicationInitiator(initiator: InsertApplicationInitiator): Promise<ApplicationInitiator>;
   getApplicationInitiator(id: number): Promise<ApplicationInitiator | undefined>;
   getApplicationInitiatorByUserId(userId: number): Promise<ApplicationInitiator | undefined>;
-  
+
   // Application operations
   createApplication(application: Partial<InsertApplication>): Promise<Application>;
   getApplication(id: number): Promise<Application | undefined>;
@@ -79,7 +104,7 @@ export interface IStorage {
   updateApplication(id: number, updates: Partial<UpdateApplication>): Promise<Application>;
   getAllApplications(): Promise<(Application & Company & User)[]>;
   updateApplicationProgress(companyId: number, currentStep: string): Promise<void>;
-  
+
   // Audit log operations
   createAuditLog(log: {
     userId: number;
@@ -99,7 +124,7 @@ export interface IStorage {
     toDate?: Date;
   }): Promise<any[]>;
   getRecentAuditLogs(limit?: number): Promise<any[]>;
-  
+
   // Session store
   sessionStore: any;
 }
@@ -127,7 +152,7 @@ export class MemStorage implements IStorage {
     userAgent?: string;
     timestamp: Date;
   }>;
-  
+
   // Counters for IDs
   private userIdCounter: number;
   private companyIdCounter: number;
@@ -140,7 +165,7 @@ export class MemStorage implements IStorage {
   private applicationIdCounter: number;
   private applicationInitiatorIdCounter: number;
   private auditLogIdCounter: number;
-  
+
   public sessionStore: any; // Using 'any' to avoid session type conflicts
 
   constructor() {
@@ -156,7 +181,7 @@ export class MemStorage implements IStorage {
     this.applications = new Map();
     this.applicationInitiators = new Map();
     this.auditLogs = [];
-    
+
     this.userIdCounter = 1;
     this.companyIdCounter = 1;
     this.ownerIdCounter = 1;
@@ -168,25 +193,26 @@ export class MemStorage implements IStorage {
     this.applicationIdCounter = 1;
     this.applicationInitiatorIdCounter = 1;
     this.auditLogIdCounter = 1;
-    
+
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
     });
-    
+
     // Create default broker and admin user
     this.createBroker({
-      agencyName: "Murillo Insurance Agency",
-      colorPrimary: "#3b82f6",
-      colorSecondary: "#1e40af"
+      agencyName: 'Murillo Insurance Agency',
+      colorPrimary: '#3b82f6',
+      colorSecondary: '#1e40af',
     }).then(broker => {
       this.createUser({
-        username: "admin",
-        password: "65b5e0ed48d7c2451ecd7d843b747b87bc18bb76a28968a2769359fb5e863dcef63d94eddc9b4a4eb346fe94b491bc8eaf74a3d58c2a8d757e1beb95a4e3536f.b04e36d4c27ed588",
-        email: "admin@murilloinsuranceagency.com",
-        name: "Admin User",
+        username: 'admin',
+        password:
+          '65b5e0ed48d7c2451ecd7d843b747b87bc18bb76a28968a2769359fb5e863dcef63d94eddc9b4a4eb346fe94b491bc8eaf74a3d58c2a8d757e1beb95a4e3536f.b04e36d4c27ed588',
+        email: 'admin@murilloinsuranceagency.com',
+        name: 'Admin User',
         brokerId: broker.id,
-        role: "owner",
-        companyName: "Murillo Insurance Agency"
+        role: 'owner',
+        companyName: 'Murillo Insurance Agency',
       });
     });
   }
@@ -203,8 +229,8 @@ export class MemStorage implements IStorage {
       ...broker,
       id,
       logoUrl: broker.logoUrl || null,
-      colorPrimary: broker.colorPrimary || "#3b82f6",
-      colorSecondary: broker.colorSecondary || "#1e40af",
+      colorPrimary: broker.colorPrimary || '#3b82f6',
+      colorSecondary: broker.colorSecondary || '#1e40af',
       createdAt: now,
       updatedAt: now,
     };
@@ -215,9 +241,9 @@ export class MemStorage implements IStorage {
   async updateBroker(id: string, updates: Partial<InsertBroker>): Promise<Broker> {
     const existing = this.brokers.get(id);
     if (!existing) {
-      throw new Error("Broker not found");
+      throw new Error('Broker not found');
     }
-    
+
     const updated: Broker = {
       ...existing,
       ...updates,
@@ -234,9 +260,7 @@ export class MemStorage implements IStorage {
   }
 
   async getUsersByBrokerId(brokerId: string): Promise<User[]> {
-    return Array.from(this.users.values()).filter(
-      (user) => user.brokerId === brokerId
-    );
+    return Array.from(this.users.values()).filter(user => user.brokerId === brokerId);
   }
 
   async getAllUsers(): Promise<User[]> {
@@ -254,23 +278,23 @@ export class MemStorage implements IStorage {
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.username.toLowerCase() === username.toLowerCase(),
+      user => user.username.toLowerCase() === username.toLowerCase()
     );
   }
-  
+
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.email.toLowerCase() === email.toLowerCase(),
+      user => user.email.toLowerCase() === email.toLowerCase()
     );
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
     const now = new Date();
-    const user: User = { 
-      ...insertUser, 
+    const user: User = {
+      ...insertUser,
       id,
-      createdAt: now
+      createdAt: now,
     };
     this.users.set(id, user);
     return user;
@@ -281,12 +305,12 @@ export class MemStorage implements IStorage {
     if (!existingUser) {
       throw new Error(`User with id ${id} not found`);
     }
-    
+
     const updatedUser: User = {
       ...existingUser,
-      ...updates
+      ...updates,
     };
-    
+
     this.users.set(id, updatedUser);
     return updatedUser;
   }
@@ -299,7 +323,7 @@ export class MemStorage implements IStorage {
       ...company,
       id,
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
     this.companies.set(id, newCompany);
     return newCompany;
@@ -310,9 +334,7 @@ export class MemStorage implements IStorage {
   }
 
   async getCompaniesByUserId(userId: number): Promise<Company[]> {
-    return Array.from(this.companies.values()).filter(
-      (company) => company.userId === userId
-    );
+    return Array.from(this.companies.values()).filter(company => company.userId === userId);
   }
 
   // Owner operations
@@ -322,16 +344,14 @@ export class MemStorage implements IStorage {
     const newOwner: Owner = {
       ...owner,
       id,
-      createdAt: now
+      createdAt: now,
     };
     this.owners.set(id, newOwner);
     return newOwner;
   }
 
   async getOwnersByCompanyId(companyId: number): Promise<Owner[]> {
-    return Array.from(this.owners.values()).filter(
-      (owner) => owner.companyId === companyId
-    );
+    return Array.from(this.owners.values()).filter(owner => owner.companyId === companyId);
   }
 
   // Employee operations
@@ -341,16 +361,14 @@ export class MemStorage implements IStorage {
     const newEmployee: Employee = {
       ...employee,
       id,
-      createdAt: now
+      createdAt: now,
     };
     this.employees.set(id, newEmployee);
     return newEmployee;
   }
 
   async getEmployeesByCompanyId(companyId: number): Promise<Employee[]> {
-    return Array.from(this.employees.values()).filter(
-      (employee) => employee.companyId === companyId
-    );
+    return Array.from(this.employees.values()).filter(employee => employee.companyId === companyId);
   }
 
   // Document operations
@@ -360,7 +378,7 @@ export class MemStorage implements IStorage {
     const newDocument: Document = {
       ...document,
       id,
-      uploadedAt: now
+      uploadedAt: now,
     };
     this.documents.set(id, newDocument);
     return newDocument;
@@ -371,9 +389,7 @@ export class MemStorage implements IStorage {
   }
 
   async getDocumentsByCompanyId(companyId: number): Promise<Document[]> {
-    return Array.from(this.documents.values()).filter(
-      (document) => document.companyId === companyId
-    );
+    return Array.from(this.documents.values()).filter(document => document.companyId === companyId);
   }
 
   async deleteDocument(id: number): Promise<void> {
@@ -387,7 +403,7 @@ export class MemStorage implements IStorage {
     const newPlan: Plan = {
       ...plan,
       id,
-      createdAt: now
+      createdAt: now,
     };
     this.plans.set(id, newPlan);
     return newPlan;
@@ -399,17 +415,17 @@ export class MemStorage implements IStorage {
 
   async getFilteredPlans(carrier?: string, coverageDate?: Date): Promise<Plan[]> {
     let plans = Array.from(this.plans.values());
-    
+
     if (carrier) {
       plans = plans.filter(plan => plan.carrier === carrier);
     }
-    
+
     if (coverageDate) {
-      plans = plans.filter(plan => 
-        plan.effectiveStart <= coverageDate && plan.effectiveEnd >= coverageDate
+      plans = plans.filter(
+        plan => plan.effectiveStart <= coverageDate && plan.effectiveEnd >= coverageDate
       );
     }
-    
+
     return plans;
   }
 
@@ -429,10 +445,10 @@ export class MemStorage implements IStorage {
 
     return { created, skipped };
   }
-  
+
   async getPlanByNameAndCarrier(name: string, carrier: string): Promise<Plan | undefined> {
     return Array.from(this.plans.values()).find(
-      (plan) => plan.name === name && plan.carrier === carrier
+      plan => plan.name === name && plan.carrier === carrier
     );
   }
 
@@ -442,7 +458,7 @@ export class MemStorage implements IStorage {
     const newCompanyPlan: CompanyPlan = {
       ...companyPlan,
       id,
-      createdAt: now
+      createdAt: now,
     };
     this.companyPlans.set(id, newCompanyPlan);
     return newCompanyPlan;
@@ -450,9 +466,9 @@ export class MemStorage implements IStorage {
 
   async getCompanyPlans(companyId: number): Promise<(CompanyPlan & Plan)[]> {
     const companyPlans = Array.from(this.companyPlans.values()).filter(
-      (companyPlan) => companyPlan.companyId === companyId
+      companyPlan => companyPlan.companyId === companyId
     );
-    
+
     return companyPlans.map(companyPlan => {
       const plan = this.plans.get(companyPlan.planId);
       if (!plan) throw new Error(`Plan with ID ${companyPlan.planId} not found`);
@@ -462,9 +478,9 @@ export class MemStorage implements IStorage {
 
   async deleteCompanyPlan(companyId: number, planId: number): Promise<void> {
     const companyPlanToDelete = Array.from(this.companyPlans.values()).find(
-      (companyPlan) => companyPlan.companyId === companyId && companyPlan.planId === planId
+      companyPlan => companyPlan.companyId === companyId && companyPlan.planId === planId
     );
-    
+
     if (companyPlanToDelete) {
       this.companyPlans.delete(companyPlanToDelete.id);
     }
@@ -477,7 +493,7 @@ export class MemStorage implements IStorage {
     const newContribution: Contribution = {
       ...contribution,
       id,
-      createdAt: now
+      createdAt: now,
     };
     this.contributions.set(id, newContribution);
     return newContribution;
@@ -485,7 +501,7 @@ export class MemStorage implements IStorage {
 
   async getContributionsByCompanyId(companyId: number): Promise<Contribution[]> {
     return Array.from(this.contributions.values()).filter(
-      (contribution) => contribution.companyId === companyId
+      contribution => contribution.companyId === companyId
     );
   }
 
@@ -497,14 +513,14 @@ export class MemStorage implements IStorage {
       id,
       companyId: application.companyId!,
       initiatorId: application.initiatorId || null,
-      status: "in_progress",
-      completedSteps: ["company"],
-      currentStep: "company",
+      status: 'in_progress',
+      completedSteps: ['company'],
+      currentStep: 'company',
       createdAt: now,
       updatedAt: now,
       selectedCarrier: null,
       signature: null,
-      submittedAt: null
+      submittedAt: null,
     };
     this.applications.set(id, newApplication);
     return newApplication;
@@ -516,7 +532,7 @@ export class MemStorage implements IStorage {
 
   async getApplicationByCompanyId(companyId: number): Promise<Application | undefined> {
     return Array.from(this.applications.values()).find(
-      (application) => application.companyId === companyId
+      application => application.companyId === companyId
     );
   }
 
@@ -525,12 +541,12 @@ export class MemStorage implements IStorage {
     if (!application) {
       throw new Error(`Application with ID ${id} not found`);
     }
-    
+
     const now = new Date();
     const updatedApplication: Application = {
       ...application,
       ...updates,
-      updatedAt: now
+      updatedAt: now,
     };
     this.applications.set(id, updatedApplication);
     return updatedApplication;
@@ -540,29 +556,29 @@ export class MemStorage implements IStorage {
     return Array.from(this.applications.values()).map(application => {
       const company = this.companies.get(application.companyId);
       if (!company) throw new Error(`Company with ID ${application.companyId} not found`);
-      
+
       const user = this.users.get(company.userId);
       if (!user) throw new Error(`User with ID ${company.userId} not found`);
-      
+
       return { ...application, ...company, ...user };
     });
   }
-  
+
   async updateApplicationProgress(companyId: number, currentStep: string): Promise<void> {
     const application = await this.getApplicationByCompanyId(companyId);
     if (!application) {
       throw new Error(`Application for company ID ${companyId} not found`);
     }
-    
+
     // Update completed steps if not already included
     const completedSteps = application.completedSteps as string[];
     if (!completedSteps.includes(currentStep)) {
       completedSteps.push(currentStep);
     }
-    
+
     await this.updateApplication(application.id, {
       currentStep,
-      completedSteps
+      completedSteps,
     });
   }
 
@@ -579,7 +595,7 @@ export class MemStorage implements IStorage {
     const auditLog = {
       id: this.auditLogIdCounter++,
       timestamp: new Date(),
-      ...log
+      ...log,
     };
     this.auditLogs.push(auditLog);
     console.log(`Audit log created: ${auditLog.action} by user ${auditLog.userId}`);
@@ -594,33 +610,33 @@ export class MemStorage implements IStorage {
     toDate?: Date;
   }): Promise<any[]> {
     let filteredLogs = [...this.auditLogs];
-    
+
     if (filters) {
       if (filters.userId !== undefined) {
         filteredLogs = filteredLogs.filter(log => log.userId === filters.userId);
       }
-      
+
       if (filters.action !== undefined) {
         filteredLogs = filteredLogs.filter(log => log.action === filters.action);
       }
-      
+
       if (filters.entityType !== undefined) {
         filteredLogs = filteredLogs.filter(log => log.entityType === filters.entityType);
       }
-      
+
       if (filters.entityId !== undefined) {
         filteredLogs = filteredLogs.filter(log => log.entityId === filters.entityId);
       }
-      
+
       if (filters.fromDate !== undefined) {
         filteredLogs = filteredLogs.filter(log => log.timestamp >= filters.fromDate!);
       }
-      
+
       if (filters.toDate !== undefined) {
         filteredLogs = filteredLogs.filter(log => log.timestamp <= filters.toDate!);
       }
     }
-    
+
     // Sort by timestamp (newest first)
     return filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
@@ -633,7 +649,9 @@ export class MemStorage implements IStorage {
   }
 
   // Application Initiator operations
-  async createApplicationInitiator(initiator: InsertApplicationInitiator): Promise<ApplicationInitiator> {
+  async createApplicationInitiator(
+    initiator: InsertApplicationInitiator
+  ): Promise<ApplicationInitiator> {
     const id = this.applicationInitiatorIdCounter++;
     const newInitiator: ApplicationInitiator = {
       id,
@@ -664,9 +682,9 @@ export class DatabaseStorage implements IStorage {
 
   constructor() {
     const PostgresSessionStore = connectPg(session);
-    this.sessionStore = new PostgresSessionStore({ 
-      pool, 
-      createTableIfMissing: true 
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
     });
   }
 
@@ -727,7 +745,7 @@ export class DatabaseStorage implements IStorage {
 
   async getFilteredPlans(carrier?: string, coverageDate?: Date): Promise<Plan[]> {
     let query = db.select().from(plans);
-    
+
     if (carrier && coverageDate) {
       query = query.where(
         and(
@@ -739,7 +757,7 @@ export class DatabaseStorage implements IStorage {
     } else if (carrier) {
       query = query.where(eq(plans.carrier, carrier));
     }
-    
+
     return await query;
   }
 
@@ -760,7 +778,7 @@ export class DatabaseStorage implements IStorage {
           skipped++;
           continue;
         }
-        
+
         await this.createPlan(plan);
         created++;
       } catch (error) {
@@ -772,7 +790,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPlanByNameAndCarrier(name: string, carrier: string): Promise<Plan | undefined> {
-    const [plan] = await db.select().from(plans)
+    const [plan] = await db
+      .select()
+      .from(plans)
       .where(and(eq(plans.planName, name), eq(plans.carrier, carrier)));
     return plan || undefined;
   }
@@ -793,28 +813,72 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Stub methods for other operations (to be implemented as needed)
-  async createOwner(owner: InsertOwner): Promise<Owner> { throw new Error("Not implemented"); }
-  async getOwnersByCompanyId(companyId: number): Promise<Owner[]> { throw new Error("Not implemented"); }
-  async createEmployee(employee: InsertEmployee): Promise<Employee> { throw new Error("Not implemented"); }
-  async getEmployeesByCompanyId(companyId: number): Promise<Employee[]> { throw new Error("Not implemented"); }
-  async createDocument(document: InsertDocument): Promise<Document> { throw new Error("Not implemented"); }
-  async getDocument(id: number): Promise<Document | undefined> { throw new Error("Not implemented"); }
-  async getDocumentsByCompanyId(companyId: number): Promise<Document[]> { throw new Error("Not implemented"); }
-  async deleteDocument(id: number): Promise<void> { throw new Error("Not implemented"); }
-  async createCompanyPlan(companyPlan: InsertCompanyPlan): Promise<CompanyPlan> { throw new Error("Not implemented"); }
-  async getCompanyPlans(companyId: number): Promise<(CompanyPlan & Plan)[]> { throw new Error("Not implemented"); }
-  async deleteCompanyPlan(companyId: number, planId: number): Promise<void> { throw new Error("Not implemented"); }
-  async createContribution(contribution: InsertContribution): Promise<Contribution> { throw new Error("Not implemented"); }
-  async getContributionsByCompanyId(companyId: number): Promise<Contribution[]> { throw new Error("Not implemented"); }
-  async createApplication(application: Partial<InsertApplication>): Promise<Application> { throw new Error("Not implemented"); }
-  async getApplication(id: number): Promise<Application | undefined> { throw new Error("Not implemented"); }
-  async getApplicationByCompanyId(companyId: number): Promise<Application | undefined> { throw new Error("Not implemented"); }
-  async updateApplication(id: number, updates: Partial<UpdateApplication>): Promise<Application> { throw new Error("Not implemented"); }
-  async getAllApplications(): Promise<(Application & Company & User)[]> { throw new Error("Not implemented"); }
-  async updateApplicationProgress(companyId: number, currentStep: string): Promise<void> { throw new Error("Not implemented"); }
-  async createAuditLog(log: any): Promise<void> { throw new Error("Not implemented"); }
-  async getAuditLogs(filters?: any): Promise<any[]> { throw new Error("Not implemented"); }
-  async getRecentAuditLogs(limit?: number): Promise<any[]> { throw new Error("Not implemented"); }
+  async createOwner(owner: InsertOwner): Promise<Owner> {
+    throw new Error('Not implemented');
+  }
+  async getOwnersByCompanyId(companyId: number): Promise<Owner[]> {
+    throw new Error('Not implemented');
+  }
+  async createEmployee(employee: InsertEmployee): Promise<Employee> {
+    throw new Error('Not implemented');
+  }
+  async getEmployeesByCompanyId(companyId: number): Promise<Employee[]> {
+    throw new Error('Not implemented');
+  }
+  async createDocument(document: InsertDocument): Promise<Document> {
+    throw new Error('Not implemented');
+  }
+  async getDocument(id: number): Promise<Document | undefined> {
+    throw new Error('Not implemented');
+  }
+  async getDocumentsByCompanyId(companyId: number): Promise<Document[]> {
+    throw new Error('Not implemented');
+  }
+  async deleteDocument(id: number): Promise<void> {
+    throw new Error('Not implemented');
+  }
+  async createCompanyPlan(companyPlan: InsertCompanyPlan): Promise<CompanyPlan> {
+    throw new Error('Not implemented');
+  }
+  async getCompanyPlans(companyId: number): Promise<(CompanyPlan & Plan)[]> {
+    throw new Error('Not implemented');
+  }
+  async deleteCompanyPlan(companyId: number, planId: number): Promise<void> {
+    throw new Error('Not implemented');
+  }
+  async createContribution(contribution: InsertContribution): Promise<Contribution> {
+    throw new Error('Not implemented');
+  }
+  async getContributionsByCompanyId(companyId: number): Promise<Contribution[]> {
+    throw new Error('Not implemented');
+  }
+  async createApplication(application: Partial<InsertApplication>): Promise<Application> {
+    throw new Error('Not implemented');
+  }
+  async getApplication(id: number): Promise<Application | undefined> {
+    throw new Error('Not implemented');
+  }
+  async getApplicationByCompanyId(companyId: number): Promise<Application | undefined> {
+    throw new Error('Not implemented');
+  }
+  async updateApplication(id: number, updates: Partial<UpdateApplication>): Promise<Application> {
+    throw new Error('Not implemented');
+  }
+  async getAllApplications(): Promise<(Application & Company & User)[]> {
+    throw new Error('Not implemented');
+  }
+  async updateApplicationProgress(companyId: number, currentStep: string): Promise<void> {
+    throw new Error('Not implemented');
+  }
+  async createAuditLog(log: any): Promise<void> {
+    throw new Error('Not implemented');
+  }
+  async getAuditLogs(filters?: any): Promise<any[]> {
+    throw new Error('Not implemented');
+  }
+  async getRecentAuditLogs(limit?: number): Promise<any[]> {
+    throw new Error('Not implemented');
+  }
 }
 
 export const storage = new MemStorage();

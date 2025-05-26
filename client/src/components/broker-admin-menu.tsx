@@ -1,23 +1,30 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { 
-  CreditCard, 
-  FileText, 
-  TrendingUp, 
-  History, 
+import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import {
+  CreditCard,
+  FileText,
+  TrendingUp,
+  History,
   Download,
   DollarSign,
   CheckCircle,
   AlertCircle,
-  Clock
-} from "lucide-react";
+  Clock,
+} from 'lucide-react';
 
 export function BrokerAdminMenu() {
   const { toast } = useToast();
@@ -25,60 +32,71 @@ export function BrokerAdminMenu() {
   // Upgrade subscription mutation
   const upgradeMutation = useMutation({
     mutationFn: async (planId: string) => {
-      const res = await apiRequest("POST", "/api/broker/upgrade-subscription", { planId });
+      const res = await apiRequest('POST', '/api/broker/upgrade-subscription', { planId });
       return await res.json();
     },
     onSuccess: () => {
       toast({
-        title: "Subscription upgraded",
-        description: "Your subscription has been successfully upgraded.",
+        title: 'Subscription upgraded',
+        description: 'Your subscription has been successfully upgraded.',
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/broker/subscription"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/broker/subscription'] });
     },
     onError: (error: any) => {
       toast({
-        title: "Upgrade failed",
+        title: 'Upgrade failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
 
   const subscriptionPlans = [
     {
-      id: "starter",
-      name: "Starter Plan",
+      id: 'starter',
+      name: 'Starter Plan',
       price: 49,
-      features: ["Up to 10 applications/month", "Basic support", "Standard templates"],
+      features: ['Up to 10 applications/month', 'Basic support', 'Standard templates'],
     },
     {
-      id: "professional",
-      name: "Professional Plan", 
+      id: 'professional',
+      name: 'Professional Plan',
       price: 99,
-      features: ["Up to 50 applications/month", "Priority support", "Custom templates", "Advanced reporting"],
+      features: [
+        'Up to 50 applications/month',
+        'Priority support',
+        'Custom templates',
+        'Advanced reporting',
+      ],
     },
     {
-      id: "enterprise",
-      name: "Enterprise Plan",
+      id: 'enterprise',
+      name: 'Enterprise Plan',
       price: 199,
-      features: ["Unlimited applications", "24/7 support", "White-label options", "API access", "Custom integrations"],
+      features: [
+        'Unlimited applications',
+        '24/7 support',
+        'White-label options',
+        'API access',
+        'Custom integrations',
+      ],
     },
   ];
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      active: { color: "bg-green-100 text-green-800", icon: CheckCircle },
-      past_due: { color: "bg-red-100 text-red-800", icon: AlertCircle },
-      incomplete: { color: "bg-yellow-100 text-yellow-800", icon: Clock },
-      canceled: { color: "bg-gray-100 text-gray-800", icon: AlertCircle },
-      paid: { color: "bg-green-100 text-green-800", icon: CheckCircle },
-      open: { color: "bg-blue-100 text-blue-800", icon: Clock },
-      draft: { color: "bg-gray-100 text-gray-800", icon: Clock },
+      active: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
+      past_due: { color: 'bg-red-100 text-red-800', icon: AlertCircle },
+      incomplete: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+      canceled: { color: 'bg-gray-100 text-gray-800', icon: AlertCircle },
+      paid: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
+      open: { color: 'bg-blue-100 text-blue-800', icon: Clock },
+      draft: { color: 'bg-gray-100 text-gray-800', icon: Clock },
     };
-    
+
     const config = statusMap[status as keyof typeof statusMap] || statusMap.draft;
     const IconComponent = config.icon;
-    
+
     return (
       <Badge className={`${config.color} flex items-center gap-1`}>
         <IconComponent className="w-3 h-3" />
@@ -113,10 +131,10 @@ export function BrokerAdminMenu() {
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">Connect your Stripe account to manage subscriptions</p>
-                <Button variant="outline">
-                  Setup Payment Processing
-                </Button>
+                <p className="text-gray-600 mb-4">
+                  Connect your Stripe account to manage subscriptions
+                </p>
+                <Button variant="outline">Setup Payment Processing</Button>
               </div>
             </CardContent>
           </Card>
@@ -129,7 +147,7 @@ export function BrokerAdminMenu() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {subscriptionPlans.map((plan) => (
+                {subscriptionPlans.map(plan => (
                   <Card key={plan.id} className="relative">
                     <CardHeader>
                       <CardTitle className="text-lg">{plan.name}</CardTitle>

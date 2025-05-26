@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Eraser, Download, Save } from "lucide-react";
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Eraser, Download, Save } from 'lucide-react';
 
 interface SignaturePadProps {
   onSave: (signature: string) => void;
@@ -23,26 +23,28 @@ export function SignaturePad({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     // Set canvas styles
     ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.strokeStyle = "#333";
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#333';
 
     // Clear canvas
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const startDrawing = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
     if (disabled) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     setIsDrawing(true);
@@ -54,11 +56,11 @@ export function SignaturePad({
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing || disabled) return;
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const { offsetX, offsetY } = getCoordinates(e, canvas);
@@ -72,7 +74,7 @@ export function SignaturePad({
   };
 
   const getCoordinates = (
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>, 
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
     canvas: HTMLCanvasElement
   ) => {
     if ('touches' in e) {
@@ -96,10 +98,10 @@ export function SignaturePad({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     setIsEmpty(true);
   };
@@ -108,7 +110,7 @@ export function SignaturePad({
     const canvas = canvasRef.current;
     if (!canvas || isEmpty) return;
 
-    const dataUrl = canvas.toDataURL("image/png");
+    const dataUrl = canvas.toDataURL('image/png');
     onSave(dataUrl);
   };
 
@@ -116,9 +118,9 @@ export function SignaturePad({
     const canvas = canvasRef.current;
     if (!canvas || isEmpty) return;
 
-    const dataUrl = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.download = "signature.png";
+    const dataUrl = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = 'signature.png';
     link.href = dataUrl;
     link.click();
   };
@@ -130,7 +132,7 @@ export function SignaturePad({
           ref={canvasRef}
           width={width}
           height={height}
-          className={`w-full touch-none bg-white ${disabled ? "cursor-not-allowed" : "cursor-crosshair"}`}
+          className={`w-full touch-none bg-white ${disabled ? 'cursor-not-allowed' : 'cursor-crosshair'}`}
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
@@ -141,9 +143,9 @@ export function SignaturePad({
         />
       </div>
       <div className="flex flex-wrap gap-2 justify-between">
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           onClick={clearSignature}
           disabled={disabled || isEmpty}
         >
@@ -160,11 +162,7 @@ export function SignaturePad({
             <Download className="h-4 w-4 mr-2" />
             Download
           </Button>
-          <Button
-            type="button"
-            onClick={saveSignature}
-            disabled={disabled || isEmpty}
-          >
+          <Button type="button" onClick={saveSignature} disabled={disabled || isEmpty}>
             <Save className="h-4 w-4 mr-2" />
             Save Signature
           </Button>

@@ -1,5 +1,5 @@
-import documentRules from "@shared/document-rules.json";
-import featureFlags from "@shared/feature-flags.json";
+import documentRules from '@shared/document-rules.json';
+import featureFlags from '@shared/feature-flags.json';
 
 interface CompanyData {
   hasPriorCoverage?: boolean;
@@ -20,12 +20,12 @@ interface ValidationResult {
 // Evaluate conditions based on company data
 function evaluateCondition(condition: string, companyData: CompanyData): boolean {
   switch (condition) {
-    case "hasPriorCoverage":
+    case 'hasPriorCoverage':
       return companyData.hasPriorCoverage === true;
-    case "employeeCount > 50":
+    case 'employeeCount > 50':
       return (companyData.employeeCount || 0) > 50;
-    case "missingDE9C":
-      return !companyData.uploadedDocuments?.includes("DE9C");
+    case 'missingDE9C':
+      return !companyData.uploadedDocuments?.includes('DE9C');
     default:
       return false;
   }
@@ -37,25 +37,25 @@ function getRequiredGroups(companyData: CompanyData) {
 
   // Always required: Pay proof and business docs
   groups.push({
-    id: "payProof",
+    id: 'payProof',
     label: documentRules.payProof.label,
     requirements: documentRules.payProof.oneOf,
-    oneOf: true
+    oneOf: true,
   });
 
   groups.push({
-    id: "businessDocs", 
+    id: 'businessDocs',
     label: documentRules.businessDocs.label,
     requirements: documentRules.businessDocs.oneOf,
-    oneOf: true
+    oneOf: true,
   });
 
   // Conditional: Prior coverage
   if (evaluateCondition(documentRules.priorCoverage.condition, companyData)) {
     groups.push({
-      id: "priorCoverage",
+      id: 'priorCoverage',
       label: documentRules.priorCoverage.label,
-      requirements: documentRules.priorCoverage.required
+      requirements: documentRules.priorCoverage.required,
     });
   }
 
@@ -63,20 +63,20 @@ function getRequiredGroups(companyData: CompanyData) {
   if (companyData.selectedCarrier && documentRules.carrierSpecific[companyData.selectedCarrier]) {
     const carrierDocs = documentRules.carrierSpecific[companyData.selectedCarrier];
     groups.push({
-      id: "carrierSpecific",
+      id: 'carrierSpecific',
       label: `${companyData.selectedCarrier} Requirements`,
-      requirements: carrierDocs.filter(doc => 
-        !doc.condition || evaluateCondition(doc.condition, companyData)
-      )
+      requirements: carrierDocs.filter(
+        doc => !doc.condition || evaluateCondition(doc.condition, companyData)
+      ),
     });
   }
 
   // Employee count based requirements
   if (evaluateCondition(documentRules.employeeCount.condition, companyData)) {
     groups.push({
-      id: "employeeCount",
+      id: 'employeeCount',
       label: documentRules.employeeCount.label,
-      requirements: documentRules.employeeCount.required
+      requirements: documentRules.employeeCount.required,
     });
   }
 
@@ -104,20 +104,18 @@ export function validateDocuments(companyData: CompanyData): ValidationResult {
       missingRequirements: [],
       satisfiedGroups: 0,
       totalGroups: 0,
-      errors: []
+      errors: [],
     };
   }
 
   const uploadedDocs = companyData.uploadedDocuments || [];
   const requiredGroups = getRequiredGroups(companyData);
-  
-  const satisfiedGroups = requiredGroups.filter(group => 
+
+  const satisfiedGroups = requiredGroups.filter(group =>
     isGroupSatisfied(group, uploadedDocs)
   ).length;
-  
-  const missingGroups = requiredGroups.filter(group => 
-    !isGroupSatisfied(group, uploadedDocs)
-  );
+
+  const missingGroups = requiredGroups.filter(group => !isGroupSatisfied(group, uploadedDocs));
 
   const missingRequirements = missingGroups.map(group => group.label);
   const isValid = satisfiedGroups === requiredGroups.length;
@@ -127,38 +125,38 @@ export function validateDocuments(companyData: CompanyData): ValidationResult {
     missingRequirements,
     satisfiedGroups,
     totalGroups: requiredGroups.length,
-    errors: missingRequirements.map(req => `Missing required documents: ${req}`)
+    errors: missingRequirements.map(req => `Missing required documents: ${req}`),
   };
 }
 
 // Check if user can override validation
 export function canOverrideValidation(userRole: string): boolean {
-  if (userRole === "admin" && featureFlags.adminOverride.enabled) {
+  if (userRole === 'admin' && featureFlags.adminOverride.enabled) {
     return true;
   }
-  
-  if ((userRole === "owner" || userRole === "staff") && featureFlags.brokerOverride.enabled) {
+
+  if ((userRole === 'owner' || userRole === 'staff') && featureFlags.brokerOverride.enabled) {
     return true;
   }
-  
+
   return false;
 }
 
 // Validate with override capability
 export function validateWithOverride(
-  companyData: CompanyData, 
-  userRole: string, 
+  companyData: CompanyData,
+  userRole: string,
   overrideReason?: string
 ): ValidationResult {
   const validation = validateDocuments(companyData);
-  
+
   if (!validation.isValid && canOverrideValidation(userRole) && overrideReason) {
     return {
       ...validation,
       isValid: true,
-      errors: [`Override applied by ${userRole}: ${overrideReason}`]
+      errors: [`Override applied by ${userRole}: ${overrideReason}`],
     };
   }
-  
+
   return validation;
 }

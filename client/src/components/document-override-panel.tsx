@@ -1,21 +1,15 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Switch } from "@/components/ui/switch";
-import { useAuth } from "@/hooks/use-auth";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { 
-  ShieldCheck, 
-  AlertTriangle, 
-  User, 
-  Calendar,
-  FileText
-} from "lucide-react";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Switch } from '@/components/ui/switch';
+import { useAuth } from '@/hooks/use-auth';
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { ShieldCheck, AlertTriangle, User, Calendar, FileText } from 'lucide-react';
 
 interface DocumentOverridePanelProps {
   companyId: number;
@@ -25,30 +19,30 @@ interface DocumentOverridePanelProps {
   featureEnabled?: boolean;
 }
 
-export function DocumentOverridePanel({ 
-  companyId, 
-  companyName, 
-  missingRequirements, 
+export function DocumentOverridePanel({
+  companyId,
+  companyName,
+  missingRequirements,
   onOverrideApplied,
-  featureEnabled = true
+  featureEnabled = true,
 }: DocumentOverridePanelProps) {
   const { user } = useAuth();
-  const [overrideReason, setOverrideReason] = useState("");
+  const [overrideReason, setOverrideReason] = useState('');
   const [showPanel, setShowPanel] = useState(false);
 
   // Check if user can override based on role
-  const canOverride = user?.role === "admin" || user?.role === "owner" || user?.role === "staff";
+  const canOverride = user?.role === 'admin' || user?.role === 'owner' || user?.role === 'staff';
 
   const overrideMutation = useMutation({
     mutationFn: async (data: { companyId: number; reason: string }) => {
-      const res = await apiRequest("POST", "/api/admin/document-override", data);
+      const res = await apiRequest('POST', '/api/admin/document-override', data);
       return await res.json();
     },
     onSuccess: () => {
-      setOverrideReason("");
+      setOverrideReason('');
       setShowPanel(false);
       onOverrideApplied();
-    }
+    },
   });
 
   if (!featureEnabled || !canOverride || missingRequirements.length === 0) {
@@ -79,8 +73,9 @@ export function DocumentOverridePanel({
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Override Capability:</strong> You can bypass document requirements for this company.
-              Use this feature responsibly when documents are submitted offline or special circumstances apply.
+              <strong>Override Capability:</strong> You can bypass document requirements for this
+              company. Use this feature responsibly when documents are submitted offline or special
+              circumstances apply.
             </AlertDescription>
           </Alert>
 
@@ -111,7 +106,7 @@ export function DocumentOverridePanel({
                 id="override-reason"
                 placeholder="Explain why you're overriding the document requirements (e.g., 'Documents submitted via email', 'Client will mail physical copies', 'Special circumstances approved by underwriting')"
                 value={overrideReason}
-                onChange={(e) => setOverrideReason(e.target.value)}
+                onChange={e => setOverrideReason(e.target.value)}
                 className="mt-1"
                 rows={3}
               />
@@ -124,13 +119,13 @@ export function DocumentOverridePanel({
                 <Calendar className="h-3 w-3 ml-2" />
                 {new Date().toLocaleDateString()}
               </div>
-              
+
               <Button
                 onClick={() => overrideMutation.mutate({ companyId, reason: overrideReason })}
                 disabled={!overrideReason.trim() || overrideMutation.isPending}
                 className="bg-amber-600 hover:bg-amber-700"
               >
-                {overrideMutation.isPending ? "Applying Override..." : "Apply Override"}
+                {overrideMutation.isPending ? 'Applying Override...' : 'Apply Override'}
               </Button>
             </div>
           </div>

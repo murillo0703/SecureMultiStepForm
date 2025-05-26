@@ -1,18 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { TwoPanelLayout } from "@/components/layout/two-panel-layout";
-import { 
-  Building2, 
-  Users, 
-  FileText, 
-  Settings, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { TwoPanelLayout } from '@/components/layout/two-panel-layout';
+import {
+  Building2,
+  Users,
+  FileText,
+  Settings,
   BarChart3,
   Calendar,
   Mail,
   Plus,
-  Eye
-} from "lucide-react";
+  Eye,
+} from 'lucide-react';
 
 // Sample Components for Broker Dashboard
 function BrokerOverview() {
@@ -95,9 +95,9 @@ function ClientManagement() {
       <CardContent>
         <div className="space-y-4">
           {[
-            { name: "ABC Corporation", status: "Active", employees: 25 },
-            { name: "XYZ Industries", status: "Pending", employees: 12 },
-            { name: "Tech Solutions LLC", status: "Active", employees: 8 }
+            { name: 'ABC Corporation', status: 'Active', employees: 25 },
+            { name: 'XYZ Industries', status: 'Pending', employees: 12 },
+            { name: 'Tech Solutions LLC', status: 'Active', employees: 8 },
           ].map((client, index) => (
             <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
               <div>
@@ -105,7 +105,7 @@ function ClientManagement() {
                 <p className="text-sm text-gray-600">{client.employees} employees</p>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={client.status === "Active" ? "default" : "secondary"}>
+                <Badge variant={client.status === 'Active' ? 'default' : 'secondary'}>
                   {client.status}
                 </Badge>
                 <Button variant="outline" size="sm">
@@ -129,9 +129,9 @@ function ApplicationTracking() {
       <CardContent>
         <div className="space-y-4">
           {[
-            { company: "ABC Corp", stage: "Document Collection", progress: 60 },
-            { company: "XYZ Inc", stage: "Plan Selection", progress: 80 },
-            { company: "Tech LLC", stage: "Final Review", progress: 95 }
+            { company: 'ABC Corp', stage: 'Document Collection', progress: 60 },
+            { company: 'XYZ Inc', stage: 'Plan Selection', progress: 80 },
+            { company: 'Tech LLC', stage: 'Final Review', progress: 95 },
           ].map((app, index) => (
             <div key={index} className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
@@ -140,8 +140,8 @@ function ApplicationTracking() {
               </div>
               <p className="text-sm text-gray-600 mb-2">{app.stage}</p>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full" 
+                <div
+                  className="bg-blue-600 h-2 rounded-full"
                   style={{ width: `${app.progress}%` }}
                 ></div>
               </div>
@@ -163,18 +163,26 @@ function BrokerSettings() {
         <div className="space-y-4">
           <div className="p-4 border rounded-lg">
             <h3 className="font-medium mb-2">Agency Information</h3>
-            <p className="text-sm text-gray-600">Update your agency name, logo, and contact details</p>
-            <Button variant="outline" className="mt-2">Edit Details</Button>
+            <p className="text-sm text-gray-600">
+              Update your agency name, logo, and contact details
+            </p>
+            <Button variant="outline" className="mt-2">
+              Edit Details
+            </Button>
           </div>
           <div className="p-4 border rounded-lg">
             <h3 className="font-medium mb-2">Branding & Colors</h3>
             <p className="text-sm text-gray-600">Customize the look and feel for your clients</p>
-            <Button variant="outline" className="mt-2">Customize Branding</Button>
+            <Button variant="outline" className="mt-2">
+              Customize Branding
+            </Button>
           </div>
           <div className="p-4 border rounded-lg">
             <h3 className="font-medium mb-2">Team Management</h3>
             <p className="text-sm text-gray-600">Add staff members and manage permissions</p>
-            <Button variant="outline" className="mt-2">Manage Team</Button>
+            <Button variant="outline" className="mt-2">
+              Manage Team
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -185,30 +193,30 @@ function BrokerSettings() {
 export default function BrokerDashboard() {
   const brokerItems = [
     {
-      id: "overview",
-      label: "Dashboard",
+      id: 'overview',
+      label: 'Dashboard',
       icon: <BarChart3 className="h-4 w-4" />,
       component: <BrokerOverview />,
-      roles: ["owner", "staff"]
+      roles: ['owner', 'staff'],
     },
     {
-      id: "clients",
-      label: "Client Management",
+      id: 'clients',
+      label: 'Client Management',
       icon: <Users className="h-4 w-4" />,
       component: <ClientManagement />,
-      roles: ["owner", "staff"]
+      roles: ['owner', 'staff'],
     },
     {
-      id: "applications",
-      label: "Applications",
+      id: 'applications',
+      label: 'Applications',
       icon: <FileText className="h-4 w-4" />,
       component: <ApplicationTracking />,
-      roles: ["owner", "staff"],
-      badge: "3" // Show pending count
+      roles: ['owner', 'staff'],
+      badge: '3', // Show pending count
     },
     {
-      id: "calendar",
-      label: "Calendar",
+      id: 'calendar',
+      label: 'Calendar',
       icon: <Calendar className="h-4 w-4" />,
       component: (
         <Card>
@@ -220,11 +228,11 @@ export default function BrokerDashboard() {
           </CardContent>
         </Card>
       ),
-      roles: ["owner", "staff"]
+      roles: ['owner', 'staff'],
     },
     {
-      id: "communications",
-      label: "Communications",
+      id: 'communications',
+      label: 'Communications',
       icon: <Mail className="h-4 w-4" />,
       component: (
         <Card>
@@ -236,22 +244,18 @@ export default function BrokerDashboard() {
           </CardContent>
         </Card>
       ),
-      roles: ["owner", "staff"]
+      roles: ['owner', 'staff'],
     },
     {
-      id: "settings",
-      label: "Agency Settings",
+      id: 'settings',
+      label: 'Agency Settings',
       icon: <Settings className="h-4 w-4" />,
       component: <BrokerSettings />,
-      roles: ["owner"] // Only agency owners can access settings
-    }
+      roles: ['owner'], // Only agency owners can access settings
+    },
   ];
 
   return (
-    <TwoPanelLayout
-      title="Broker Dashboard"
-      items={brokerItems}
-      defaultActiveTab="overview"
-    />
+    <TwoPanelLayout title="Broker Dashboard" items={brokerItems} defaultActiveTab="overview" />
   );
 }

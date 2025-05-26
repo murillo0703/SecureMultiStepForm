@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { Application, Company, User } from "@shared/schema";
-import { Check, AlertCircle, Circle } from "lucide-react";
-import { Link } from "wouter";
-import { getEnabledEnrollmentSteps } from "@/utils/enrollment-steps";
+import { useQuery } from '@tanstack/react-query';
+import { Application, Company, User } from '@shared/schema';
+import { Check, AlertCircle, Circle } from 'lucide-react';
+import { Link } from 'wouter';
+import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
 
 interface ChecklistProps {
   companyId: number;
@@ -14,20 +14,29 @@ export function EnrollmentChecklist({ companyId }: ChecklistProps) {
     enabled: !!companyId,
   });
 
-  const completedSteps = application?.completedSteps as string[] || [];
-  const currentStep = application?.currentStep || "";
+  const completedSteps = (application?.completedSteps as string[]) || [];
+  const currentStep = application?.currentStep || '';
 
   // Get the enabled steps from our utility
   const checklistItems = getEnabledEnrollmentSteps().map(step => ({
     id: step.id,
-    label: step.id === "company" ? "Company details" :
-           step.id === "ownership" ? "Business owners" :
-           step.id === "employees" ? "Employee census" :
-           step.id === "documents" ? "Required documents" :
-           step.id === "plans" ? "Plan selection" :
-           step.id === "contributions" ? "Contribution setup" :
-           step.id === "review" ? "Application signature" : step.label,
-    href: step.href
+    label:
+      step.id === 'company'
+        ? 'Company details'
+        : step.id === 'ownership'
+          ? 'Business owners'
+          : step.id === 'employees'
+            ? 'Employee census'
+            : step.id === 'documents'
+              ? 'Required documents'
+              : step.id === 'plans'
+                ? 'Plan selection'
+                : step.id === 'contributions'
+                  ? 'Contribution setup'
+                  : step.id === 'review'
+                    ? 'Application signature'
+                    : step.label,
+    href: step.href,
   }));
 
   return (
@@ -37,10 +46,10 @@ export function EnrollmentChecklist({ companyId }: ChecklistProps) {
       </div>
       <div className="p-4">
         <div className="space-y-3">
-          {checklistItems.map((item) => {
+          {checklistItems.map(item => {
             const isCompleted = completedSteps.includes(item.id);
             const isActive = currentStep === item.id;
-            
+
             return (
               <div key={item.id} className="flex">
                 <div className="flex-shrink-0">
@@ -54,8 +63,10 @@ export function EnrollmentChecklist({ companyId }: ChecklistProps) {
                 </div>
                 <div className="ml-3">
                   <Link href={item.href}>
-                    <a className={`text-sm ${isCompleted ? 'text-gray-700' : isActive ? 'text-gray-700 font-medium' : 'text-gray-400'}`}>
-                      {item.label} {isActive && "(in progress)"}
+                    <a
+                      className={`text-sm ${isCompleted ? 'text-gray-700' : isActive ? 'text-gray-700 font-medium' : 'text-gray-400'}`}
+                    >
+                      {item.label} {isActive && '(in progress)'}
                     </a>
                   </Link>
                 </div>

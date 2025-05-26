@@ -1,66 +1,66 @@
 /**
  * PDF Generator
- * 
+ *
  * This utility helps with generating and manipulating PDFs from application data.
  * It can auto-populate carrier-specific PDF forms based on employer input.
  */
 
-import { Company, Owner, Employee, Plan, Application, Contribution } from "@shared/schema";
+import { Company, Owner, Employee, Plan, Application, Contribution } from '@shared/schema';
 
 // Mock field mappings for different carriers
 const carrierFieldMappings = {
   Anthem: {
-    companyName: "company_name",
-    companyAddress: "company_address",
-    companyCity: "company_city",
-    companyState: "company_state",
-    companyZip: "company_zip",
-    companyPhone: "company_phone",
-    taxId: "tax_id",
+    companyName: 'company_name',
+    companyAddress: 'company_address',
+    companyCity: 'company_city',
+    companyState: 'company_state',
+    companyZip: 'company_zip',
+    companyPhone: 'company_phone',
+    taxId: 'tax_id',
     // Owner fields
-    ownerFirstName: "owner_first_name",
-    ownerLastName: "owner_last_name",
-    ownerTitle: "owner_title",
+    ownerFirstName: 'owner_first_name',
+    ownerLastName: 'owner_last_name',
+    ownerTitle: 'owner_title',
     // Plan fields
-    planName: "plan_name",
+    planName: 'plan_name',
     // Contribution fields
-    employeeContribution: "employee_contribution",
-    dependentContribution: "dependent_contribution",
+    employeeContribution: 'employee_contribution',
+    dependentContribution: 'dependent_contribution',
   },
-  "Blue Shield": {
-    companyName: "employer_name",
-    companyAddress: "employer_address",
-    companyCity: "employer_city",
-    companyState: "employer_state",
-    companyZip: "employer_zip",
-    companyPhone: "employer_phone",
-    taxId: "employer_tax_id",
+  'Blue Shield': {
+    companyName: 'employer_name',
+    companyAddress: 'employer_address',
+    companyCity: 'employer_city',
+    companyState: 'employer_state',
+    companyZip: 'employer_zip',
+    companyPhone: 'employer_phone',
+    taxId: 'employer_tax_id',
     // Owner fields
-    ownerName: "owner_name",
-    ownerTitle: "owner_title",
+    ownerName: 'owner_name',
+    ownerTitle: 'owner_title',
     // Plan fields
-    planName: "medical_plan",
+    planName: 'medical_plan',
     // Contribution fields
-    employeeContribution: "ee_contribution",
-    dependentContribution: "dep_contribution",
+    employeeContribution: 'ee_contribution',
+    dependentContribution: 'dep_contribution',
   },
   CCSB: {
-    companyName: "business_name",
-    companyAddress: "business_address",
-    companyCity: "business_city",
-    companyState: "business_state",
-    companyZip: "business_zip",
-    companyPhone: "business_phone",
-    taxId: "fein",
+    companyName: 'business_name',
+    companyAddress: 'business_address',
+    companyCity: 'business_city',
+    companyState: 'business_state',
+    companyZip: 'business_zip',
+    companyPhone: 'business_phone',
+    taxId: 'fein',
     // Owner fields
-    ownerName: "principal_name",
-    ownerTitle: "principal_title",
+    ownerName: 'principal_name',
+    ownerTitle: 'principal_title',
     // Plan fields
-    planName: "selected_plan",
+    planName: 'selected_plan',
     // Contribution fields
-    employeeContribution: "employee_contrib",
-    dependentContribution: "dependent_contrib",
-  }
+    employeeContribution: 'employee_contrib',
+    dependentContribution: 'dependent_contrib',
+  },
 };
 
 // Function to map application data to carrier-specific fields
@@ -91,15 +91,18 @@ export function mapDataToCarrierFields(
   // Map owner data
   if (mapping.ownerFirstName) mappedData[mapping.ownerFirstName] = primaryOwner.firstName;
   if (mapping.ownerLastName) mappedData[mapping.ownerLastName] = primaryOwner.lastName;
-  if (mapping.ownerName) mappedData[mapping.ownerName] = `${primaryOwner.firstName} ${primaryOwner.lastName}`;
+  if (mapping.ownerName)
+    mappedData[mapping.ownerName] = `${primaryOwner.firstName} ${primaryOwner.lastName}`;
   if (mapping.ownerTitle) mappedData[mapping.ownerTitle] = primaryOwner.title;
 
   // Map plan data
   if (mapping.planName) mappedData[mapping.planName] = primaryPlan.name;
 
   // Map contribution data
-  if (mapping.employeeContribution) mappedData[mapping.employeeContribution] = primaryContribution.employeeContribution;
-  if (mapping.dependentContribution) mappedData[mapping.dependentContribution] = primaryContribution.dependentContribution;
+  if (mapping.employeeContribution)
+    mappedData[mapping.employeeContribution] = primaryContribution.employeeContribution;
+  if (mapping.dependentContribution)
+    mappedData[mapping.dependentContribution] = primaryContribution.dependentContribution;
 
   return mappedData;
 }

@@ -1,14 +1,14 @@
-import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { REQUIRED_DOCUMENT_TYPES, validateRequiredDocuments } from "@/utils/form-validators";
-import { Document } from "@shared/schema";
-import { getEnabledEnrollmentSteps } from "@/utils/enrollment-steps";
-import { Header } from "@/components/layout/header";
-import { ProgressBar } from "@/components/layout/progress-bar";
-import { EnrollmentChecklist } from "@/components/enrollment/checklist";
-import { DocumentUploader } from "@/components/enrollment/document-uploader";
-import { Button } from "@/components/ui/button";
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
+import { REQUIRED_DOCUMENT_TYPES, validateRequiredDocuments } from '@/utils/form-validators';
+import { Document } from '@shared/schema';
+import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
+import { Header } from '@/components/layout/header';
+import { ProgressBar } from '@/components/layout/progress-bar';
+import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { DocumentUploader } from '@/components/enrollment/document-uploader';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -16,8 +16,8 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
+} from '@/components/ui/card';
+import { CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function DocumentUpload() {
   const queryClient = useQueryClient();
@@ -25,7 +25,7 @@ export default function DocumentUpload() {
 
   // Fetch companies for this user
   const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
-    queryKey: ["/api/companies"],
+    queryKey: ['/api/companies'],
   });
 
   // Get the first company
@@ -34,7 +34,7 @@ export default function DocumentUpload() {
   // Redirect if no company exists
   useEffect(() => {
     if (!isLoadingCompanies && !companyId) {
-      navigate("/enrollment/company");
+      navigate('/enrollment/company');
     }
   }, [companyId, isLoadingCompanies, navigate]);
 
@@ -67,13 +67,13 @@ export default function DocumentUpload() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Bar */}
-        <ProgressBar 
-          steps={steps} 
-          currentStep="documents" 
-          completedSteps={application?.completedSteps as string[] || []}
+        <ProgressBar
+          steps={steps}
+          currentStep="documents"
+          completedSteps={(application?.completedSteps as string[]) || []}
         />
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -89,7 +89,8 @@ export default function DocumentUpload() {
               <CardHeader>
                 <CardTitle>Required Documents</CardTitle>
                 <CardDescription>
-                  Upload all required supporting documentation for your health insurance application.
+                  Upload all required supporting documentation for your health insurance
+                  application.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -111,12 +112,12 @@ export default function DocumentUpload() {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="outline" onClick={() => navigate("/enrollment/employees")}>
+                <Button variant="outline" onClick={() => navigate('/enrollment/employees')}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Previous: Employees
                 </Button>
-                <Button 
-                  onClick={() => navigate("/enrollment/plans")}
+                <Button
+                  onClick={() => navigate('/enrollment/plans')}
                   disabled={!validateRequiredDocuments(documents)}
                 >
                   Next: Plans
@@ -125,7 +126,7 @@ export default function DocumentUpload() {
               </CardFooter>
             </Card>
           </div>
-          
+
           {/* Sidebar */}
           <div className="lg:w-80">
             <EnrollmentChecklist companyId={companyId} />

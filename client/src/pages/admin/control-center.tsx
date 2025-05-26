@@ -1,25 +1,38 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { TwoPanelLayout } from "@/components/layout/two-panel-layout";
-import PdfTemplatesPage from "./pdf-templates";
-import { 
-  Users, 
-  Building2, 
-  FileText, 
-  Upload, 
-  Activity, 
-  Search, 
+import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { queryClient, apiRequest } from '@/lib/queryClient';
+import { TwoPanelLayout } from '@/components/layout/two-panel-layout';
+import PdfTemplatesPage from './pdf-templates';
+import {
+  Users,
+  Building2,
+  FileText,
+  Upload,
+  Activity,
+  Search,
   Download,
   Shield,
   Eye,
@@ -29,46 +42,47 @@ import {
   FileSpreadsheet,
   Calendar,
   Clock,
-  MapPin
-} from "lucide-react";
+  MapPin,
+} from 'lucide-react';
 
 // User Management Component
 function UserManagement() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
   const { data: users = [], isLoading } = useQuery({
-    queryKey: ["/api/admin/users"],
+    queryKey: ['/api/admin/users'],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/admin/users");
+      const res = await apiRequest('GET', '/api/admin/users');
       return await res.json();
-    }
+    },
   });
 
   const toggleUserAccess = useMutation({
     mutationFn: async ({ userId, active }: { userId: number; active: boolean }) => {
-      const res = await apiRequest("PATCH", `/api/admin/users/${userId}`, { active });
+      const res = await apiRequest('PATCH', `/api/admin/users/${userId}`, { active });
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      toast({ title: "User access updated successfully" });
-    }
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({ title: 'User access updated successfully' });
+    },
   });
 
   const resetPassword = useMutation({
     mutationFn: async (userId: number) => {
-      const res = await apiRequest("POST", `/api/admin/users/${userId}/reset-password`);
+      const res = await apiRequest('POST', `/api/admin/users/${userId}/reset-password`);
       return await res.json();
     },
     onSuccess: () => {
-      toast({ title: "Password reset email sent" });
-    }
+      toast({ title: 'Password reset email sent' });
+    },
   });
 
-  const filteredUsers = users.filter((user: any) => 
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (user: any) =>
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -84,7 +98,7 @@ function UserManagement() {
             <Input
               placeholder="Search users by email or name..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -114,16 +128,16 @@ function UserManagement() {
                 <TableCell>
                   <Badge variant="outline">{user.role}</Badge>
                 </TableCell>
-                <TableCell>{user.brokerAgency || "N/A"}</TableCell>
+                <TableCell>{user.brokerAgency || 'N/A'}</TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : "Never"}
+                    {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Switch 
+                  <Switch
                     checked={user.active !== false}
-                    onCheckedChange={(checked) => 
+                    onCheckedChange={checked =>
                       toggleUserAccess.mutate({ userId: user.id, active: checked })
                     }
                   />
@@ -156,33 +170,33 @@ function BrokerManagement() {
   const { toast } = useToast();
 
   const { data: brokers = [] } = useQuery({
-    queryKey: ["/api/admin/brokers"],
+    queryKey: ['/api/admin/brokers'],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/admin/brokers");
+      const res = await apiRequest('GET', '/api/admin/brokers');
       return await res.json();
-    }
+    },
   });
 
   const toggleBrokerAccess = useMutation({
     mutationFn: async ({ brokerId, enabled }: { brokerId: string; enabled: boolean }) => {
-      const res = await apiRequest("PATCH", `/api/admin/brokers/${brokerId}`, { enabled });
+      const res = await apiRequest('PATCH', `/api/admin/brokers/${brokerId}`, { enabled });
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/brokers"] });
-      toast({ title: "Broker access updated successfully" });
-    }
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/brokers'] });
+      toast({ title: 'Broker access updated successfully' });
+    },
   });
 
   const flagForReview = useMutation({
     mutationFn: async ({ brokerId, flagged }: { brokerId: string; flagged: boolean }) => {
-      const res = await apiRequest("PATCH", `/api/admin/brokers/${brokerId}/flag`, { flagged });
+      const res = await apiRequest('PATCH', `/api/admin/brokers/${brokerId}/flag`, { flagged });
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/brokers"] });
-      toast({ title: "Broker flagged for review" });
-    }
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/brokers'] });
+      toast({ title: 'Broker flagged for review' });
+    },
   });
 
   return (
@@ -220,23 +234,19 @@ function BrokerManagement() {
                   </div>
                 </TableCell>
                 <TableCell>{broker.userCount || 0}</TableCell>
-                <TableCell>
-                  {new Date(broker.createdAt).toLocaleDateString()}
-                </TableCell>
+                <TableCell>{new Date(broker.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    {broker.flaggedForReview && (
-                      <Badge variant="destructive">Flagged</Badge>
-                    )}
-                    <Badge variant={broker.enabled ? "default" : "secondary"}>
-                      {broker.enabled ? "Active" : "Disabled"}
+                    {broker.flaggedForReview && <Badge variant="destructive">Flagged</Badge>}
+                    <Badge variant={broker.enabled ? 'default' : 'secondary'}>
+                      {broker.enabled ? 'Active' : 'Disabled'}
                     </Badge>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Switch 
+                  <Switch
                     checked={broker.enabled}
-                    onCheckedChange={(checked) => 
+                    onCheckedChange={checked =>
                       toggleBrokerAccess.mutate({ brokerId: broker.id, enabled: checked })
                     }
                   />
@@ -246,10 +256,10 @@ function BrokerManagement() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => 
-                        flagForReview.mutate({ 
-                          brokerId: broker.id, 
-                          flagged: !broker.flaggedForReview 
+                      onClick={() =>
+                        flagForReview.mutate({
+                          brokerId: broker.id,
+                          flagged: !broker.flaggedForReview,
                         })
                       }
                     >
@@ -271,23 +281,23 @@ function BrokerManagement() {
 
 // Plan Upload Dashboard Component
 function PlanUploadDashboard() {
-  const [selectedCarrier, setSelectedCarrier] = useState("");
+  const [selectedCarrier, setSelectedCarrier] = useState('');
   const { toast } = useToast();
 
   const { data: uploadHistory = [] } = useQuery({
-    queryKey: ["/api/admin/plan-uploads"],
+    queryKey: ['/api/admin/plan-uploads'],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/admin/plan-uploads");
+      const res = await apiRequest('GET', '/api/admin/plan-uploads');
       return await res.json();
-    }
+    },
   });
 
   const { data: carriers = [] } = useQuery({
-    queryKey: ["/api/carriers"],
+    queryKey: ['/api/carriers'],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/carriers");
+      const res = await apiRequest('GET', '/api/carriers');
       return await res.json();
-    }
+    },
   });
 
   return (
@@ -305,7 +315,9 @@ function PlanUploadDashboard() {
             <SelectContent>
               <SelectItem value="all">All Carriers</SelectItem>
               {carriers.map((carrier: string) => (
-                <SelectItem key={carrier} value={carrier}>{carrier}</SelectItem>
+                <SelectItem key={carrier} value={carrier}>
+                  {carrier}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -331,31 +343,31 @@ function PlanUploadDashboard() {
             {uploadHistory
               .filter((upload: any) => !selectedCarrier || upload.carrier === selectedCarrier)
               .map((upload: any) => (
-              <TableRow key={upload.id}>
-                <TableCell className="font-medium">{upload.fileName}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">{upload.carrier}</Badge>
-                </TableCell>
-                <TableCell>{upload.plansAdded}</TableCell>
-                <TableCell>{upload.uploadedBy}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {new Date(upload.createdAt).toLocaleDateString()}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                <TableRow key={upload.id}>
+                  <TableCell className="font-medium">{upload.fileName}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{upload.carrier}</Badge>
+                  </TableCell>
+                  <TableCell>{upload.plansAdded}</TableCell>
+                  <TableCell>{upload.uploadedBy}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {new Date(upload.createdAt).toLocaleDateString()}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </CardContent>
@@ -365,28 +377,28 @@ function PlanUploadDashboard() {
 
 // Audit Logs Component
 function AuditLogs() {
-  const [actionFilter, setActionFilter] = useState("");
-  
+  const [actionFilter, setActionFilter] = useState('');
+
   const { data: auditLogs = [] } = useQuery({
-    queryKey: ["/api/admin/audit-logs"],
+    queryKey: ['/api/admin/audit-logs'],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/admin/audit-logs");
+      const res = await apiRequest('GET', '/api/admin/audit-logs');
       return await res.json();
-    }
+    },
   });
 
   const exportLogs = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("GET", "/api/admin/audit-logs/export");
+      const res = await apiRequest('GET', '/api/admin/audit-logs/export');
       return await res.blob();
     },
-    onSuccess: (blob) => {
+    onSuccess: blob => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `audit-logs-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
-    }
+    },
   });
 
   return (
@@ -409,7 +421,7 @@ function AuditLogs() {
               <SelectItem value="plan_upload">Plan Upload</SelectItem>
             </SelectContent>
           </Select>
-          <Button 
+          <Button
             variant="outline"
             onClick={() => exportLogs.mutate()}
             disabled={exportLogs.isPending}
@@ -435,27 +447,27 @@ function AuditLogs() {
             {auditLogs
               .filter((log: any) => !actionFilter || log.action === actionFilter)
               .map((log: any) => (
-              <TableRow key={log.id}>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {new Date(log.timestamp).toLocaleString()}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{log.action}</Badge>
-                </TableCell>
-                <TableCell>{log.userName}</TableCell>
-                <TableCell>{log.agency || "N/A"}</TableCell>
-                <TableCell className="max-w-xs truncate">{log.details}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {log.ipAddress}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                <TableRow key={log.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {new Date(log.timestamp).toLocaleString()}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{log.action}</Badge>
+                  </TableCell>
+                  <TableCell>{log.userName}</TableCell>
+                  <TableCell>{log.agency || 'N/A'}</TableCell>
+                  <TableCell className="max-w-xs truncate">{log.details}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {log.ipAddress}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </CardContent>
@@ -466,8 +478,8 @@ function AuditLogs() {
 export default function AdminControlCenter() {
   const adminItems = [
     {
-      id: "overview",
-      label: "Dashboard Overview",
+      id: 'overview',
+      label: 'Dashboard Overview',
       icon: <Activity className="h-4 w-4" />,
       component: (
         <div className="space-y-6">
@@ -527,50 +539,46 @@ export default function AdminControlCenter() {
           </Card>
         </div>
       ),
-      roles: ["admin"]
+      roles: ['admin'],
     },
     {
-      id: "users",
-      label: "User Management",
+      id: 'users',
+      label: 'User Management',
       icon: <Users className="h-4 w-4" />,
       component: <UserManagement />,
-      roles: ["admin"]
+      roles: ['admin'],
     },
     {
-      id: "brokers",
-      label: "Broker Agencies",
+      id: 'brokers',
+      label: 'Broker Agencies',
       icon: <Building2 className="h-4 w-4" />,
       component: <BrokerManagement />,
-      roles: ["admin"]
+      roles: ['admin'],
     },
     {
-      id: "plans",
-      label: "Plan Dashboard",
+      id: 'plans',
+      label: 'Plan Dashboard',
       icon: <FileSpreadsheet className="h-4 w-4" />,
       component: <PlanUploadDashboard />,
-      roles: ["admin", "owner"]
+      roles: ['admin', 'owner'],
     },
     {
-      id: "templates",
-      label: "PDF Templates",
+      id: 'templates',
+      label: 'PDF Templates',
       icon: <FileText className="h-4 w-4" />,
       component: <PdfTemplatesPage />,
-      roles: ["admin", "owner"]
+      roles: ['admin', 'owner'],
     },
     {
-      id: "audit",
-      label: "Audit Logs",
+      id: 'audit',
+      label: 'Audit Logs',
       icon: <Activity className="h-4 w-4" />,
       component: <AuditLogs />,
-      roles: ["admin"]
-    }
+      roles: ['admin'],
+    },
   ];
 
   return (
-    <TwoPanelLayout
-      title="Admin Control Center"
-      items={adminItems}
-      defaultActiveTab="overview"
-    />
+    <TwoPanelLayout title="Admin Control Center" items={adminItems} defaultActiveTab="overview" />
   );
 }

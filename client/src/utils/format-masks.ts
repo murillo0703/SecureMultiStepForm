@@ -10,7 +10,7 @@
 export function formatPhoneNumber(value: string): string {
   // Remove all non-digit characters
   const digits = value.replace(/\D/g, '');
-  
+
   // Format the phone number based on length
   if (digits.length <= 3) {
     return digits;
@@ -29,7 +29,7 @@ export function formatPhoneNumber(value: string): string {
 export function formatEIN(value: string): string {
   // Remove all non-digit characters
   const digits = value.replace(/\D/g, '');
-  
+
   // Format the EIN based on length
   if (digits.length <= 2) {
     return digits;

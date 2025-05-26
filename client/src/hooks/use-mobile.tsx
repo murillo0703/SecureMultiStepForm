@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -7,9 +7,10 @@ export function useIsMobile() {
     // Function to check if the device is mobile
     const checkMobile = () => {
       const userAgent = navigator.userAgent.toLowerCase();
-      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+      const isMobileDevice =
+        /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
       const isSmallScreen = window.innerWidth <= 768;
-      
+
       setIsMobile(isMobileDevice || isSmallScreen);
     };
 
@@ -17,11 +18,11 @@ export function useIsMobile() {
     checkMobile();
 
     // Check on resize
-    window.addEventListener("resize", checkMobile);
-    
+    window.addEventListener('resize', checkMobile);
+
     // Cleanup
     return () => {
-      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener('resize', checkMobile);
     };
   }, []);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export type Step = {
   id: string;
@@ -32,7 +32,7 @@ export function useMultistepForm({
   const updateFormData = (newData: Partial<FormData>) => {
     const updatedData = { ...formData, ...newData };
     setFormData(updatedData);
-    
+
     // Auto-save with debounce
     setIsSaving(true);
     if (saveData) {
@@ -40,7 +40,7 @@ export function useMultistepForm({
         saveData(updatedData);
         setIsSaving(false);
       }, 1000);
-      
+
       return () => clearTimeout(timeoutId);
     }
   };
@@ -56,14 +56,14 @@ export function useMultistepForm({
   // Navigate to the next step
   const nextStep = () => {
     const currentStep = steps[currentStepIndex];
-    
+
     // Check if step has a validator function
     if (currentStep.validator && !currentStep.validator()) {
       return false;
     }
-    
+
     completeCurrentStep();
-    
+
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
       return true;

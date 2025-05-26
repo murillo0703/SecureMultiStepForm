@@ -1,15 +1,23 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { isFeatureEnabled } from "@/config/feature-flags";
-import { getEnabledEnrollmentSteps } from "@/utils/enrollment-steps";
-import { Company, Owner, Employee, Document, Plan, Contribution, Application } from "@shared/schema";
-import { Header } from "@/components/layout/header";
-import { ProgressBar } from "@/components/layout/progress-bar";
-import { EnrollmentChecklist } from "@/components/enrollment/checklist";
-import { generatePDF, downloadPDF } from "@/utils/pdf-generator";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { isFeatureEnabled } from '@/config/feature-flags';
+import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
+import {
+  Company,
+  Owner,
+  Employee,
+  Document,
+  Plan,
+  Contribution,
+  Application,
+} from '@shared/schema';
+import { Header } from '@/components/layout/header';
+import { ProgressBar } from '@/components/layout/progress-bar';
+import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { generatePDF, downloadPDF } from '@/utils/pdf-generator';
 import {
   Card,
   CardContent,
@@ -17,8 +25,8 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,13 +36,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from '@/components/ui/accordion';
 import {
   CheckCircle,
   ArrowLeft,
@@ -42,8 +50,8 @@ import {
   AlertTriangle,
   CheckSquare,
   Download,
-  Send
-} from "lucide-react";
+  Send,
+} from 'lucide-react';
 
 export default function ReviewSubmit() {
   const { toast } = useToast();
@@ -57,7 +65,7 @@ export default function ReviewSubmit() {
 
   // Fetch companies for this user
   const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
-    queryKey: ["/api/companies"],
+    queryKey: ['/api/companies'],
   });
 
   // Get the first company
@@ -66,7 +74,7 @@ export default function ReviewSubmit() {
   // Redirect if no company exists
   useEffect(() => {
     if (!isLoadingCompanies && !companyId) {
-      navigate("/enrollment/company");
+      navigate('/enrollment/company');
     }
   }, [companyId, isLoadingCompanies, navigate]);
 
@@ -114,13 +122,13 @@ export default function ReviewSubmit() {
 
   // Steps configuration for progress bar
   const steps = [
-    { id: "company", label: "Company", href: "/enrollment/company" },
-    { id: "ownership", label: "Owners", href: "/enrollment/ownership" },
-    { id: "employees", label: "Employees", href: "/enrollment/employees" },
-    { id: "documents", label: "Documents", href: "/enrollment/documents" },
-    { id: "plans", label: "Plans", href: "/enrollment/plans" },
-    { id: "contributions", label: "Contributions", href: "/enrollment/contributions" },
-    { id: "review", label: "Submit", href: "/enrollment/review" },
+    { id: 'company', label: 'Company', href: '/enrollment/company' },
+    { id: 'ownership', label: 'Owners', href: '/enrollment/ownership' },
+    { id: 'employees', label: 'Employees', href: '/enrollment/employees' },
+    { id: 'documents', label: 'Documents', href: '/enrollment/documents' },
+    { id: 'plans', label: 'Plans', href: '/enrollment/plans' },
+    { id: 'contributions', label: 'Contributions', href: '/enrollment/contributions' },
+    { id: 'review', label: 'Submit', href: '/enrollment/review' },
   ];
 
   // Check for missing steps/requirements
@@ -128,34 +136,34 @@ export default function ReviewSubmit() {
     if (!application) return;
 
     const missing: string[] = [];
-    
+
     // Check company
-    if (!company) missing.push("Company Information");
-    
+    if (!company) missing.push('Company Information');
+
     // Check owners (optional)
-    
+
     // Check employees - only if the feature is enabled
-    if (isFeatureEnabled("EMPLOYEE_MANAGEMENT") && !employees.length) {
-      missing.push("Employee Information");
+    if (isFeatureEnabled('EMPLOYEE_MANAGEMENT') && !employees.length) {
+      missing.push('Employee Information');
     }
-    
+
     // Check documents
-    if (documents.length < 3) missing.push("Required Documents");
-    
+    if (documents.length < 3) missing.push('Required Documents');
+
     // Check plans
-    if (!plans.length) missing.push("Plan Selection");
-    
+    if (!plans.length) missing.push('Plan Selection');
+
     // Check contributions
-    if (plans.length && !contributions.length) missing.push("Contribution Setup");
-    
+    if (plans.length && !contributions.length) missing.push('Contribution Setup');
+
     setMissingSteps(missing);
   }, [application, company, owners, employees, documents, plans, contributions]);
 
   // Mutation for submitting the application - now handled in the signature page
   const submitMutation = useMutation({
     mutationFn: async () => {
-      if (!application) throw new Error("Application not found");
-      
+      if (!application) throw new Error('Application not found');
+
       // No longer handling signature submission here
       return { success: true };
     },
@@ -163,19 +171,19 @@ export default function ReviewSubmit() {
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/application`] });
       setSubmitting(false);
       setSubmitSuccess(true);
-      
+
       toast({
-        title: "Application submitted",
-        description: "Your enrollment application has been successfully submitted.",
+        title: 'Application submitted',
+        description: 'Your enrollment application has been successfully submitted.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       setSubmitting(false);
-      
+
       toast({
-        title: "Submission failed",
+        title: 'Submission failed',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -187,42 +195,42 @@ export default function ReviewSubmit() {
       setIncompleteAlertOpen(true);
       return;
     }
-    
+
     // Redirect to the new enhanced signature page with mobile support
     if (companyId) {
       navigate(`/enrollment/${companyId}/signature`);
     } else {
       toast({
-        title: "Error",
-        description: "Could not find company information. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Could not find company information. Please try again.',
+        variant: 'destructive',
       });
     }
   };
 
   // This function is now handled in the signature page component
-  const submitApplication = async () => {    
+  const submitApplication = async () => {
     setSubmitting(true);
-    
+
     try {
       // Generate carrier-specific forms first
       if (plans.length > 0) {
         const uniqueCarriers = Array.from(new Set(plans.map(plan => plan.carrier)));
-        
+
         // Create PDF for each carrier
         for (const carrier of uniqueCarriers) {
           const carrierPlans = plans.filter(plan => plan.carrier === carrier);
-          const carrierContributions = contributions.filter(
-            contribution => carrierPlans.some(plan => plan.id === contribution.planId)
+          const carrierContributions = contributions.filter(contribution =>
+            carrierPlans.some(plan => plan.id === contribution.planId)
           );
-          
+
           if (carrierPlans.length > 0) {
             try {
               toast({
-                title: "Generating forms",
+                title: 'Generating forms',
                 description: `Creating ${carrier} enrollment forms...`,
               });
-              
+
               await generatePDF(
                 carrier,
                 company!,
@@ -236,36 +244,37 @@ export default function ReviewSubmit() {
               console.error(`Error generating ${carrier} form:`, error);
               toast({
                 title: `${carrier} Form Error`,
-                description: "Unable to generate carrier forms, but your application will still be submitted.",
-                variant: "destructive",
+                description:
+                  'Unable to generate carrier forms, but your application will still be submitted.',
+                variant: 'destructive',
               });
             }
           }
         }
       }
     } catch (error) {
-      console.error("Error in form generation:", error);
+      console.error('Error in form generation:', error);
     }
-    
+
     // Submit application regardless of form generation success
     submitMutation.mutate();
   };
 
   const generateAndDownloadPDF = async (carrier: string) => {
     if (!company || !application) return;
-    
+
     try {
       setPdfGenerating(true);
-      
+
       // Get the selected plan for this carrier
       const selectedPlans = plans.filter(plan => plan.carrier === carrier);
       if (!selectedPlans.length) throw new Error(`No plans selected for ${carrier}`);
-      
+
       // Get contributions for these plans
-      const planContributions = contributions.filter(
-        contribution => selectedPlans.some(plan => plan.id === contribution.planId)
+      const planContributions = contributions.filter(contribution =>
+        selectedPlans.some(plan => plan.id === contribution.planId)
       );
-      
+
       const pdfBlob = await generatePDF(
         carrier,
         company,
@@ -275,19 +284,19 @@ export default function ReviewSubmit() {
         planContributions,
         application
       );
-      
+
       // Download the PDF
       downloadPDF(pdfBlob, `${carrier}-Enrollment-${company.name}.pdf`);
-      
+
       toast({
-        title: "PDF Downloaded",
+        title: 'PDF Downloaded',
         description: `The ${carrier} enrollment PDF has been downloaded.`,
       });
     } catch (error) {
       toast({
-        title: "PDF Generation Failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
-        variant: "destructive",
+        title: 'PDF Generation Failed',
+        description: error instanceof Error ? error.message : 'Unknown error occurred',
+        variant: 'destructive',
       });
     } finally {
       setPdfGenerating(false);
@@ -296,11 +305,11 @@ export default function ReviewSubmit() {
 
   // Format date for display
   const formatDate = (date: Date | null) => {
-    if (!date) return "Not available";
+    if (!date) return 'Not available';
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -309,42 +318,45 @@ export default function ReviewSubmit() {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount / 100);
   };
 
   // Loading state
-  const isLoading = 
-    isLoadingCompanies || 
-    isLoadingCompany || 
-    isLoadingOwners || 
-    isLoadingEmployees || 
-    isLoadingDocuments || 
-    isLoadingPlans || 
-    isLoadingContributions || 
+  const isLoading =
+    isLoadingCompanies ||
+    isLoadingCompany ||
+    isLoadingOwners ||
+    isLoadingEmployees ||
+    isLoadingDocuments ||
+    isLoadingPlans ||
+    isLoadingContributions ||
     isLoadingApplication;
 
   // Group plans by carrier
-  const plansByCarrier = plans.reduce((acc, plan) => {
-    if (!acc[plan.carrier]) {
-      acc[plan.carrier] = [];
-    }
-    acc[plan.carrier].push(plan);
-    return acc;
-  }, {} as Record<string, typeof plans>);
+  const plansByCarrier = plans.reduce(
+    (acc, plan) => {
+      if (!acc[plan.carrier]) {
+        acc[plan.carrier] = [];
+      }
+      acc[plan.carrier].push(plan);
+      return acc;
+    },
+    {} as Record<string, typeof plans>
+  );
 
   if (!companyId) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Bar */}
-        <ProgressBar 
-          steps={steps} 
-          currentStep="review" 
-          completedSteps={application?.completedSteps as string[] || []}
+        <ProgressBar
+          steps={steps}
+          currentStep="review"
+          completedSteps={(application?.completedSteps as string[]) || []}
         />
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -362,12 +374,14 @@ export default function ReviewSubmit() {
                 <div className="flex">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="text-green-800 font-medium">Application Submitted Successfully</h3>
+                    <h3 className="text-green-800 font-medium">
+                      Application Submitted Successfully
+                    </h3>
                     <p className="text-green-700 mt-1">
-                      Your application has been submitted and is now being reviewed by our team. 
+                      Your application has been submitted and is now being reviewed by our team.
                       You'll receive updates via email about the status of your application.
                     </p>
-                    
+
                     {/* Carrier Forms Section */}
                     {plans.length > 0 && (
                       <div className="mt-4 bg-white p-4 rounded-md border border-green-200">
@@ -379,11 +393,11 @@ export default function ReviewSubmit() {
                           The following carrier forms have been prepared with your data:
                         </p>
                         <div className="space-y-2">
-                          {Array.from(new Set(plans.map(plan => plan.carrier))).map((carrier) => (
+                          {Array.from(new Set(plans.map(plan => plan.carrier))).map(carrier => (
                             <div key={carrier} className="flex items-center justify-between">
                               <span className="text-sm font-medium">{carrier} Application</span>
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 variant="outline"
                                 className="flex items-center"
                                 onClick={() => generateAndDownloadPDF(carrier)}
@@ -396,12 +410,12 @@ export default function ReviewSubmit() {
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="mt-4">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="text-green-700 border-green-300 hover:bg-green-100"
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate('/')}
                       >
                         Return to Dashboard
                       </Button>
@@ -417,7 +431,9 @@ export default function ReviewSubmit() {
                 <div className="flex">
                   <AlertTriangle className="h-5 w-5 text-yellow-500 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="text-yellow-800 font-medium">Please complete missing information</h3>
+                    <h3 className="text-yellow-800 font-medium">
+                      Please complete missing information
+                    </h3>
                     <p className="text-yellow-700 mt-1">
                       Your application is missing the following required information:
                     </p>
@@ -448,25 +464,21 @@ export default function ReviewSubmit() {
                 </p>
               </CardContent>
               <CardFooter className="flex flex-col sm:flex-row sm:justify-between space-y-3 sm:space-y-0">
-                <Button variant="outline" onClick={() => navigate("/enrollment/contributions")}>
+                <Button variant="outline" onClick={() => navigate('/enrollment/contributions')}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Previous: Contributions
                 </Button>
 
-                {application?.status !== "submitted" && !submitSuccess && (
-                  <Button 
-                    onClick={handleSubmit}
-                    disabled={submitting}
-                    className="w-full sm:w-auto"
-                  >
+                {application?.status !== 'submitted' && !submitSuccess && (
+                  <Button onClick={handleSubmit} disabled={submitting} className="w-full sm:w-auto">
                     <Send className="mr-2 h-4 w-4" />
-                    {submitting ? "Submitting..." : "Sign & Submit Application"}
+                    {submitting ? 'Submitting...' : 'Sign & Submit Application'}
                   </Button>
                 )}
               </CardFooter>
             </Card>
           </div>
-            
+
           {/* Right sidebar with checklist component */}
           <div className="lg:w-80 flex-shrink-0">
             <EnrollmentChecklist companyId={companyId} />
