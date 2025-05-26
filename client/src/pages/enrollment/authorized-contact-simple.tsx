@@ -395,15 +395,15 @@ export default function AuthorizedContactSimple() {
                   <Button
                     onClick={() => setLocation('/enrollment/employees')}
                     className="flex items-center gap-2"
-                    disabled={!isSaved}
+                    disabled={!canContinue}
                   >
                     Continue to Employees
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
-                {!isSaved && (
+                {!canContinue && (
                   <p className="text-sm text-gray-600 mt-2 text-center">
-                    Please save the authorized contact information to continue
+                    Please add at least one authorized contact to continue
                   </p>
                 )}
               </CardContent>
