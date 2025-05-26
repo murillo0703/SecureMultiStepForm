@@ -187,7 +187,20 @@ export default function OwnershipInfo() {
     setDeleteDialogOpen(true);
   };
 
-  if (!companyId) return null;
+  // Show loading state while companies are being fetched
+  if (isLoadingCompanies) {
+    return (
+      <EnrollmentLayout
+        title="Business Ownership"
+        subtitle="Loading..."
+        icon={<Users className="w-6 h-6 text-blue-600" />}
+      >
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </EnrollmentLayout>
+    );
+  }
 
   return (
     <EnrollmentLayout
