@@ -44,7 +44,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Checkbox } from '@/components/ui/checkbox';
+// import { Checkbox } from '@/components/ui/checkbox';
 import { Users, ArrowRight, ArrowLeft, CheckCircle, AlertCircle, Edit, Trash2, Loader2 } from 'lucide-react';
 
 type OwnerFormValues = z.infer<typeof ownerValidationSchema>;
@@ -63,7 +63,7 @@ export default function OwnershipInfo() {
     queryKey: ['/api/companies'],
   });
 
-  const companyId = companies.length > 0 ? companies[0].id : null;
+  const companyId = Array.isArray(companies) && companies.length > 0 ? companies[0].id : null;
 
   // Use the enabled enrollment steps
   const steps = getEnabledEnrollmentSteps();
