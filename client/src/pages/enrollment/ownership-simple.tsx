@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/layout/header';
@@ -38,6 +39,21 @@ export default function OwnershipSimple() {
   const { toast } = useToast();
   const [owners, setOwners] = useState<(OwnerFormData & { id: string })[]>([]);
   const [isAddingOwner, setIsAddingOwner] = useState(false);
+  const [hasAutoPopulated, setHasAutoPopulated] = useState(false);
+
+  // Fetch companies for this user
+  const { data: companies = [] } = useQuery({
+    queryKey: ['/api/companies'],
+  });
+
+  // Get the first company
+  const companyId = companies.length > 0 ? companies[0].id : null;
+
+  // Fetch initiator data
+  const { data: initiator } = useQuery({
+    queryKey: [`/api/companies/${companyId}/initiator`],
+    enabled: !!companyId,
+  });
 
   const form = useForm<OwnerFormData>({
     resolver: zodResolver(ownerSchema),
@@ -51,6 +67,30 @@ export default function OwnershipSimple() {
       isEligibleForCoverage: false,
     },
   });
+
+  // Auto-populate owner from initiator if relationship is "Owner"
+  useEffect(() => {
+    if (initiator && !hasAutoPopulated && initiator.relationshipToCompany === 'Owner') {
+      const autoOwner = {
+        id: `auto-${Date.now()}`,
+        firstName: initiator.firstName,
+        lastName: initiator.lastName,
+        title: initiator.title,
+        email: initiator.email,
+        phone: formatPhoneNumber(initiator.phone),
+        ownershipPercentage: 100, // Default to 100%, user can adjust
+        isEligibleForCoverage: false,
+      };
+      
+      setOwners([autoOwner]);
+      setHasAutoPopulated(true);
+      
+      toast({
+        title: 'Owner information added',
+        description: `${initiator.firstName} ${initiator.lastName} has been automatically added as an owner from the initiator information.`,
+      });
+    }
+  }, [initiator, hasAutoPopulated, toast]);
 
   const formatPhoneNumber = (value: string) => {
     const digits = value.replace(/\D/g, '');
