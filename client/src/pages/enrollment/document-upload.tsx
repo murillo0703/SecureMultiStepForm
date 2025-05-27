@@ -34,7 +34,7 @@ export default function DocumentUpload() {
   // Redirect if no company exists
   useEffect(() => {
     if (!isLoadingCompanies && !companyId) {
-      navigate('/enrollment/company');
+      navigate('/enrollment/company-information');
     }
   }, [companyId, isLoadingCompanies, navigate]);
 

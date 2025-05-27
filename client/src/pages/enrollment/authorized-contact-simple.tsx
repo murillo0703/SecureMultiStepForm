@@ -136,7 +136,7 @@ export default function AuthorizedContactSimple() {
     });
   };
 
-  const canContinue = contacts.length > 0;
+  const canContinue = true; // Allow continuing without contacts
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -401,9 +401,9 @@ export default function AuthorizedContactSimple() {
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
-                {!canContinue && (
+                {contacts.length === 0 && (
                   <p className="text-sm text-gray-600 mt-2 text-center">
-                    Please add at least one authorized contact to continue
+                    Authorized contacts are optional - you can continue without adding any
                   </p>
                 )}
               </CardContent>
