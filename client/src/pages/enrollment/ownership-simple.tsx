@@ -51,8 +51,7 @@ export default function OwnershipSimple() {
 
   // Fetch initiator data
   const { data: initiator } = useQuery({
-    queryKey: [`/api/companies/${companyId}/initiator`],
-    enabled: !!companyId,
+    queryKey: ['/api/application-initiator'],
   });
 
   const form = useForm<OwnerFormData>({
