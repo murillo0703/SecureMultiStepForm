@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { REQUIRED_DOCUMENT_TYPES, validateRequiredDocuments } from '@/utils/form-validators';
 import { Document } from '@shared/schema';
+import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
 import { Header } from '@/components/layout/header';
 import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import { EnrollmentChecklist } from '@/components/enrollment/checklist';
@@ -34,8 +35,6 @@ export default function DocumentUpload() {
   const { data: documents = [], isLoading: isLoadingDocuments } = useQuery<Document[]>({
     queryKey: [`/api/companies/${companyId}/documents`],
     enabled: !!companyId,
-    retry: false,
-    throwOnError: false,
   });
 
   // Fetch application data (optional, handle 404 gracefully)
