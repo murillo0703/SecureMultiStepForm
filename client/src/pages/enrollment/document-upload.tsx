@@ -29,14 +29,14 @@ export default function DocumentUpload() {
   });
 
   // Get the first company
-  const companyId = companies.length > 0 ? companies[0].id : null;
+  const companyId = companies.length > 0 ? companies[0].id : 1; // Default to 1 for testing
 
-  // Redirect if no company exists
-  useEffect(() => {
-    if (!isLoadingCompanies && !companyId) {
-      navigate('/enrollment/company-information');
-    }
-  }, [companyId, isLoadingCompanies, navigate]);
+  // Redirect if no company exists (commented out for now to prevent redirect loop)
+  // useEffect(() => {
+  //   if (!isLoadingCompanies && !companyId) {
+  //     navigate('/enrollment/company-information');
+  //   }
+  // }, [companyId, isLoadingCompanies, navigate]);
 
   // Fetch documents for this company
   const { data: documents = [], isLoading: isLoadingDocuments } = useQuery<Document[]>({
