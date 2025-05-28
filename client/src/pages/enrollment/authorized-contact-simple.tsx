@@ -393,7 +393,7 @@ export default function AuthorizedContactSimple() {
                     Back to Ownership
                   </Button>
                   <Button
-                    onClick={() => setLocation('/enrollment/documents')}
+                    onClick={() => setLocation('/enrollment/document-upload')}
                     className="flex items-center gap-2"
                     disabled={!canContinue}
                   >
