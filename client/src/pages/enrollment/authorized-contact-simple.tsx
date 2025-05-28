@@ -393,9 +393,11 @@ export default function AuthorizedContactSimple() {
                     Back to Ownership
                   </Button>
                   <Button
-                    onClick={() => setLocation('/enrollment/document-upload')}
+                    onClick={() => {
+                      console.log('Navigating to documents...');
+                      setLocation('/enrollment/document-upload');
+                    }}
                     className="flex items-center gap-2"
-                    disabled={!canContinue}
                   >
                     Continue to Documents
                     <ArrowRight className="w-4 h-4" />
