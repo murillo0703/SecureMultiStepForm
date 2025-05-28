@@ -44,10 +44,12 @@ export default function DocumentUpload() {
     enabled: !!companyId,
   });
 
-  // Fetch application data
+  // Fetch application data (optional, handle 404 gracefully)
   const { data: application, isLoading: isLoadingApplication } = useQuery({
     queryKey: [`/api/companies/${companyId}/application`],
     enabled: !!companyId,
+    retry: false,
+    throwOnError: false,
   });
 
   // Use the enabled enrollment steps (without the Employee step)
