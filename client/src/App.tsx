@@ -1,3 +1,4 @@
+import React from 'react';
 import { Switch, Route } from 'wouter';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
@@ -10,8 +11,6 @@ import BrokerDashboard from '@/pages/broker-dashboard';
 import ApplicationInitiator from '@/pages/enrollment/application-initiator';
 import CarriersPage from '@/pages/enrollment/carriers';
 import CompanyInformation from '@/pages/enrollment/company-information';
-
-
 import OwnershipInfo from '@/pages/enrollment/ownership-simple';
 
 import EmployeeInfo from '@/pages/enrollment/employee-info';
