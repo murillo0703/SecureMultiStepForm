@@ -2,6 +2,344 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Responsive Design Enhancements */
+@layer base {
+  /* Mobile-first font sizing */
+  html {
+    font-size: 14px;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      font-size: 16px;
+    }
+  }
+
+  /* Improved focus visibility for accessibility */
+  *:focus-visible {
+    outline: 2px solid theme('colors.blue.500');
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .bg-gray-50 {
+      background-color: white;
+    }
+    .bg-gray-900 {
+      background-color: black;
+    }
+    .border-gray-300 {
+      border-color: black;
+    }
+  }
+}
+
+@layer components {
+  /* Responsive form components */
+  .form-field {
+    @apply space-y-1 sm:space-y-2;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base;
+    @apply border border-gray-300 dark:border-gray-600;
+    @apply rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100;
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .form-input:invalid {
+    @apply border-red-500 focus:ring-red-500;
+  }
+
+  .form-label {
+    @apply block text-sm sm:text-base font-medium;
+    @apply text-gray-700 dark:text-gray-300 mb-1;
+  }
+
+  .form-error {
+    @apply text-xs sm:text-sm text-red-600 dark:text-red-400;
+    @apply flex items-center gap-1 mt-1;
+  }
+
+  .form-description {
+    @apply text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1;
+  }
+
+  /* Responsive button styles */
+  .btn {
+    @apply px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-medium;
+    @apply rounded-md transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white;
+    @apply focus:ring-blue-500;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-900;
+    @apply dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100;
+    @apply focus:ring-gray-500;
+  }
+
+  /* Responsive navigation */
+  .nav-item {
+    @apply px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base;
+    @apply rounded-md transition-colors duration-200;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  }
+
+  /* Responsive cards */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+
+  /* Responsive grid layouts */
+  .grid-responsive {
+    @apply grid gap-4 sm:gap-6 lg:gap-8;
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
+  .grid-form {
+    @apply grid gap-4 sm:gap-6;
+    @apply grid-cols-1 sm:grid-cols-2;
+  }
+
+  /* Mobile-friendly touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Responsive typography */
+  .heading-xl {
+    @apply text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold;
+    @apply leading-tight tracking-tight;
+  }
+
+  .heading-lg {
+    @apply text-xl sm:text-2xl lg:text-3xl font-bold;
+    @apply leading-tight;
+  }
+
+  .heading-md {
+    @apply text-lg sm:text-xl lg:text-2xl font-semibold;
+    @apply leading-snug;
+  }
+
+  .text-body {
+    @apply text-sm sm:text-base leading-relaxed;
+  }
+
+  .text-small {
+    @apply text-xs sm:text-sm leading-normal;
+  }
+
+  /* Loading and skeleton states */
+  .skeleton {
+    @apply bg-gray-200 dark:bg-gray-700 animate-pulse rounded;
+  }
+
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-gray-300;
+    @apply border-t-blue-600 w-4 h-4 sm:w-5 sm:h-5;
+  }
+
+  /* Responsive spacing utilities */
+  .section-padding {
+    @apply px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-12;
+  }
+
+  .container-responsive {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Skip to content link for accessibility */
+  .skip-link {
+    @apply absolute -top-10 left-4 z-50 bg-blue-600 text-white;
+    @apply px-4 py-2 rounded-md text-sm font-medium;
+    @apply focus:top-4 transition-all duration-200;
+  }
+
+  /* Responsive text truncation */
+  .truncate-responsive {
+    @apply truncate sm:whitespace-normal;
+  }
+
+  /* Touch-friendly spacing */
+  .touch-spacing {
+    @apply space-y-4 sm:space-y-3;
+  }
+
+  /* Responsive flexbox utilities */
+  .flex-responsive {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .flex-responsive-reverse {
+    @apply flex flex-col-reverse sm:flex-row;
+  }
+
+  /* Safe area insets for mobile devices */
+  .safe-area-insets {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Responsive visibility */
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+
+  .desktop-only {
+    @apply hidden sm:block;
+  }
+
+  .tablet-up {
+    @apply hidden md:block;
+  }
+
+  /* Improved scrolling on mobile */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better button spacing on mobile */
+  .button-group {
+    @apply flex flex-col sm:flex-row gap-3 sm:gap-4;
+  }
+
+  .button-group > * {
+    @apply flex-1 sm:flex-none;
+  }
+}
+
+/* Custom media queries for specific breakpoints */
+@media (max-width: 374px) {
+  /* Extra small phones */
+  .text-xs-mobile {
+    font-size: 0.75rem;
+  }
+  
+  .px-xs-mobile {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 639px) {
+  /* Standard mobile phones */
+  .mobile-optimized {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet specific styles */
+  .tablet-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop specific styles */
+  .desktop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break-before {
+    page-break-before: always;
+  }
+  
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  .shadow-lg,
+  .shadow-md,
+  .shadow-sm {
+    box-shadow: none !important;
+  }
+}
+
+/* Dark mode improvements */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Animation improvements for accessibility */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-on-scroll {
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
 :root {
   --background: 0 0% 100%;
   --foreground: 20 14.3% 4.1%;
