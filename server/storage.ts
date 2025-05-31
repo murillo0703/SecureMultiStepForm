@@ -104,6 +104,8 @@ export interface IStorage {
   getApplicationByCompanyId(companyId: number): Promise<Application | undefined>;
   updateApplication(id: number, updates: Partial<UpdateApplication>): Promise<Application>;
   getAllApplications(): Promise<(Application & Company & User)[]>;
+  getApplicationsByBroker(brokerId: string): Promise<Application[]>;
+  getUsersByBroker(brokerId: string): Promise<User[]>;
   updateApplicationProgress(companyId: number, currentStep: string): Promise<void>;
 
   // Audit log operations
@@ -338,6 +340,17 @@ export class MemStorage implements IStorage {
     return Array.from(this.companies.values()).filter(company => company.userId === userId);
   }
 
+  async getCompaniesByBroker(brokerId: string): Promise<Company[]> {
+    // Get all users associated with this broker
+    const brokerUsers = await this.getUsersByBrokerId(brokerId);
+    const brokerUserIds = brokerUsers.map(user => user.id);
+    
+    // Return companies owned by any of these users
+    return Array.from(this.companies.values()).filter(company => 
+      brokerUserIds.includes(company.userId)
+    );
+  }
+
   // Owner operations
   async createOwner(owner: InsertOwner): Promise<Owner> {
     const id = this.ownerIdCounter++;
@@ -563,6 +576,21 @@ export class MemStorage implements IStorage {
 
       return { ...application, ...company, ...user };
     });
+  }
+
+  async getApplicationsByBroker(brokerId: string): Promise<Application[]> {
+    // Get all companies associated with this broker's users
+    const companies = await this.getCompaniesByBroker(brokerId);
+    const companyIds = companies.map(company => company.id);
+    
+    // Return applications for these companies
+    return Array.from(this.applications.values()).filter(application => 
+      companyIds.includes(application.companyId)
+    );
+  }
+
+  async getUsersByBroker(brokerId: string): Promise<User[]> {
+    return this.getUsersByBrokerId(brokerId);
   }
 
   async updateApplicationProgress(companyId: number, currentStep: string): Promise<void> {
