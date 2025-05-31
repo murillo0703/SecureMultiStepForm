@@ -6,8 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Plan } from '@shared/schema';
 import { validatePlanSelection } from '@/utils/form-validators';
 import { Header } from '@/components/layout/header';
-import { ProgressBar } from '@/components/layout/progress-bar';
-import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import { PdfFormGenerator } from '@/components/enrollment/pdf-form-generator';
 import {
   Card,
@@ -218,24 +217,34 @@ export default function PlanSelection() {
   if (!companyId) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Bar */}
-        <ProgressBar
-          steps={steps}
-          currentStep="plans"
-          completedSteps={(application?.completedSteps as string[]) || []}
-        />
-
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main Content Area */}
-          <div className="lg:flex-1">
-            {/* Autosave Indicator */}
-            <div className="flex items-center mb-2 text-sm text-gray-500">
-              <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
-              <span>All changes autosaved</span>
+      
+      <div className="flex">
+        {/* Sidebar */}
+        <ProgressSidebar />
+        
+        {/* Main Content */}
+        <div className="flex-1 p-6">
+          {/* Autosave Indicator */}
+          <div className="flex items-center mb-6 text-sm text-gray-500">
+            <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
+            <span>All changes autosaved</span>
+          </div>
+          
+          <div className="max-w-4xl">
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Plan Selection</h1>
+                  <p className="text-gray-600">
+                    Select health insurance plans for your employees
+                  </p>
+                </div>
+              </div>
             </div>
 
             <Card className="mb-6">
@@ -498,32 +507,26 @@ export default function PlanSelection() {
                 </Button>
               </CardFooter>
             </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:w-80">
-            <EnrollmentChecklist companyId={companyId} />
+            {/* Confirm Dialog for No Plans */}
+            <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>No Plans Selected</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    You haven't selected any health plans. At least one plan selection is required to
+                    continue.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogAction onClick={() => setConfirmDialogOpen(false)}>
+                    Select Plans
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
-
-        {/* Confirm Dialog for No Plans */}
-        <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>No Plans Selected</AlertDialogTitle>
-              <AlertDialogDescription>
-                You haven't selected any health plans. At least one plan selection is required to
-                continue.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogAction onClick={() => setConfirmDialogOpen(false)}>
-                Select Plans
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </main>
+      </div>
     </div>
   );
 }

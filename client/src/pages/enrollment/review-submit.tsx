@@ -3,8 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { isFeatureEnabled } from '@/config/feature-flags';
-import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
 import {
   Company,
   Owner,
@@ -15,8 +13,7 @@ import {
   Application,
 } from '@shared/schema';
 import { Header } from '@/components/layout/header';
-import { ProgressBar } from '@/components/layout/progress-bar';
-import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import { generatePDF, downloadPDF } from '@/utils/pdf-generator';
 import {
   Card,
@@ -69,12 +66,12 @@ export default function ReviewSubmit() {
   });
 
   // Get the first company
-  const companyId = companies.length > 0 ? companies[0].id : null;
+  const companyId = Array.isArray(companies) && companies.length > 0 ? companies[0].id : null;
 
   // Redirect if no company exists
   useEffect(() => {
     if (!isLoadingCompanies && !companyId) {
-      navigate('/enrollment/company');
+      navigate('/enrollment/company-information');
     }
   }, [companyId, isLoadingCompanies, navigate]);
 
@@ -120,206 +117,44 @@ export default function ReviewSubmit() {
     enabled: !!companyId,
   });
 
-  // Steps configuration for progress bar
-  const steps = [
-    { id: 'company', label: 'Company', href: '/enrollment/company' },
-    { id: 'ownership', label: 'Owners', href: '/enrollment/ownership' },
-    { id: 'employees', label: 'Employees', href: '/enrollment/employees' },
-    { id: 'documents', label: 'Documents', href: '/enrollment/documents' },
-    { id: 'plans', label: 'Plans', href: '/enrollment/plans' },
-    { id: 'contributions', label: 'Contributions', href: '/enrollment/contributions' },
-    { id: 'review', label: 'Submit', href: '/enrollment/review' },
-  ];
-
-  // Check for missing steps/requirements
-  useEffect(() => {
-    if (!application) return;
-
-    const missing: string[] = [];
-
-    // Check company
-    if (!company) missing.push('Company Information');
-
-    // Check owners (optional)
-
-    // Check employees - only if the feature is enabled
-    if (isFeatureEnabled('EMPLOYEE_MANAGEMENT') && !employees.length) {
-      missing.push('Employee Information');
-    }
-
-    // Check documents
-    if (documents.length < 3) missing.push('Required Documents');
-
-    // Check plans
-    if (!plans.length) missing.push('Plan Selection');
-
-    // Check contributions
-    if (plans.length && !contributions.length) missing.push('Contribution Setup');
-
-    setMissingSteps(missing);
-  }, [application, company, owners, employees, documents, plans, contributions]);
-
-  // Mutation for submitting the application - now handled in the signature page
+  // Submit application mutation
   const submitMutation = useMutation({
     mutationFn: async () => {
-      if (!application) throw new Error('Application not found');
-
-      // No longer handling signature submission here
-      return { success: true };
+      const res = await apiRequest('POST', `/api/companies/${companyId}/submit`);
+      return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/application`] });
-      setSubmitting(false);
       setSubmitSuccess(true);
-
+      queryClient.invalidateQueries({ queryKey: [`/api/companies/${companyId}/application`] });
       toast({
-        title: 'Application submitted',
-        description: 'Your enrollment application has been successfully submitted.',
+        title: 'Application submitted successfully!',
+        description: 'Your enrollment application has been submitted for processing.',
       });
     },
-    onError: error => {
-      setSubmitting(false);
-
+    onError: (error: any) => {
       toast({
         title: 'Submission failed',
-        description: error.message,
+        description: error.message || 'Failed to submit application. Please try again.',
         variant: 'destructive',
       });
     },
   });
 
-  // Signature capture is now handled in the separate signature page component
-
-  const handleSubmit = () => {
-    if (missingSteps.length > 0) {
-      setIncompleteAlertOpen(true);
-      return;
-    }
-
-    // Redirect to the new enhanced signature page with mobile support
-    if (companyId) {
-      navigate(`/enrollment/${companyId}/signature`);
-    } else {
+  const handleSubmit = async () => {
+    if (!company) {
       toast({
         title: 'Error',
         description: 'Could not find company information. Please try again.',
         variant: 'destructive',
       });
+      return;
     }
-  };
-
-  // This function is now handled in the signature page component
-  const submitApplication = async () => {
-    setSubmitting(true);
-
-    try {
-      // Generate carrier-specific forms first
-      if (plans.length > 0) {
-        const uniqueCarriers = Array.from(new Set(plans.map(plan => plan.carrier)));
-
-        // Create PDF for each carrier
-        for (const carrier of uniqueCarriers) {
-          const carrierPlans = plans.filter(plan => plan.carrier === carrier);
-          const carrierContributions = contributions.filter(contribution =>
-            carrierPlans.some(plan => plan.id === contribution.planId)
-          );
-
-          if (carrierPlans.length > 0) {
-            try {
-              toast({
-                title: 'Generating forms',
-                description: `Creating ${carrier} enrollment forms...`,
-              });
-
-              await generatePDF(
-                carrier,
-                company!,
-                owners,
-                employees,
-                carrierPlans,
-                carrierContributions,
-                application!
-              );
-            } catch (error) {
-              console.error(`Error generating ${carrier} form:`, error);
-              toast({
-                title: `${carrier} Form Error`,
-                description:
-                  'Unable to generate carrier forms, but your application will still be submitted.',
-                variant: 'destructive',
-              });
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error in form generation:', error);
-    }
-
-    // Submit application regardless of form generation success
+    
     submitMutation.mutate();
   };
 
-  const generateAndDownloadPDF = async (carrier: string) => {
-    if (!company || !application) return;
-
-    try {
-      setPdfGenerating(true);
-
-      // Get the selected plan for this carrier
-      const selectedPlans = plans.filter(plan => plan.carrier === carrier);
-      if (!selectedPlans.length) throw new Error(`No plans selected for ${carrier}`);
-
-      // Get contributions for these plans
-      const planContributions = contributions.filter(contribution =>
-        selectedPlans.some(plan => plan.id === contribution.planId)
-      );
-
-      const pdfBlob = await generatePDF(
-        carrier,
-        company,
-        owners,
-        employees,
-        selectedPlans,
-        planContributions,
-        application
-      );
-
-      // Download the PDF
-      downloadPDF(pdfBlob, `${carrier}-Enrollment-${company.name}.pdf`);
-
-      toast({
-        title: 'PDF Downloaded',
-        description: `The ${carrier} enrollment PDF has been downloaded.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'PDF Generation Failed',
-        description: error instanceof Error ? error.message : 'Unknown error occurred',
-        variant: 'destructive',
-      });
-    } finally {
-      setPdfGenerating(false);
-    }
-  };
-
-  // Format date for display
-  const formatDate = (date: Date | null) => {
-    if (!date) return 'Not available';
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(amount / 100);
+  const handleContinue = () => {
+    navigate('/enrollment/signature');
   };
 
   // Loading state
@@ -333,178 +168,112 @@ export default function ReviewSubmit() {
     isLoadingContributions ||
     isLoadingApplication;
 
-  // Group plans by carrier
-  const plansByCarrier = plans.reduce(
-    (acc, plan) => {
-      if (!acc[plan.carrier]) {
-        acc[plan.carrier] = [];
-      }
-      acc[plan.carrier].push(plan);
-      return acc;
-    },
-    {} as Record<string, typeof plans>
-  );
-
   if (!companyId) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Bar */}
-        <ProgressBar
-          steps={steps}
-          currentStep="review"
-          completedSteps={(application?.completedSteps as string[]) || []}
-        />
-
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main Content Area */}
-          <div className="lg:flex-1">
-            {/* Autosave Indicator */}
-            <div className="flex items-center mb-2 text-sm text-gray-500">
-              <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
-              <span>All changes autosaved</span>
+      
+      <div className="flex">
+        {/* Sidebar */}
+        <ProgressSidebar />
+        
+        {/* Main Content */}
+        <div className="flex-1 p-6">
+          {/* Autosave Indicator */}
+          <div className="flex items-center mb-6 text-sm text-gray-500">
+            <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
+            <span>All changes autosaved</span>
+          </div>
+          
+          <div className="max-w-4xl">
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Review & Submit</h1>
+                  <p className="text-gray-600">
+                    Review your enrollment information and submit your application
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Success Banner */}
-            {submitSuccess && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <div className="flex">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-green-800 font-medium">
-                      Application Submitted Successfully
-                    </h3>
-                    <p className="text-green-700 mt-1">
-                      Your application has been submitted and is now being reviewed by our team.
-                      You'll receive updates via email about the status of your application.
-                    </p>
-
-                    {/* Carrier Forms Section */}
-                    {plans.length > 0 && (
-                      <div className="mt-4 bg-white p-4 rounded-md border border-green-200">
-                        <h4 className="font-medium text-gray-800 flex items-center">
-                          <FileText className="h-4 w-4 mr-2" />
-                          Carrier Application Forms
-                        </h4>
-                        <p className="text-sm text-gray-600 mt-1 mb-3">
-                          The following carrier forms have been prepared with your data:
-                        </p>
-                        <div className="space-y-2">
-                          {Array.from(new Set(plans.map(plan => plan.carrier))).map(carrier => (
-                            <div key={carrier} className="flex items-center justify-between">
-                              <span className="text-sm font-medium">{carrier} Application</span>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="flex items-center"
-                                onClick={() => generateAndDownloadPDF(carrier)}
-                              >
-                                <Download className="h-4 w-4 mr-1" />
-                                Download
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-4">
-                      <Button
-                        variant="outline"
-                        className="text-green-700 border-green-300 hover:bg-green-100"
-                        onClick={() => navigate('/')}
-                      >
-                        Return to Dashboard
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Missing Requirements Warning */}
-            {missingSteps.length > 0 && !submitSuccess && (
-              <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-6">
-                <div className="flex">
-                  <AlertTriangle className="h-5 w-5 text-yellow-500 mr-3 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-yellow-800 font-medium">
-                      Please complete missing information
-                    </h3>
-                    <p className="text-yellow-700 mt-1">
-                      Your application is missing the following required information:
-                    </p>
-                    <ul className="mt-2 list-disc pl-5 text-yellow-700 space-y-1">
-                      {missingSteps.map((step, index) => (
-                        <li key={index}>{step}</li>
-                      ))}
-                    </ul>
-                    <p className="text-yellow-700 mt-3">
-                      Please complete these sections before submitting your application.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
+            {/* Review Content */}
             <Card className="mb-6">
               <CardHeader>
-                <CardTitle>Review & Submit</CardTitle>
+                <CardTitle>Application Review</CardTitle>
                 <CardDescription>
-                  Review your enrollment information and submit your application
+                  Please review all information below before submitting your application.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {/* Review content here */}
-                <p className="text-sm text-gray-500 mb-4">
-                  Please review all the information below before submitting your application.
-                </p>
+                <div className="space-y-6">
+                  {/* Company Information */}
+                  {company && (
+                    <div>
+                      <h3 className="text-lg font-medium mb-3">Company Information</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="font-medium">Legal Name:</span> {company.legalName}
+                        </div>
+                        <div>
+                          <span className="font-medium">Tax ID:</span> {company.taxId}
+                        </div>
+                        <div>
+                          <span className="font-medium">Phone:</span> {company.phone}
+                        </div>
+                        <div>
+                          <span className="font-medium">Employee Count:</span> {company.employeeCount}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Plans */}
+                  {plans.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-medium mb-3">Selected Plans</h3>
+                      <div className="space-y-2">
+                        {plans.map((plan) => (
+                          <div key={plan.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <div>
+                              <span className="font-medium">{plan.name}</span>
+                              <span className="text-gray-500 ml-2">({plan.carrier})</span>
+                            </div>
+                            <span className="text-sm text-gray-600">{plan.metalTier}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardContent>
               <CardFooter className="flex flex-col sm:flex-row sm:justify-between space-y-3 sm:space-y-0">
-                <Button variant="outline" onClick={() => navigate('/enrollment/contributions')}>
+                <Button variant="outline" onClick={() => navigate('/enrollment/contribution-setup')}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Previous: Contributions
+                  Previous
                 </Button>
 
                 {application?.status !== 'submitted' && !submitSuccess && (
-                  <Button onClick={handleSubmit} disabled={submitting} className="w-full sm:w-auto">
-                    <Send className="mr-2 h-4 w-4" />
-                    {submitting ? 'Submitting...' : 'Sign & Submit Application'}
+                  <Button onClick={handleContinue} className="w-full sm:w-auto">
+                    Continue to Signature
+                    <Send className="ml-2 h-4 w-4" />
                   </Button>
+                )}
+
+                {submitSuccess && (
+                  <div className="text-green-600 font-medium">
+                    ✓ Application submitted successfully!
+                  </div>
                 )}
               </CardFooter>
             </Card>
           </div>
-
-          {/* Right sidebar with checklist component */}
-          <div className="lg:w-80 flex-shrink-0">
-            <EnrollmentChecklist companyId={companyId} />
-          </div>
         </div>
-
-        {/* Incomplete Application Alert */}
-        <AlertDialog open={incompleteAlertOpen} onOpenChange={setIncompleteAlertOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Incomplete Application</AlertDialogTitle>
-              <AlertDialogDescription>
-                You need to complete the following sections before submitting your application:
-                <ul className="list-disc pl-5 mt-2 space-y-1">
-                  {missingSteps.map((step, index) => (
-                    <li key={index}>{step}</li>
-                  ))}
-                </ul>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Close</AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </main>
+      </div>
     </div>
   );
 }

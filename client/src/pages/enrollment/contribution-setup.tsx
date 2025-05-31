@@ -9,8 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Plan, Contribution } from '@shared/schema';
 import { contributionValidationSchema } from '@/utils/form-validators';
 import { Header } from '@/components/layout/header';
-import { ProgressBar } from '@/components/layout/progress-bar';
-import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import {
   Form,
   FormControl,
