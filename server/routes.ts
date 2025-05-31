@@ -228,6 +228,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Application progress endpoint
+  app.get('/api/companies/:companyId/application', isAuthenticated, async (req, res, next) => {
+    try {
+      const companyId = parseInt(req.params.companyId);
+      
+      if (isNaN(companyId)) {
+        return res.status(400).json({ message: 'Invalid company ID' });
+      }
+
+      // Try to get existing application
+      let application;
+      try {
+        application = await storage.getApplicationByCompanyId(companyId);
+      } catch (error) {
+        // If no application exists, return default state
+        application = {
+          id: 0,
+          companyId: companyId,
+          currentStep: 'application-initiator',
+          completedSteps: [],
+          status: 'not_started'
+        };
+      }
+
+      res.json(application);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Company Information routes
   app.post('/api/company-information', isAuthenticated, async (req, res, next) => {
     try {
