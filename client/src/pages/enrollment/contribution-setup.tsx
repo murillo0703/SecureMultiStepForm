@@ -10,6 +10,7 @@ import { Plan, Contribution } from '@shared/schema';
 import { contributionValidationSchema } from '@/utils/form-validators';
 import { Header } from '@/components/layout/header';
 import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
+import { Company } from '@shared/schema';
 import {
   Form,
   FormControl,

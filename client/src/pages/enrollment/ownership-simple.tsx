@@ -43,7 +43,7 @@ export default function OwnershipSimple() {
   const [hasAutoPopulated, setHasAutoPopulated] = useState(false);
 
   // Fetch companies for this user
-  const { data: companies = [] } = useQuery({
+  const { data: companies = [] } = useQuery<Company[]>({
     queryKey: ['/api/companies'],
   });
 
@@ -51,7 +51,7 @@ export default function OwnershipSimple() {
   const companyId = companies.length > 0 ? companies[0].id : null;
 
   // Fetch initiator data
-  const { data: initiator } = useQuery({
+  const { data: initiator } = useQuery<ApplicationInitiator>({
     queryKey: ['/api/application-initiator'],
   });
 
@@ -70,14 +70,14 @@ export default function OwnershipSimple() {
 
   // Auto-populate owner from initiator if relationship is "Owner"
   useEffect(() => {
-    if (initiator && !hasAutoPopulated && initiator.relationshipToCompany === 'Owner') {
+    if (initiator && !hasAutoPopulated && 'relationshipToCompany' in initiator && initiator.relationshipToCompany === 'Owner') {
       const autoOwner = {
         id: `auto-${Date.now()}`,
-        firstName: initiator.firstName,
-        lastName: initiator.lastName,
-        title: initiator.title,
-        email: initiator.email,
-        phone: formatPhoneNumber(initiator.phone),
+        firstName: (initiator as any).firstName || '',
+        lastName: (initiator as any).lastName || '',
+        title: (initiator as any).title || '',
+        email: (initiator as any).email || '',
+        phone: formatPhoneNumber((initiator as any).phone || ''),
         ownershipPercentage: 100, // Default to 100%, user can adjust
         isEligibleForCoverage: false,
       };
@@ -87,7 +87,7 @@ export default function OwnershipSimple() {
       
       toast({
         title: 'Owner information added',
-        description: `${initiator.firstName} ${initiator.lastName} has been automatically added as an owner from the initiator information.`,
+        description: `${(initiator as any).firstName} ${(initiator as any).lastName} has been automatically added as an owner from the initiator information.`,
       });
     }
   }, [initiator, hasAutoPopulated, toast]);

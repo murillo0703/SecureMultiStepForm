@@ -7,6 +7,7 @@ import { Plan } from '@shared/schema';
 import { validatePlanSelection } from '@/utils/form-validators';
 import { Header } from '@/components/layout/header';
 import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
+import { Company } from '@shared/schema';
 import { PdfFormGenerator } from '@/components/enrollment/pdf-form-generator';
 import {
   Card,
@@ -48,7 +49,7 @@ export default function PlanSelection() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   // Fetch companies for this user
-  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
+  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery<Company[]>({
     queryKey: ['/api/companies'],
   });
 
