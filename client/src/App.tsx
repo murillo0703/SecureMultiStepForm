@@ -1,4 +1,4 @@
-import { Switch, Route } from 'wouter';
+import { Switch, Route, useLocation } from 'wouter';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import AuthPage from '@/pages/auth-page';
@@ -12,6 +12,8 @@ import EmployerDashboard from '@/pages/employer/dashboard';
 import QuoteBuilder from '@/pages/quoting/quote-builder';
 import EmployeeEnrollment from '@/pages/enrollment-management/employee-enrollment';
 import RenewalManager from '@/pages/renewals/renewal-manager';
+import EmployeePortal from '@/pages/employee-portal';
+import BrokerManagement from '@/pages/master-admin/brokers';
 import ApplicationInitiator from '@/pages/enrollment/application-initiator';
 import CarriersPage from '@/pages/enrollment/carriers';
 import CompanyInformation from '@/pages/enrollment/company-information';
@@ -30,6 +32,7 @@ import BrokerSettingsPage from '@/pages/broker-settings';
 import { ProtectedRoute } from '@/lib/protected-route';
 import { getBrandConfig } from '@/lib/brand-config';
 import { RoleSwitcher } from '@/components/role-switcher';
+import { UnifiedNavigation } from '@/components/unified-navigation';
 
 function Router() {
   return (
@@ -39,6 +42,7 @@ function Router() {
 
       {/* Master Admin Routes */}
       <ProtectedRoute path="/master-admin/dashboard" component={MasterAdminDashboard} />
+      <ProtectedRoute path="/master-admin/brokers" component={BrokerManagement} />
       
       {/* Admin Routes */}
       <ProtectedRoute path="/admin/dashboard" component={AdminControlCenter} />
@@ -50,6 +54,9 @@ function Router() {
       
       {/* Employer Routes */}
       <ProtectedRoute path="/employer/dashboard" component={EmployerDashboard} />
+
+      {/* Employee Portal */}
+      <ProtectedRoute path="/employee-portal" component={EmployeePortal} />
 
       {/* Quote Builder Routes */}
       <ProtectedRoute path="/quotes/builder" component={QuoteBuilder} />
@@ -99,8 +106,15 @@ function Router() {
 }
 
 function App() {
+  const { user } = useAuth();
+  const [location] = useLocation();
+  
+  // Don't show navigation on auth page
+  const showNavigation = user && location !== '/auth';
+  
   return (
     <TooltipProvider>
+      {showNavigation && <UnifiedNavigation />}
       <Router />
       <RoleSwitcher />
     </TooltipProvider>
