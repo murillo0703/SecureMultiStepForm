@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Building, MapPin, Calendar, FileText, Phone, CheckCircle, Loader2 } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
@@ -238,7 +238,15 @@ export default function CompanyInformation() {
         return { success: true };
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Invalidate queries to refresh progress data
+      queryClient.invalidateQueries({ queryKey: ['/api/companies'] });
+      if (companyId || data?.companyId) {
+        queryClient.invalidateQueries({ 
+          queryKey: [`/api/companies/${companyId || data.companyId}/application`] 
+        });
+      }
+      
       toast({
         title: 'Company information saved',
         description: 'Proceeding to ownership information...',

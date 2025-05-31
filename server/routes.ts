@@ -155,6 +155,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const userId = req.user!.id;
         const initiator = await storage.createApplicationInitiator({ ...req.body, userId });
+        
+        // Create basic application tracking for this user
+        try {
+          const existingCompanies = await storage.getCompaniesByUserId(userId);
+          let company;
+          
+          if (existingCompanies.length === 0) {
+            // Create a placeholder company that will be updated later
+            company = await storage.createCompany({
+              userId,
+              name: `${initiator.firstName} ${initiator.lastName} Company`,
+              address: '',
+              city: '',
+              state: '',
+              zip: '',
+              phone: initiator.phone || '',
+              taxId: '',
+              industry: '',
+            });
+          } else {
+            company = existingCompanies[0];
+          }
+
+          // Create or update application with 'application-initiator' step completed
+          const completedSteps = ['application-initiator'];
+          
+          try {
+            const existingApp = await storage.getApplicationByCompanyId(company.id);
+            if (existingApp) {
+              const currentCompleted = existingApp.completedSteps as string[] || [];
+              if (!currentCompleted.includes('application-initiator')) {
+                currentCompleted.push('application-initiator');
+              }
+              await storage.updateApplication(existingApp.id, {
+                currentStep: 'company-information',
+                completedSteps: currentCompleted,
+                status: 'in_progress'
+              });
+            } else {
+              await storage.createApplication({
+                companyId: company.id,
+                currentStep: 'company-information',
+                completedSteps: completedSteps,
+                status: 'in_progress'
+              });
+            }
+          } catch (appError) {
+            console.error('Failed to create/update application:', appError);
+          }
+        } catch (companyError) {
+          console.error('Failed to create company for application tracking:', companyError);
+        }
+        
         res.status(201).json(initiator);
       } catch (error) {
         next(error);
@@ -181,11 +234,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user!.id;
       const companyInfo = { ...req.body, userId };
 
-      // For now, we'll store this as a simple JSON response
-      // In a full implementation, this would save to database
+      // Check if user already has a company, if not create one
+      const existingCompanies = await storage.getCompaniesByUserId(userId);
+      let company;
+      
+      if (existingCompanies.length === 0) {
+        // Create a new company record with the provided information
+        company = await storage.createCompany({
+          userId,
+          name: companyInfo.legalName || 'New Company',
+          address: companyInfo.physicalAddress || '',
+          city: companyInfo.physicalCity || '',
+          state: companyInfo.physicalState || '',
+          zip: companyInfo.physicalZip || '',
+          phone: companyInfo.phone || '',
+          taxId: companyInfo.taxId || '',
+          industry: companyInfo.industry || '',
+        });
+      } else {
+        company = existingCompanies[0];
+        // Update existing company with new information
+        await storage.updateCompany(company.id, {
+          name: companyInfo.legalName || company.name,
+          address: companyInfo.physicalAddress || company.address,
+          city: companyInfo.physicalCity || company.city,
+          state: companyInfo.physicalState || company.state,
+          zip: companyInfo.physicalZip || company.zip,
+          phone: companyInfo.phone || company.phone,
+          taxId: companyInfo.taxId || company.taxId,
+          industry: companyInfo.industry || company.industry,
+        });
+      }
+
+      // Create or update application with progress tracking
+      try {
+        let application = await storage.getApplicationByCompanyId(company.id);
+        const completedSteps = application?.completedSteps as string[] || [];
+        
+        // Add 'company-information' to completed steps if not already there
+        if (!completedSteps.includes('company-information')) {
+          completedSteps.push('company-information');
+        }
+
+        if (application) {
+          await storage.updateApplication(application.id, {
+            currentStep: 'ownership-info',
+            completedSteps: completedSteps,
+            status: 'in_progress'
+          });
+        } else {
+          await storage.createApplication({
+            companyId: company.id,
+            currentStep: 'ownership-info',
+            completedSteps: completedSteps,
+            status: 'in_progress'
+          });
+        }
+      } catch (error) {
+        // Application tracking failed, but don't fail the whole request
+        console.error('Failed to update application progress:', error);
+      }
+
       res.status(201).json({
         message: 'Company information saved successfully',
         data: companyInfo,
+        companyId: company.id,
       });
     } catch (error) {
       next(error);
