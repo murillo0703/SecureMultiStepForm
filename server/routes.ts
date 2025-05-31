@@ -253,17 +253,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       } else {
         company = existingCompanies[0];
-        // Update existing company with new information
-        await storage.updateCompany(company.id, {
-          name: companyInfo.legalName || company.name,
-          address: companyInfo.physicalAddress || company.address,
-          city: companyInfo.physicalCity || company.city,
-          state: companyInfo.physicalState || company.state,
-          zip: companyInfo.physicalZip || company.zip,
-          phone: companyInfo.phone || company.phone,
-          taxId: companyInfo.taxId || company.taxId,
-          industry: companyInfo.industry || company.industry,
-        });
+        // Note: Company update functionality would be implemented here in a full system
       }
 
       // Create or update application with progress tracking
