@@ -54,7 +54,7 @@ export default function ContributionSetup() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   // Fetch companies for this user
-  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
+  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery<Company[]>({
     queryKey: ['/api/companies'],
   });
 

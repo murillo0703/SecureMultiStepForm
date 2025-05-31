@@ -217,7 +217,7 @@ export default function ReviewSubmit() {
                       <h3 className="text-lg font-medium mb-3">Company Information</h3>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <span className="font-medium">Legal Name:</span> {company.legalName}
+                          <span className="font-medium">Legal Name:</span> {company.name}
                         </div>
                         <div>
                           <span className="font-medium">Tax ID:</span> {company.taxId}
@@ -226,7 +226,7 @@ export default function ReviewSubmit() {
                           <span className="font-medium">Phone:</span> {company.phone}
                         </div>
                         <div>
-                          <span className="font-medium">Employee Count:</span> {company.employeeCount}
+                          <span className="font-medium">Industry:</span> {company.industry}
                         </div>
                       </div>
                     </div>
