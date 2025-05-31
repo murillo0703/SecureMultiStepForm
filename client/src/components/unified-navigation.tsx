@@ -442,47 +442,97 @@ export function UnifiedNavigation() {
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-80">
-              <SheetHeader>
-                <SheetTitle>{getRoleTitle(currentRole)}</SheetTitle>
-                <SheetDescription>
-                  Navigate through all available modules and tools
-                </SheetDescription>
-              </SheetHeader>
-              <div className="mt-6 space-y-6">
-                {currentSections.map((section) => (
-                  <div key={section.title}>
-                    <h4 className="font-semibold text-sm text-muted-foreground mb-3">
-                      {section.title}
-                    </h4>
-                    <div className="space-y-2">
-                      {section.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className="flex items-center space-x-3 rounded-md p-2 text-sm hover:bg-accent hover:text-accent-foreground"
-                        >
-                          {item.icon}
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2">
-                              <span>{item.title}</span>
-                              {item.badge && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {item.badge}
-                                </Badge>
+            <SheetContent side="left" className="w-80 p-0 flex flex-col max-h-screen">
+              <div className="p-6 border-b flex-shrink-0">
+                <SheetHeader>
+                  <SheetTitle>{getRoleTitle(currentRole)}</SheetTitle>
+                  <SheetDescription>
+                    Navigate through all available modules and tools
+                  </SheetDescription>
+                </SheetHeader>
+                
+                {/* Mobile Role Switcher */}
+                <div className="mt-4">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between">
+                        <div className="flex items-center space-x-2">
+                          {getRoleIcon(currentRole)}
+                          <span className="text-sm">{getRoleTitle(currentRole)}</span>
+                        </div>
+                        <ChevronDown className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56">
+                      <DropdownMenuItem onClick={() => handleRoleSwitch('master-admin')}>
+                        <Crown className="w-4 h-4 mr-2" />
+                        Master Administrator
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleRoleSwitch('broker')}>
+                        <Shield className="w-4 h-4 mr-2" />
+                        Broker Portal
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleRoleSwitch('employer')}>
+                        <Building2 className="w-4 h-4 mr-2" />
+                        Employer Portal
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-6 space-y-6">
+                  {currentSections.map((section) => (
+                    <div key={section.title}>
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-3 uppercase tracking-wide">
+                        {section.title}
+                      </h4>
+                      <div className="space-y-1">
+                        {section.items.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className="flex items-center space-x-3 rounded-lg p-3 text-sm hover:bg-accent hover:text-accent-foreground active:bg-accent/50 transition-colors touch-manipulation"
+                            onClick={() => {
+                              // Close the mobile menu when a link is clicked
+                              setTimeout(() => {
+                                const closeButton = document.querySelector('[data-state="open"] button[aria-label="Close"]') as HTMLButtonElement;
+                                if (closeButton) closeButton.click();
+                              }, 100);
+                            }}
+                          >
+                            <div className="flex-shrink-0">
+                              {item.icon}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-medium">{item.title}</span>
+                                {item.badge && (
+                                  <Badge variant="secondary" className="text-xs flex-shrink-0">
+                                    {item.badge}
+                                  </Badge>
+                                )}
+                              </div>
+                              {item.description && (
+                                <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                  {item.description}
+                                </div>
                               )}
                             </div>
-                            {item.description && (
-                              <div className="text-xs text-muted-foreground">
-                                {item.description}
-                              </div>
-                            )}
-                          </div>
-                        </Link>
-                      ))}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+              
+              <div className="p-6 border-t flex-shrink-0 bg-muted/50">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Murillo Insurance</span>
+                  <span>v1.0</span>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
