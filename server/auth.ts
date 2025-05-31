@@ -115,19 +115,18 @@ export function setupAuth(app: Express) {
           return next(err);
         }
 
-          req.login(user, err => {
-            if (err) {
-              console.error('Login error after registration:', err);
-              return next(err);
-            }
-            console.log(
-              'User logged in after registration:',
-              user.username,
-              'Session ID:',
-              req.sessionID
-            );
-            res.status(201).json(user);
-          });
+        req.login(user, err => {
+          if (err) {
+            console.error('Login error after registration:', err);
+            return next(err);
+          }
+          console.log(
+            'User logged in after registration:',
+            user.username,
+            'Session ID:',
+            req.sessionID
+          );
+          res.status(201).json(user);
         });
       });
     } catch (error) {
@@ -152,15 +151,16 @@ export function setupAuth(app: Express) {
             console.error('Login error:', err);
             return next(err);
           }
-        console.log(
-          'User logged in:',
-          user.username,
-          'Session ID:',
-          req.sessionID,
-          'Authenticated:',
-          req.isAuthenticated()
-        );
-        return res.status(200).json(user);
+          console.log(
+            'User logged in:',
+            user.username,
+            'Session ID:',
+            req.sessionID,
+            'Authenticated:',
+            req.isAuthenticated()
+          );
+          return res.status(200).json(user);
+        });
       });
     })(req, res, next);
   });
