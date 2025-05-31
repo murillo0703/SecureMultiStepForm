@@ -68,6 +68,7 @@ export interface IStorage {
   // Owner operations
   createOwner(owner: InsertOwner): Promise<Owner>;
   getOwnersByCompanyId(companyId: number): Promise<Owner[]>;
+  updateOwner(id: number, updates: Partial<InsertOwner>): Promise<Owner>;
 
   // Employee operations
   createEmployee(employee: InsertEmployee): Promise<Employee>;
@@ -366,6 +367,20 @@ export class MemStorage implements IStorage {
 
   async getOwnersByCompanyId(companyId: number): Promise<Owner[]> {
     return Array.from(this.owners.values()).filter(owner => owner.companyId === companyId);
+  }
+
+  async updateOwner(id: number, updates: Partial<InsertOwner>): Promise<Owner> {
+    const existingOwner = this.owners.get(id);
+    if (!existingOwner) {
+      throw new Error(`Owner with id ${id} not found`);
+    }
+    
+    const updatedOwner: Owner = {
+      ...existingOwner,
+      ...updates,
+    };
+    this.owners.set(id, updatedOwner);
+    return updatedOwner;
   }
 
   // Employee operations

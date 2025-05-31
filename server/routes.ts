@@ -464,6 +464,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Authorized Contact routes
+  app.get('/api/companies/:companyId/authorized-contact', isAuthenticated, async (req, res, next) => {
+    try {
+      const companyId = parseInt(req.params.companyId);
+      const company = await storage.getCompany(companyId);
+
+      if (!company) {
+        return res.status(404).json({ message: 'Company not found' });
+      }
+
+      if (company.userId !== req.user!.id && req.user!.role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const owners = await storage.getOwnersByCompanyId(companyId);
+      const authorizedContact = owners.find(owner => owner.isAuthorizedContact);
+      
+      if (!authorizedContact) {
+        return res.status(404).json({ message: 'Authorized contact not found' });
+      }
+
+      res.json(authorizedContact);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/companies/:companyId/authorized-contact', isAuthenticated, validateRequest(insertOwnerSchema), async (req, res, next) => {
+    try {
+      const companyId = parseInt(req.params.companyId);
+      const company = await storage.getCompany(companyId);
+
+      if (!company) {
+        return res.status(404).json({ message: 'Company not found' });
+      }
+
+      if (company.userId !== req.user!.id && req.user!.role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      // Create new owner as authorized contact
+      const authorizedContact = await storage.createOwner({ 
+        ...req.body, 
+        companyId,
+        isAuthorizedContact: true,
+        ownershipPercentage: 0 // Default for authorized contact who may not be an owner
+      });
+
+      // Update application progress
+      await storage.updateApplicationProgress(companyId, 'authorized-contact');
+
+      res.status(201).json(authorizedContact);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.patch('/api/companies/:companyId/owners/:ownerId', isAuthenticated, async (req, res, next) => {
+    try {
+      const companyId = parseInt(req.params.companyId);
+      const ownerId = parseInt(req.params.ownerId);
+      const company = await storage.getCompany(companyId);
+
+      if (!company) {
+        return res.status(404).json({ message: 'Company not found' });
+      }
+
+      if (company.userId !== req.user!.id && req.user!.role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const updatedOwner = await storage.updateOwner(ownerId, req.body);
+      
+      if (req.body.isAuthorizedContact) {
+        // Update application progress
+        await storage.updateApplicationProgress(companyId, 'authorized-contact');
+      }
+
+      res.json(updatedOwner);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Employee routes
   app.post(
     '/api/companies/:companyId/employees',

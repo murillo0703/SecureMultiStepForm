@@ -136,7 +136,9 @@ export const owners = pgTable('owners', {
   ownershipPercentage: integer('ownership_percentage').notNull(),
   email: text('email').notNull(),
   phone: text('phone').notNull(),
+  relationshipToCompany: text('relationship_to_company'),
   isEligibleForCoverage: boolean('is_eligible_for_coverage').default(false),
+  isAuthorizedContact: boolean('is_authorized_contact').default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
