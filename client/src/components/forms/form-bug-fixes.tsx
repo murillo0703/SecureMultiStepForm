@@ -89,19 +89,29 @@ export function EnhancedForm({ steps, onSubmit, storageKey = 'enrollment-form' }
 
   // Fix #2: Auto-populate owner fields when initiator is owner
   const handleOwnerAutoPopulation = useCallback((data: Record<string, any>) => {
-    if (data.isOwner === 'yes') {
-      const ownerFields = ['ownerName', 'ownerEmail', 'ownerPhone', 'ownerAddress'];
-      const initiatorFields = ['initiatorName', 'initiatorEmail', 'initiatorPhone', 'initiatorAddress'];
+    if (data.isOwner === 'yes' || data.isOwner === true) {
+      // Map initiator/contact fields to owner fields
+      const fieldMappings = {
+        ownerName: data.contactName || data.initiatorName || data.firstName + ' ' + data.lastName,
+        ownerEmail: data.contactEmail || data.initiatorEmail || data.email,
+        ownerPhone: data.contactPhone || data.initiatorPhone || data.phone,
+        ownerAddress: data.contactAddress || data.initiatorAddress || data.address
+      };
       
-      ownerFields.forEach((ownerField, index) => {
-        const initiatorField = initiatorFields[index];
-        if (data[initiatorField] && !data[ownerField]) {
-          setFormData(prev => ({
-            ...prev,
-            [ownerField]: data[initiatorField]
-          }));
+      // Update form data with mapped values, but don't overwrite existing values
+      const updates: Record<string, any> = {};
+      Object.entries(fieldMappings).forEach(([ownerField, sourceValue]) => {
+        if (sourceValue && (!data[ownerField] || data[ownerField] === '')) {
+          updates[ownerField] = sourceValue;
         }
       });
+      
+      if (Object.keys(updates).length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          ...updates
+        }));
+      }
     }
   }, []);
 
@@ -153,7 +163,14 @@ export function EnhancedForm({ steps, onSubmit, storageKey = 'enrollment-form' }
   const handleFieldChange = (fieldName: string, value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [fieldName]: value };
-      handleOwnerAutoPopulation(newData);
+      
+      // Trigger auto-population immediately when isOwner changes to 'yes'
+      if (fieldName === 'isOwner' && value === 'yes') {
+        setTimeout(() => handleOwnerAutoPopulation(newData), 0);
+      } else {
+        handleOwnerAutoPopulation(newData);
+      }
+      
       return newData;
     });
 
@@ -173,9 +190,19 @@ export function EnhancedForm({ steps, onSubmit, storageKey = 'enrollment-form' }
 
   // Fix #1: Progress bar synchronization
   const updateProgressBar = useCallback(() => {
-    const progressPercentage = ((currentStep + 1) / steps.length) * 100;
-    return progressPercentage;
-  }, [currentStep, steps.length]);
+    // Calculate progress based on completed steps plus current step progress
+    const baseProgress = (currentStep / steps.length) * 100;
+    const currentStepProgress = (1 / steps.length) * 100;
+    
+    // Add partial progress for current step if any fields are filled
+    const currentStepFields = steps[currentStep]?.fields || [];
+    const filledFields = currentStepFields.filter(field => 
+      formData[field.name] && formData[field.name].toString().trim() !== ''
+    );
+    const stepCompletion = filledFields.length / currentStepFields.length;
+    
+    return baseProgress + (currentStepProgress * stepCompletion);
+  }, [currentStep, steps.length, formData]);
 
   // Validate current step
   const validateCurrentStep = (): boolean => {
