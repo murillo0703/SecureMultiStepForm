@@ -30,7 +30,7 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
+    secret: process.env.SESSION_SECRET || 'fallback-secret-key-for-development',
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
@@ -134,35 +134,16 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post('/api/login', (req, res, next) => {
-    passport.authenticate('local', (err: any, user: any, info: any) => {
-      if (err) return next(err);
-      if (!user) return res.status(401).json({ message: 'Invalid username or password' });
-
-      // Regenerate session ID for security
-      req.session.regenerate((err) => {
-        if (err) {
-          console.error('Session regeneration error:', err);
-          return next(err);
-        }
-
-        req.login(user, err => {
-          if (err) {
-            console.error('Login error:', err);
-            return next(err);
-          }
-          console.log(
-            'User logged in:',
-            user.username,
-            'Session ID:',
-            req.sessionID,
-            'Authenticated:',
-            req.isAuthenticated()
-          );
-          return res.status(200).json(user);
-        });
-      });
-    })(req, res, next);
+  app.post('/api/login', passport.authenticate('local'), (req, res) => {
+    console.log(
+      'User logged in:',
+      req.user?.username,
+      'Session ID:',
+      req.sessionID,
+      'Authenticated:',
+      req.isAuthenticated()
+    );
+    res.status(200).json(req.user);
   });
 
   app.post('/api/logout', (req, res, next) => {
