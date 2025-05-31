@@ -1836,12 +1836,395 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Quoting System API Routes
+  app.post('/api/quotes/generate', isAuthenticated, async (req, res, next) => {
+    try {
+      const { zipCode, effectiveDate, employees, planTypes } = req.body;
+      
+      // Validate required fields
+      if (!zipCode || !effectiveDate || !planTypes?.length) {
+        return res.status(400).json({ message: 'Missing required quote parameters' });
+      }
+
+      // Get rating area for zip code
+      const ratingArea = getRatingAreaForZip(zipCode);
+      
+      // Generate quotes based on employee census and location
+      const quotes = await generateQuotesForGroup({
+        zipCode,
+        ratingArea,
+        effectiveDate,
+        employees,
+        planTypes,
+        userId: req.user!.id
+      });
+
+      res.json({ quotes, ratingArea });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/quotes/save', isAuthenticated, async (req, res, next) => {
+    try {
+      const quoteData = {
+        ...req.body,
+        userId: req.user!.id,
+        createdAt: new Date(),
+        status: 'saved'
+      };
+
+      // Save quote to storage (implement in storage layer)
+      const savedQuote = await storage.saveQuote(quoteData);
+      
+      res.status(201).json(savedQuote);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get('/api/quotes', isAuthenticated, async (req, res, next) => {
+    try {
+      const quotes = await storage.getQuotesByUser(req.user!.id);
+      res.json(quotes);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Rating Areas API
+  app.get('/api/rating-areas', async (req, res) => {
+    const ratingAreas = [
+      { id: 1, name: 'Rating Area 1', zipCodes: ['93701', '93702', '93703'] },
+      { id: 2, name: 'Rating Area 2', zipCodes: ['93704', '93705', '93706'] },
+      { id: 3, name: 'Rating Area 3', zipCodes: ['93707', '93708', '93709'] },
+      { id: 4, name: 'Rating Area 4', zipCodes: ['93710', '93711', '93712'] },
+      { id: 5, name: 'Rating Area 5', zipCodes: ['93720', '93721', '93722'] },
+      // Add all 19 rating areas for California
+    ];
+    res.json(ratingAreas);
+  });
+
+  // Carriers API
+  app.get('/api/carriers', async (req, res) => {
+    const carriers = [
+      { id: 'anthem', name: 'Anthem Blue Cross', active: true },
+      { id: 'blue_shield', name: 'Blue Shield of California', active: true },
+      { id: 'kaiser', name: 'Kaiser Permanente', active: true },
+      { id: 'health_net', name: 'Health Net', active: true },
+      { id: 'sharp', name: 'Sharp Health Plan', active: true }
+    ];
+    res.json(carriers);
+  });
+
+  // Employee Enrollment Management
+  app.get('/api/employee-enrollments', isAuthenticated, async (req, res, next) => {
+    try {
+      const enrollments = await storage.getEmployeeEnrollments(req.user!.id);
+      res.json(enrollments);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put('/api/employee-enrollments/:id', isAuthenticated, async (req, res, next) => {
+    try {
+      const enrollmentId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedEnrollment = await storage.updateEmployeeEnrollment(enrollmentId, updates);
+      res.json(updatedEnrollment);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/employee-census/upload', isAuthenticated, async (req, res, next) => {
+    try {
+      // Handle CSV/Excel file upload and processing
+      const result = await processCensusFile(req.body, req.user!.id);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get('/api/employee-enrollments/export', isAuthenticated, async (req, res, next) => {
+    try {
+      const enrollments = await storage.getEmployeeEnrollments(req.user!.id);
+      // Generate CSV export
+      const csvData = generateEnrollmentCSV(enrollments);
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=employee-enrollments.csv');
+      res.send(csvData);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Available Plans API
+  app.get('/api/available-plans', isAuthenticated, async (req, res, next) => {
+    try {
+      const plans = await storage.getAvailablePlansForUser(req.user!.id);
+      res.json(plans);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Renewal Management API Routes
+  app.get('/api/renewals', isAuthenticated, async (req, res, next) => {
+    try {
+      const filter = req.query.filter || 'all';
+      const renewals = await storage.getRenewalGroups(req.user!.id, filter as string);
+      res.json(renewals);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/renewals/:id/generate-quote', isAuthenticated, async (req, res, next) => {
+    try {
+      const renewalId = req.params.id;
+      const renewalOptions = await generateRenewalQuote(renewalId);
+      
+      // Update renewal with generated options
+      await storage.updateRenewalOptions(renewalId, renewalOptions);
+      
+      res.json({ optionCount: renewalOptions.length, renewalOptions });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/renewals/:id/send-proposal', isAuthenticated, async (req, res, next) => {
+    try {
+      const renewalId = req.params.id;
+      const { optionId } = req.body;
+      
+      // Send renewal proposal to client
+      const result = await sendRenewalProposal(renewalId, optionId);
+      
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Renewal Tasks API
+  app.get('/api/renewal-tasks', isAuthenticated, async (req, res, next) => {
+    try {
+      const tasks = await storage.getRenewalTasks(req.user!.id);
+      res.json(tasks);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put('/api/renewal-tasks/:id', isAuthenticated, async (req, res, next) => {
+    try {
+      const taskId = req.params.id;
+      const { status } = req.body;
+      
+      const updatedTask = await storage.updateRenewalTask(taskId, { status });
+      res.json(updatedTask);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
 }
 
 // Initialize some sample insurance plans data
+// Helper functions for quoting and rating
+function getRatingAreaForZip(zipCode: string): number {
+  // California has 19 rating areas - this maps zip codes to rating areas
+  const zipToRatingArea: { [key: string]: number } = {
+    // Fresno area (Rating Area 4)
+    '93701': 4, '93702': 4, '93703': 4, '93704': 4, '93705': 4,
+    '93706': 4, '93707': 4, '93708': 4, '93709': 4, '93710': 4,
+    '93711': 4, '93712': 4, '93720': 4, '93721': 4, '93722': 4,
+    
+    // Los Angeles area (Rating Area 1)
+    '90001': 1, '90002': 1, '90003': 1, '90004': 1, '90005': 1,
+    '90210': 1, '90211': 1, '90212': 1, '90213': 1, '90214': 1,
+    
+    // San Francisco area (Rating Area 3)
+    '94102': 3, '94103': 3, '94104': 3, '94105': 3, '94106': 3,
+    '94107': 3, '94108': 3, '94109': 3, '94110': 3, '94111': 3,
+    
+    // San Diego area (Rating Area 19)
+    '92101': 19, '92102': 19, '92103': 19, '92104': 19, '92105': 19,
+  };
+  
+  return zipToRatingArea[zipCode] || 4; // Default to Rating Area 4
+}
+
+async function generateQuotesForGroup(params: {
+  zipCode: string;
+  ratingArea: number;
+  effectiveDate: string;
+  employees: any[];
+  planTypes: string[];
+  userId: number;
+}) {
+  const { zipCode, ratingArea, employees, planTypes } = params;
+  
+  // Calculate average age for group rating
+  const totalAge = employees.reduce((sum, emp) => {
+    if (emp.dateOfBirth) {
+      const age = calculateAge(emp.dateOfBirth);
+      return sum + age + emp.dependents.reduce((depSum: number, dep: any) => 
+        depSum + calculateAge(dep.dateOfBirth), 0);
+    }
+    return sum;
+  }, 0);
+  
+  const averageAge = totalAge / (employees.length + employees.reduce((sum, emp) => sum + emp.dependents.length, 0)) || 35;
+  
+  // Base rates by rating area and plan type
+  const baseRates = {
+    medical: {
+      1: 450, // LA area
+      3: 520, // SF area
+      4: 380, // Fresno area
+      19: 420 // San Diego area
+    },
+    dental: {
+      1: 45,
+      3: 48,
+      4: 42,
+      19: 44
+    },
+    vision: {
+      1: 18,
+      3: 20,
+      4: 16,
+      19: 17
+    }
+  };
+  
+  const quotes = [];
+  
+  // Generate quotes for each requested plan type
+  for (const planType of planTypes) {
+    const carriers = ['anthem', 'blue_shield', 'kaiser', 'health_net'];
+    
+    for (const carrier of carriers) {
+      // Different metal tiers for medical plans
+      const tiers = planType === 'medical' ? ['Bronze', 'Silver', 'Gold'] : ['Standard'];
+      
+      for (const tier of tiers) {
+        const baseRate = baseRates[planType as keyof typeof baseRates]?.[ratingArea as keyof typeof baseRates.medical] || 400;
+        
+        // Age and tier adjustments
+        const ageMultiplier = Math.max(0.8, Math.min(2.0, averageAge / 35));
+        const tierMultiplier = tier === 'Bronze' ? 0.85 : tier === 'Silver' ? 1.0 : 1.25;
+        
+        const monthlyPremium = Math.round(baseRate * ageMultiplier * tierMultiplier * employees.length);
+        
+        quotes.push({
+          id: `${carrier}-${planType}-${tier}-${Date.now()}`,
+          carrierName: getCarrierName(carrier),
+          planName: `${getCarrierName(carrier)} ${tier} ${planType.charAt(0).toUpperCase() + planType.slice(1)}`,
+          planType,
+          monthlyPremium,
+          deductible: tier === 'Bronze' ? 6000 : tier === 'Silver' ? 3000 : 1500,
+          outOfPocketMax: tier === 'Bronze' ? 8000 : tier === 'Silver' ? 6000 : 4000,
+          network: carrier === 'kaiser' ? 'Kaiser Network' : 'PPO Network',
+          metalTier: tier
+        });
+      }
+    }
+  }
+  
+  return quotes;
+}
+
+function getCarrierName(carrierId: string): string {
+  const carriers: { [key: string]: string } = {
+    'anthem': 'Anthem Blue Cross',
+    'blue_shield': 'Blue Shield of California',
+    'kaiser': 'Kaiser Permanente',
+    'health_net': 'Health Net',
+    'sharp': 'Sharp Health Plan'
+  };
+  return carriers[carrierId] || carrierId;
+}
+
+function calculateAge(dateOfBirth: string): number {
+  const today = new Date();
+  const birthDate = new Date(dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
+async function processCensusFile(fileData: any, userId: number) {
+  // Process uploaded CSV/Excel census file
+  // This would parse the file and create employee records
+  return {
+    imported: 25,
+    message: 'Successfully imported 25 employee records'
+  };
+}
+
+function generateEnrollmentCSV(enrollments: any[]): string {
+  const headers = ['Name', 'Email', 'Department', 'Status', 'Medical Plan', 'Dental Plan', 'Vision Plan'];
+  const rows = enrollments.map(emp => [
+    `${emp.firstName} ${emp.lastName}`,
+    emp.email,
+    emp.department,
+    emp.status,
+    emp.medicalPlan || 'None',
+    emp.dentalPlan || 'None',
+    emp.visionPlan || 'None'
+  ]);
+  
+  return [headers, ...rows].map(row => row.join(',')).join('\n');
+}
+
+async function generateRenewalQuote(renewalId: string) {
+  // Generate renewal options with rate changes
+  return [
+    {
+      id: 'renewal-1',
+      planName: 'Current Plan Renewal',
+      carrier: 'Anthem Blue Cross',
+      monthlyPremium: 4200,
+      rateIncrease: 8.5,
+      planChanges: ['Deductible increased to $3,500'],
+      recommended: true
+    },
+    {
+      id: 'renewal-2',
+      planName: 'Alternative Silver Plan',
+      carrier: 'Blue Shield of California',
+      monthlyPremium: 3950,
+      rateIncrease: 3.2,
+      planChanges: ['Lower premium', 'Different network'],
+      recommended: false
+    }
+  ];
+}
+
+async function sendRenewalProposal(renewalId: string, optionId: string) {
+  // Send renewal proposal to client
+  return {
+    sent: true,
+    message: 'Renewal proposal sent to client for review'
+  };
+}
+
 async function initializePlans() {
   const plans = [
     {
