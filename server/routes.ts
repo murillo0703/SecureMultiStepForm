@@ -1621,6 +1621,221 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
+  // Master Admin API Routes
+  app.get('/api/master-admin/stats', isAuthenticated, async (req, res, next) => {
+    try {
+      if (req.user!.role !== 'master_admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const brokers = await storage.getAllBrokers();
+      const users = await storage.getAllUsers();
+      const totalSubmissions = await storage.getTotalSubmissions();
+
+      const stats = {
+        totalBrokers: brokers.length,
+        activeBrokers: brokers.filter(b => b.isActive).length,
+        totalUsers: users.length,
+        totalSubmissions,
+        monthlyRevenue: brokers.reduce((sum, broker) => {
+          // Calculate based on subscription tier
+          const tierPricing = { basic: 2900, premium: 9900, enterprise: 29900 };
+          return sum + (tierPricing[broker.subscriptionTier as keyof typeof tierPricing] || 0);
+        }, 0),
+        trialBrokers: brokers.filter(b => b.trialEndsAt && new Date(b.trialEndsAt) > new Date()).length,
+      };
+
+      res.json(stats);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get('/api/master-admin/brokers', isAuthenticated, async (req, res, next) => {
+    try {
+      if (req.user!.role !== 'master_admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const brokers = await storage.getAllBrokers();
+      const brokersWithStats = await Promise.all(
+        brokers.map(async (broker) => {
+          const users = await storage.getUsersByBrokerId(broker.id);
+          const companies = await storage.getCompaniesByBroker(broker.id);
+          
+          return {
+            ...broker,
+            userCount: users.length,
+            submissionCount: companies.length,
+            lastActive: broker.updatedAt,
+          };
+        })
+      );
+
+      res.json(brokersWithStats);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get('/api/master-admin/activity', isAuthenticated, async (req, res, next) => {
+    try {
+      if (req.user!.role !== 'master_admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const activities = [
+        { type: 'success', message: 'New broker account created', timestamp: new Date() },
+        { type: 'info', message: 'Subscription payment processed', timestamp: new Date() },
+        { type: 'warning', message: 'Trial expiring in 3 days', timestamp: new Date() },
+      ];
+
+      res.json(activities);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Broker Admin API Routes
+  app.get('/api/broker/stats', isAuthenticated, async (req, res, next) => {
+    try {
+      if (!req.user!.brokerId || (req.user!.role !== 'broker_admin' && req.user!.role !== 'broker_staff')) {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const users = await storage.getUsersByBrokerId(req.user!.brokerId);
+      const companies = await storage.getCompaniesByBroker(req.user!.brokerId);
+      const broker = await storage.getBroker(req.user!.brokerId);
+
+      const stats = {
+        totalUsers: users.length,
+        totalSubmissions: companies.length,
+        activeSubmissions: companies.filter(c => c.name).length, // Simple filter for demo
+        completedSubmissions: Math.floor(companies.length * 0.7), // Demo calculation
+        subscriptionTier: broker?.subscriptionTier || 'basic',
+        usagePercentage: Math.round((users.length / (broker?.maxUsers || 10)) * 100),
+        maxUsers: broker?.maxUsers || 10,
+        maxSubmissions: broker?.maxSubmissions || 100,
+      };
+
+      res.json(stats);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get('/api/broker/users', isAuthenticated, async (req, res, next) => {
+    try {
+      if (!req.user!.brokerId || (req.user!.role !== 'broker_admin' && req.user!.role !== 'broker_staff')) {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const users = await storage.getUsersByBrokerId(req.user!.brokerId);
+      const usersWithStats = users.map(user => ({
+        ...user,
+        submissionCount: Math.floor(Math.random() * 5), // Demo data
+        lastActive: user.lastLoginAt || user.createdAt,
+        isActive: user.isActive,
+      }));
+
+      res.json(usersWithStats);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get('/api/broker/submissions', isAuthenticated, async (req, res, next) => {
+    try {
+      if (!req.user!.brokerId || (req.user!.role !== 'broker_admin' && req.user!.role !== 'broker_staff')) {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const companies = await storage.getCompaniesByBroker(req.user!.brokerId);
+      const submissions = companies.map(company => ({
+        id: company.id,
+        companyName: company.name,
+        ownerName: `${company.name} Owner`, // Demo data
+        status: 'completed',
+        carrier: 'Anthem',
+        submittedAt: company.createdAt,
+      }));
+
+      res.json(submissions);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Employer API Routes
+  app.get('/api/employer/stats', isAuthenticated, async (req, res, next) => {
+    try {
+      if (req.user!.role !== 'employer') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const companies = await storage.getCompaniesByUserId(req.user!.id);
+      const currentCompany = companies[0];
+
+      const stats = {
+        totalApplications: companies.length,
+        completedApplications: Math.floor(companies.length * 0.8),
+        inProgressApplications: Math.floor(companies.length * 0.2),
+        pendingReview: 0,
+        currentCompany: currentCompany ? {
+          name: currentCompany.name,
+          employees: 15, // Demo data
+          industry: currentCompany.industry,
+        } : undefined,
+      };
+
+      res.json(stats);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get('/api/employer/applications', isAuthenticated, async (req, res, next) => {
+    try {
+      if (req.user!.role !== 'employer') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      const companies = await storage.getCompaniesByUserId(req.user!.id);
+      const applications = companies.map(company => ({
+        id: company.id,
+        companyName: company.name,
+        status: 'completed',
+        progress: 100,
+        currentStep: 'review-submit',
+        createdAt: company.createdAt,
+        submittedAt: company.updatedAt,
+      }));
+
+      res.json(applications);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/employer/applications/new', isAuthenticated, async (req, res, next) => {
+    try {
+      if (req.user!.role !== 'employer') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
+      // Create a new application placeholder
+      const newApplication = {
+        id: Date.now(), // Simple ID for demo
+        status: 'draft',
+        nextStep: 'application-initiator',
+      };
+
+      res.status(201).json(newApplication);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

@@ -64,6 +64,9 @@ export interface IStorage {
   getCompany(id: number): Promise<Company | undefined>;
   getCompaniesByUserId(userId: number): Promise<Company[]>;
   getCompaniesByBroker(brokerId: string): Promise<Company[]>;
+  
+  // Additional methods for SaaS functionality
+  getTotalSubmissions(): Promise<number>;
 
   // Owner operations
   createOwner(owner: InsertOwner): Promise<Owner>;
@@ -350,6 +353,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.companies.values()).filter(company => 
       brokerUserIds.includes(company.userId)
     );
+  }
+
+  async getTotalSubmissions(): Promise<number> {
+    return this.companies.size;
   }
 
   // Owner operations
