@@ -898,6 +898,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize example insurance plans (in a real app, this would be seeded in the database)
   await initializePlans();
 
+  // Add security demonstration routes
+  createSecurityDemo(app);
+
   // Developer role switching endpoint
   app.post('/api/dev/switch-role', isAuthenticated, async (req: Request, res: Response) => {
     try {
