@@ -33,6 +33,7 @@ import { ProtectedRoute } from '@/lib/protected-route';
 import { getBrandConfig } from '@/lib/brand-config';
 import { RoleSwitcher } from '@/components/role-switcher';
 import { UnifiedNavigation } from '@/components/unified-navigation';
+import { useAuth } from '@/hooks/use-auth';
 
 function Router() {
   return (
@@ -105,7 +106,7 @@ function Router() {
   );
 }
 
-function App() {
+function AppContent() {
   const { user } = useAuth();
   const [location] = useLocation();
   
@@ -113,10 +114,18 @@ function App() {
   const showNavigation = user && location !== '/auth';
   
   return (
-    <TooltipProvider>
+    <>
       {showNavigation && <UnifiedNavigation />}
       <Router />
       <RoleSwitcher />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <TooltipProvider>
+      <AppContent />
     </TooltipProvider>
   );
 }
