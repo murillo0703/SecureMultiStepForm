@@ -1,4 +1,5 @@
 import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Check, Circle, User, Building, Shield, FileText, CreditCard, PenTool } from 'lucide-react';
 
@@ -57,6 +58,18 @@ const enrollmentSteps = [
 export function ProgressSidebar() {
   const [location] = useLocation();
 
+  // Fetch companies and application data to track real progress
+  const { data: companies = [] } = useQuery<any[]>({
+    queryKey: ['/api/companies'],
+  });
+
+  const companyId = companies.length > 0 ? companies[0]?.id : null;
+
+  const { data: application } = useQuery<any>({
+    queryKey: [`/api/companies/${companyId}/application`],
+    enabled: !!companyId,
+  });
+
   const getCurrentStepIndex = () => {
     const currentStep = enrollmentSteps.findIndex(step => step.path === location);
     return currentStep >= 0 ? currentStep : 0;
@@ -64,11 +77,21 @@ export function ProgressSidebar() {
 
   const currentStepIndex = getCurrentStepIndex();
 
-  const getStepStatus = (index: number) => {
-    if (index < currentStepIndex) return 'completed';
+  const getStepStatus = (index: number, stepId: string) => {
+    // Check if step is completed based on application data
+    const completedSteps = (application?.completedSteps as string[]) || [];
+    const isCompleted = completedSteps.includes(stepId);
+    
+    if (isCompleted) return 'completed';
     if (index === currentStepIndex) return 'current';
     return 'upcoming';
   };
+
+  // Calculate actual progress based on completed steps
+  const completedSteps = (application?.completedSteps as string[]) || [];
+  const actualProgress = completedSteps.length > 0 
+    ? (completedSteps.length / enrollmentSteps.length) * 100 
+    : ((currentStepIndex + 1) / enrollmentSteps.length) * 100;
 
   return (
     <Card className="h-fit">
@@ -82,7 +105,7 @@ export function ProgressSidebar() {
 
         <div className="space-y-4">
           {enrollmentSteps.map((step, index) => {
-            const status = getStepStatus(index);
+            const status = getStepStatus(index, step.id);
             const IconComponent = step.icon;
 
             return (
@@ -138,12 +161,12 @@ export function ProgressSidebar() {
             <div
               className="bg-blue-500 h-2 rounded-full transition-all duration-300"
               style={{
-                width: `${((currentStepIndex + 1) / enrollmentSteps.length) * 100}%`,
+                width: `${actualProgress}%`,
               }}
             />
           </div>
           <div className="text-xs text-gray-500 mt-2 text-center">
-            {Math.round(((currentStepIndex + 1) / enrollmentSteps.length) * 100)}% Complete
+            {Math.round(actualProgress)}% Complete ({completedSteps.length} of {enrollmentSteps.length} steps)
           </div>
         </div>
       </CardContent>
