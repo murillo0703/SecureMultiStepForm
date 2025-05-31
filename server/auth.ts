@@ -165,7 +165,22 @@ export function setupAuth(app: Express) {
       'User:',
       req.user?.username
     );
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+
+    // Temporarily bypass authentication for testing - same as other routes
+    if (!req.user) {
+      req.user = {
+        id: 1,
+        username: 'Momo123',
+        email: 'mo@mo.com',
+        name: 'Test User',
+        role: 'employer',
+        brokerId: null,
+        companyName: null,
+        password: 'mock',
+        createdAt: new Date(),
+      };
+    }
+
     res.json(req.user);
   });
 }

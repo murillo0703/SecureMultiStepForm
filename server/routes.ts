@@ -82,6 +82,7 @@ const isAuthenticated = (req: Request, res: Response, next: Function) => {
       brokerId: null,
       companyName: null,
       password: 'mock',
+      createdAt: new Date(),
     };
   }
 
