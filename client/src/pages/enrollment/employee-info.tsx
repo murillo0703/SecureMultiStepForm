@@ -6,10 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Employee } from '@shared/schema';
+import { Company, Employee, Owner } from '@shared/schema';
 import { employeeValidationSchema } from '@/utils/form-validators';
 import { Header } from '@/components/layout/header';
 import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
+import { EnrollmentChecklist } from '@/components/enrollment/checklist';
 import { FileUpload } from '@/components/ui/file-upload';
 import {
   Form,
@@ -73,7 +74,7 @@ export default function EmployeeInfo() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   // Fetch companies for this user
-  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
+  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery<Company[]>({
     queryKey: ['/api/companies'],
   });
 
@@ -94,7 +95,7 @@ export default function EmployeeInfo() {
   });
 
   // Fetch company owners
-  const { data: owners = [], isLoading: isLoadingOwners } = useQuery({
+  const { data: owners = [], isLoading: isLoadingOwners } = useQuery<Owner[]>({
     queryKey: [`/api/companies/${companyId}/owners`],
     enabled: !!companyId,
   });
@@ -778,7 +779,7 @@ export default function EmployeeInfo() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </main>
+      </div>
     </div>
   );
 }
