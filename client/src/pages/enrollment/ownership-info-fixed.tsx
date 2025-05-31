@@ -43,7 +43,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Users, ArrowRight, ArrowLeft, CheckCircle, AlertCircle, Edit, Trash2 } from 'lucide-react';
+import { Users, ArrowRight, ArrowLeft, CheckCircle, AlertCircle, Edit, Trash2, Loader2 } from 'lucide-react';
 
 type OwnerFormValues = z.infer<typeof ownerValidationSchema>;
 
@@ -290,25 +290,22 @@ export default function OwnershipInfo() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Bar */}
-        <ProgressBar
-          steps={steps}
-          currentStep="ownership-info"
-          completedSteps={(application?.completedSteps as string[]) || []}
-        />
-
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main Content Area */}
-          <div className="lg:flex-1">
-            {/* Autosave Indicator */}
-            <div className="flex items-center mb-2 text-sm text-gray-500">
-              <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
-              <span>All changes autosaved</span>
-            </div>
+      
+      <div className="flex">
+        {/* Sidebar */}
+        <ProgressSidebar />
+        
+        {/* Main Content */}
+        <div className="flex-1 p-6">
+          {/* Autosave Indicator */}
+          <div className="flex items-center mb-6 text-sm text-gray-500">
+            <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
+            <span>All changes autosaved</span>
+          </div>
+          
+          <div className="max-w-4xl">
 
       <Card className="mb-6">
         <CardHeader>

@@ -13,8 +13,7 @@ import {
   Application,
 } from '@shared/schema';
 import { Header } from '@/components/layout/header';
-import { ProgressBar } from '@/components/layout/progress-bar';
-import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import { generatePDF, downloadPDF } from '@/utils/pdf-generator';
 import {
   Card,

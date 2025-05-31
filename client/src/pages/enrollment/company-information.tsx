@@ -286,7 +286,7 @@ export default function CompanyInformation() {
       
       <div className="flex">
         {/* Sidebar */}
-        <ProgressSidebar currentStep="company-info" />
+        <ProgressSidebar />
         
         {/* Main Content */}
         <div className="flex-1 p-6">

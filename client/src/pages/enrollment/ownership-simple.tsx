@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/layout/header';
-import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ import {
   FormLabel, 
   FormMessage 
 } from '@/components/ui/form';
-import { ArrowLeft, ArrowRight, Users, Plus } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Users, Plus, CheckCircle } from 'lucide-react';
 
 // Owner form validation schema
 const ownerSchema = z.object({
@@ -137,17 +137,17 @@ export default function OwnershipSimple() {
       
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-64 bg-white shadow-sm border-r border-gray-200 min-h-screen">
-          <div className="p-6">
-            <EnrollmentChecklist 
-              companyId={1}
-            />
-          </div>
-        </div>
-
+        <ProgressSidebar />
+        
         {/* Main Content */}
         <div className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto space-y-6">
+          {/* Autosave Indicator */}
+          <div className="flex items-center mb-6 text-sm text-gray-500">
+            <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
+            <span>All changes autosaved</span>
+          </div>
+          
+          <div className="max-w-4xl space-y-6">
             
             {/* Header Card */}
             <Card>
