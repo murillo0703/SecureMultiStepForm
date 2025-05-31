@@ -34,6 +34,9 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/" component={HomePage} />
 
+      {/* Master Admin Routes */}
+      <ProtectedRoute path="/master-admin/dashboard" component={MasterAdminDashboard} />
+      
       {/* Admin Routes */}
       <ProtectedRoute path="/admin/dashboard" component={AdminControlCenter} />
       <ProtectedRoute path="/admin/control-center" component={AdminControlCenter} />
@@ -41,6 +44,9 @@ function Router() {
       {/* Broker Routes */}
       <ProtectedRoute path="/broker/dashboard" component={BrokerDashboard} />
       <ProtectedRoute path="/broker/settings" component={BrokerSettingsPage} />
+      
+      {/* Employer Routes */}
+      <ProtectedRoute path="/employer/dashboard" component={EmployerDashboard} />
 
       {/* Enrollment Routes */}
       <ProtectedRoute path="/enrollment/application-initiator" component={ApplicationInitiator} />

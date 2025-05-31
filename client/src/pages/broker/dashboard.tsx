@@ -181,15 +181,15 @@ export default function BrokerDashboard() {
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span>Users ({stats?.totalUsers || 0}/{stats?.maxUsers || 0})</span>
-                  <span>{Math.round(((stats?.totalUsers || 0) / (stats?.maxUsers || 1)) * 100)}%</span>
+                  <span>{Math.round(((stats?.totalUsers || 0) / ((stats?.maxUsers || 1))) * 100)}%</span>
                 </div>
-                <Progress value={((stats?.totalUsers || 0) / (stats?.maxUsers || 1)) * 100} className="mb-4" />
+                <Progress value={((stats?.totalUsers || 0) / ((stats?.maxUsers || 1))) * 100} className="mb-4" />
                 
                 <div className="flex justify-between text-sm mb-2">
                   <span>Submissions ({stats?.totalSubmissions || 0}/{stats?.maxSubmissions || 0})</span>
-                  <span>{Math.round(((stats?.totalSubmissions || 0) / (stats?.maxSubmissions || 1)) * 100)}%</span>
+                  <span>{Math.round(((stats?.totalSubmissions || 0) / ((stats?.maxSubmissions || 1))) * 100)}%</span>
                 </div>
-                <Progress value={((stats?.totalSubmissions || 0) / (stats?.maxSubmissions || 1)) * 100} />
+                <Progress value={((stats?.totalSubmissions || 0) / ((stats?.maxSubmissions || 1))) * 100} />
               </div>
               
               <div className="space-y-4">

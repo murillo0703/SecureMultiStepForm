@@ -35,9 +35,15 @@ export default function HomePage() {
   });
 
   useEffect(() => {
-    // If user is admin, redirect to admin dashboard
-    if (user?.role === 'admin') {
+    // Route users to their appropriate dashboards based on role
+    if (user?.role === 'master_admin') {
+      navigate('/master-admin/dashboard');
+    } else if (user?.role === 'admin') {
       navigate('/admin/dashboard');
+    } else if (user?.role === 'broker_admin' || user?.role === 'broker_staff') {
+      navigate('/broker/dashboard');
+    } else if (user?.role === 'employer') {
+      navigate('/employer/dashboard');
     }
   }, [user, navigate]);
 

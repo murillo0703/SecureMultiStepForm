@@ -268,7 +268,7 @@ export default function MasterAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentActivity.map((activity: any, index: number) => (
+                  {(recentActivity as any[]).map((activity: any, index: number) => (
                     <div key={index} className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
                         {activity.type === 'success' && (
