@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/layout/header';
 import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
+import { Company, Owner, ApplicationInitiator } from '@shared/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

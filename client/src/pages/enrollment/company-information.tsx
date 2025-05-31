@@ -30,9 +30,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { apiRequest } from '@/lib/queryClient';
 import { Building, MapPin, Calendar, FileText, Phone, CheckCircle, Loader2 } from 'lucide-react';
 import { Header } from '@/components/layout/header';
-import { ProgressBar } from '@/components/layout/progress-bar';
 import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
-import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { Company } from '@shared/schema';
 import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
 
 const companyInfoSchema = z.object({
@@ -183,7 +182,7 @@ export default function CompanyInformation() {
   const steps = getEnabledEnrollmentSteps();
 
   // Fetch companies for this user to get companyId
-  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery({
+  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery<Company[]>({
     queryKey: ['/api/companies'],
   });
 

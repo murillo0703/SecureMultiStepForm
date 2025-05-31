@@ -13,7 +13,7 @@ import CompanyInformation from '@/pages/enrollment/company-information';
 
 
 import OwnershipInfo from '@/pages/enrollment/ownership-simple';
-import AuthorizedContact from '@/pages/enrollment/authorized-contact-simple';
+
 import EmployeeInfo from '@/pages/enrollment/employee-info';
 import DocumentUpload from '@/pages/enrollment/document-upload';
 import PlanSelection from '@/pages/enrollment/plan-selection';
@@ -48,7 +48,7 @@ function Router() {
 
       <ProtectedRoute path="/enrollment/ownership" component={OwnershipInfo} />
       <ProtectedRoute path="/enrollment/ownership-info" component={OwnershipInfo} />
-      <ProtectedRoute path="/enrollment/authorized-contact" component={AuthorizedContact} />
+      <ProtectedRoute path="/enrollment/authorized-contact" component={() => <ComingSoonPage />} />
       {/* Employee section is temporarily hidden and redirected to Coming Soon page */}
       <ProtectedRoute path="/enrollment/employees" component={() => <ComingSoonPage />} />
       <ProtectedRoute path="/enrollment/employee-info" component={() => <ComingSoonPage />} />
