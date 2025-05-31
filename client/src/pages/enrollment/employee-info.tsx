@@ -101,7 +101,7 @@ export default function EmployeeInfo() {
   });
 
   // Fetch authorized contact
-  const { data: authorizedContact, isLoading: isLoadingContact } = useQuery({
+  const { data: authorizedContact, isLoading: isLoadingContact } = useQuery<Owner>({
     queryKey: [`/api/companies/${companyId}/authorized-contact`],
     enabled: !!companyId,
   });
@@ -272,17 +272,17 @@ export default function EmployeeInfo() {
   };
 
   // Helper function to import an eligible owner as an employee
-  const importOwnerAsEmployee = (owner: any) => {
+  const importOwnerAsEmployee = (owner: Owner) => {
     const employeeData = {
       companyId: companyId || 0,
       firstName: owner.firstName,
       lastName: owner.lastName,
-      dob: owner.dateOfBirth || '', // Convert if available
-      ssn: '', // Removed from owner data as requested
-      address: owner.address || '',
-      city: owner.city || '',
-      state: owner.state || '',
-      zip: owner.zip || '',
+      dob: '', // Owner schema doesn't include dateOfBirth
+      ssn: '',
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
       email: owner.email || '',
       phone: owner.phone || '',
     };
@@ -290,7 +290,7 @@ export default function EmployeeInfo() {
   };
 
   // Helper function to import the authorized contact as an employee
-  const importContactAsEmployee = (contact: any) => {
+  const importContactAsEmployee = (contact: Owner) => {
     const employeeData = {
       companyId: companyId || 0,
       firstName: contact.firstName,
