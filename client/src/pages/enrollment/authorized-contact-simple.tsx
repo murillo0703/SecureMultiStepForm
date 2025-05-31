@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/layout/header';
-import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -144,17 +144,38 @@ export default function AuthorizedContactSimple() {
       
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-64 bg-white shadow-sm border-r border-gray-200 min-h-screen">
-          <div className="p-6">
-            <EnrollmentChecklist 
-              companyId={1}
-            />
-          </div>
-        </div>
-
+        <ProgressSidebar />
+        
         {/* Main Content */}
         <div className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto space-y-6">
+          {/* Autosave Indicator */}
+          <div className="flex items-center mb-6 text-sm text-gray-500">
+            <UserCheck className="h-4 w-4 mr-1 text-secondary" />
+            <span>All changes autosaved</span>
+          </div>
+          
+          <div className="max-w-4xl">
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <UserCheck className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Authorized Contacts</h1>
+                  <p className="text-gray-600">
+                    Add individuals authorized to make decisions about your health plan
+                  </p>
+                </div>
+              </div>
+            {/* Main content continues here with the existing card structure */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <UserCheck className="h-5 w-5 text-blue-600" />
+                  Manage Authorized Contacts
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
             
             {/* Header Card */}
             <Card>
