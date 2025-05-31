@@ -343,19 +343,34 @@ export default function ReviewSubmit() {
   if (!companyId) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Bar */}
-        <ProgressBar
-          steps={steps}
-          currentStep="review"
-          completedSteps={(application?.completedSteps as string[]) || []}
-        />
-
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main Content Area */}
+      
+      <div className="flex">
+        {/* Sidebar */}
+        <ProgressSidebar />
+        
+        {/* Main Content */}
+        <div className="flex-1 p-6">
+          {/* Autosave Indicator */}
+          <div className="flex items-center mb-6 text-sm text-gray-500">
+            <CheckCircle className="h-4 w-4 mr-1 text-secondary" />
+            <span>All changes autosaved</span>
+          </div>
+          
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Review & Submit</h1>
+                  <p className="text-gray-600">
+                    Review your enrollment information and submit your application
+                  </p>
+                </div>
+              </div>
+            </div>
           <div className="lg:flex-1">
             {/* Autosave Indicator */}
             <div className="flex items-center mb-2 text-sm text-gray-500">
