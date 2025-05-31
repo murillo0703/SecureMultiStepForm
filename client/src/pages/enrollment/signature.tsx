@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { SignaturePad } from '@/components/enrollment/signature-pad';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { Header } from '@/components/layout/header';
+import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import { Loader2, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { isFeatureEnabled } from '@/config/feature-flags';
@@ -146,11 +148,35 @@ export default function SignaturePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">
-          Sign Your Application
-        </h1>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      
+      <div className="flex">
+        {/* Sidebar */}
+        <ProgressSidebar />
+        
+        {/* Main Content */}
+        <div className="flex-1 p-6">
+          {/* Autosave Indicator */}
+          <div className="flex items-center mb-6 text-sm text-gray-500">
+            <CheckCircle2 className="h-4 w-4 mr-1 text-secondary" />
+            <span>All changes autosaved</span>
+          </div>
+          
+          <div className="max-w-4xl">
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Digital Signature</h1>
+                  <p className="text-gray-600">
+                    Sign your application to complete the enrollment process
+                  </p>
+                </div>
+              </div>
+            </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Legal Agreement */}
@@ -289,6 +315,8 @@ export default function SignaturePage() {
             </Button>
           </div>
         </form>
+          </div>
+        </div>
       </div>
     </div>
   );
