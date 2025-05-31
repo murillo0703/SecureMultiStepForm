@@ -1,0 +1,126 @@
+1. Progress Bar Doesn’t Update Correctly
+Bug: The progress bar (#progressbar and .progress) visually misbehaves — sometimes not reflecting the correct step.
+
+Cause: You're toggling the classes (active) manually but missing full synchronization with the current step index.
+
+Fix:
+
+Ensure setProgressBar(curStep) always reflects the fieldset being shown.
+
+Use a global currentStep variable updated on each .next and .previous.
+
+2. "Owner" Fields Don't Auto-Populate When Initiator is an Owner
+Bug: If a user selects "yes" to being an owner, their info is not copied into the ownership section.
+
+Cause: No logic is present in the JS to copy initiator data into ownership fields.
+
+Fix:
+
+Add a JS listener:
+
+js
+Copy
+Edit
+if (isOwner === true) {
+  // Copy inputs
+  document.querySelector('#ownerName').value = document.querySelector('#initiatorName').value;
+  // Repeat for other fields
+}
+3. Date Picker Bug (Defaults to 1st of Previous Month)
+Bug: When entering a date close to the start of a month, it defaults to an incorrect earlier date.
+
+Cause: Likely due to string-to-Date parsing errors or browser locale format mismatches.
+
+Fix:
+
+Use a reliable date library like Day.js or Luxon.
+
+Force ISO format with <input type="date"> and validate using JS:
+
+js
+Copy
+Edit
+const date = new Date(document.getElementById('startDate').value);
+if (isNaN(date.getTime())) {
+  alert('Invalid date selected.');
+}
+4. Cannot Save and Return to In-Progress Application
+Bug: No implementation for saving form progress to browser storage or server.
+
+Fix (short-term):
+
+Add localStorage.setItem() to save step and field values on each change.
+
+On page load, check localStorage.getItem() and prefill if values exist.
+
+js
+Copy
+Edit
+// Save example
+localStorage.setItem('formStep', current_fs.id);
+localStorage.setItem('ownerName', document.getElementById('ownerName').value);
+
+// Restore example
+if (localStorage.getItem('ownerName')) {
+  document.getElementById('ownerName').value = localStorage.getItem('ownerName');
+}
+5. No Input Validation or Form Submission Blocking
+Bug: You can click “Next” without filling required fields.
+
+Fix:
+
+Add per-step input validation. Either HTML5 required attributes or JS validation:
+
+js
+Copy
+Edit
+if (document.getElementById('email').value === '') {
+  alert('Email is required');
+  return;
+}
+6. No "Back to Summary" or "Edit Previous Step" Feature
+Issue: After going forward, it’s not intuitive how to review or edit previous answers.
+
+Fix:
+
+Show a summary screen (step 5?) with all entered inputs and edit links.
+
+Or allow clicking on the progress steps (only for completed steps).
+
+7. Accessibility & Keyboard Navigation Fails
+Bug: Tabbing between fields or buttons isn’t smooth.
+
+Fix:
+
+Add proper tabindex and aria-label attributes.
+
+Ensure hidden steps use display: none and not visibility: hidden to prevent tabbing into them.
+
+8. Email Format or Phone Format Not Validated
+Bug: Email, phone numbers, and ZIPs accept bad formats.
+
+Fix:
+
+Add regex validation in JS or use type="email"/type="tel" and pattern attributes.
+
+9. No Feedback on Final Submission
+Bug: After submitting the final form, the user receives no confirmation.
+
+Fix:
+
+Show a success message and email summary (if configured).
+
+Optional: Show a “download PDF summary” of inputs.
+
+10. Multiple Form Submissions Possible (No Button Lock)
+Bug: Double-clicking the final submit may trigger multiple requests.
+
+Fix:
+
+Disable the submit button on click:
+
+js
+Copy
+Edit
+submitBtn.disabled = true;
+submitBtn.innerText = 'Submitting...';

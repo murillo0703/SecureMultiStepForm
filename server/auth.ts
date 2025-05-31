@@ -30,7 +30,7 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
+    secret: process.env.SESSION_SECRET || randomBytes(64).toString('hex'),
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
@@ -108,27 +108,18 @@ export function setupAuth(app: Express) {
         role,
       });
 
-      // Regenerate session ID for security
-      req.session.regenerate((err) => {
+      req.login(user, (err) => {
         if (err) {
-          console.error('Session regeneration error:', err);
+          console.error('Login error after registration:', err);
           return next(err);
         }
-
-          req.login(user, err => {
-            if (err) {
-              console.error('Login error after registration:', err);
-              return next(err);
-            }
-            console.log(
-              'User logged in after registration:',
-              user.username,
-              'Session ID:',
-              req.sessionID
-            );
-            res.status(201).json(user);
-          });
-        });
+        console.log(
+          'User logged in after registration:',
+          user.username,
+          'Session ID:',
+          req.sessionID
+        );
+        res.status(201).json(user);
       });
     } catch (error) {
       next(error);
@@ -140,28 +131,21 @@ export function setupAuth(app: Express) {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: 'Invalid username or password' });
 
-      // Regenerate session ID for security
-      req.session.regenerate((err) => {
-        if (err) {
-          console.error('Session regeneration error:', err);
-          return next(err);
-        }
-
         req.login(user, err => {
           if (err) {
             console.error('Login error:', err);
             return next(err);
           }
-        console.log(
-          'User logged in:',
-          user.username,
-          'Session ID:',
-          req.sessionID,
-          'Authenticated:',
-          req.isAuthenticated()
-        );
-        return res.status(200).json(user);
-      });
+          console.log(
+            'User logged in:',
+            user.username,
+            'Session ID:',
+            req.sessionID,
+            'Authenticated:',
+            req.isAuthenticated()
+          );
+          return res.status(200).json(user);
+        });
     })(req, res, next);
   });
 
