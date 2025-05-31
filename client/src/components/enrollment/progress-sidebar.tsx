@@ -70,6 +70,15 @@ export function ProgressSidebar() {
     enabled: !!companyId,
   });
 
+  // Debug logging to see what data we're getting
+  console.log('Progress Debug:', {
+    companyId,
+    application,
+    completedSteps: application?.completedSteps,
+    currentStep: application?.currentStep,
+    location
+  });
+
   const getCurrentStepIndex = () => {
     const currentStep = enrollmentSteps.findIndex(step => step.path === location);
     return currentStep >= 0 ? currentStep : 0;
