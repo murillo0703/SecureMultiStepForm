@@ -9,6 +9,9 @@ import AdminControlCenter from '@/pages/admin/control-center';
 import MasterAdminDashboard from '@/pages/master-admin/dashboard';
 import BrokerDashboard from '@/pages/broker/dashboard';
 import EmployerDashboard from '@/pages/employer/dashboard';
+import QuoteBuilder from '@/pages/quoting/quote-builder';
+import EmployeeEnrollment from '@/pages/enrollment-management/employee-enrollment';
+import RenewalManager from '@/pages/renewals/renewal-manager';
 import ApplicationInitiator from '@/pages/enrollment/application-initiator';
 import CarriersPage from '@/pages/enrollment/carriers';
 import CompanyInformation from '@/pages/enrollment/company-information';
@@ -47,6 +50,18 @@ function Router() {
       
       {/* Employer Routes */}
       <ProtectedRoute path="/employer/dashboard" component={EmployerDashboard} />
+
+      {/* Quote Builder Routes */}
+      <ProtectedRoute path="/quotes/builder" component={QuoteBuilder} />
+      <ProtectedRoute path="/quotes" component={QuoteBuilder} />
+
+      {/* Employee Enrollment Management Routes */}
+      <ProtectedRoute path="/enrollment-management" component={EmployeeEnrollment} />
+      <ProtectedRoute path="/employee-enrollment" component={EmployeeEnrollment} />
+
+      {/* Renewal Management Routes */}
+      <ProtectedRoute path="/renewals" component={RenewalManager} />
+      <ProtectedRoute path="/renewal-manager" component={RenewalManager} />
 
       {/* Enrollment Routes */}
       <ProtectedRoute path="/enrollment/application-initiator" component={ApplicationInitiator} />

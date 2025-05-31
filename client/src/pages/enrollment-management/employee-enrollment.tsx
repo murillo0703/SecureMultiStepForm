@@ -27,7 +27,6 @@ import {
   Edit,
   Heart,
   Eye as EyeIcon,
-  Dental,
   Calendar
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
@@ -163,7 +162,7 @@ export default function EmployeeEnrollment() {
       case 'medical':
         return <Heart className="w-4 h-4" />;
       case 'dental':
-        return <Dental className="w-4 h-4" />;
+        return <Heart className="w-4 h-4" />;
       case 'vision':
         return <EyeIcon className="w-4 h-4" />;
       default:
@@ -306,7 +305,7 @@ export default function EmployeeEnrollment() {
                             )}
                             {enrollment.dentalPlan && (
                               <Badge variant="outline" className="text-xs">
-                                <Dental className="w-3 h-3 mr-1" />
+                                <Heart className="w-3 h-3 mr-1" />
                                 Dental
                               </Badge>
                             )}
