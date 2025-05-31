@@ -167,32 +167,20 @@ export default function AuthorizedContactSimple() {
                   </p>
                 </div>
               </div>
-            {/* Main content continues here with the existing card structure */}
+            </div>
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserCheck className="h-5 w-5 text-blue-600" />
-                  Manage Authorized Contacts
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-            
-            {/* Header Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <UserCheck className="w-4 h-4 text-blue-600" />
-                  </div>
                   Authorized Contact Information
                 </CardTitle>
                 <p className="text-gray-600">
                   Add authorized contacts who can make decisions about this enrollment.
                 </p>
               </CardHeader>
-            </Card>
-
-            {/* Current Contacts List */}
+              <CardContent className="space-y-6">
+                {/* Current Contacts List */}
             {contacts.length > 0 && (
               <Card>
                 <CardHeader>
