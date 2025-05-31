@@ -1,0 +1,123 @@
+CTO Directive for Full App Overhaul
+
+Objective
+
+To align the current build of the Employer Onboarding App with the comprehensive product vision and correct all structural, functional, and UX/UI inconsistencies, this directive outlines both major and minor development action items.
+
+⸻
+
+🔧 TECHNICAL OVERHAUL INSTRUCTIONS
+
+1. UI + UX Standardization
+	•	Two-Panel Layout Enforcement:
+	•	Ensure all primary pages (including enrollment and admin views) use a consistent two-panel layout:
+	•	Left: TOC (Table of Contents)
+	•	Right: Dynamic content window
+	•	Pages not in compliance:
+	•	enrollment/company-info.tsx
+	•	broker-dashboard.tsx
+	•	ownership-info-fixed.tsx
+	•	Update progress-sidebar.tsx to universally support this layout.
+	•	Role Switcher Implementation:
+	•	Enable in-app switching between Admin, Broker, and Employer roles.
+	•	Broker/admin dashboards should display a persistent toggle.
+	•	The backend must respect access levels with middleware/auth guards.
+	•	Sticky Progress Navigation:
+	•	Add a sticky top progress bar to all enrollment pages to allow users to jump between steps.
+
+⸻
+
+2. COMPONENT + FILE STRUCTURE CLEANUP
+	•	Merge Duplicates:
+	•	Merge review-submit.tsx, review-submit-clean.tsx, and review-submit-fixed.tsx into one definitive component.
+	•	Eliminate company-info.tsx in favor of the more feature-complete company-information.tsx.
+	•	Document Upload Refactor:
+	•	Ensure conditional logic for document upload is clearly enforced via smart-document-upload.tsx and document-uploader.tsx.
+	•	Integrate file types, validation, and preview within the uploader.
+	•	Admin override logic should display upon unmet requirements.
+
+⸻
+
+3. FORM LOGIC + DATA FLOW
+	•	Auto-Fill Owner Info:
+	•	If “Initiator” selects role as “Owner,” auto-populate ownership fields in ownership-info-fixed.tsx.
+	•	Fix Field Persistence:
+	•	Ensure that multi-step forms save all data reliably.
+	•	Fields are dropping values between steps. Fix use-multistep-form.tsx and autosave logic accordingly.
+	•	Improved Input Feedback:
+	•	Add inline error messages and visual confirmation states to form fields.
+	•	Enhance UX with success state toast or light animation after major form checkpoints.
+
+⸻
+
+4. ADMIN + BROKER DASHBOARDS
+	•	Dashboard Sync:
+	•	Audit broker-dashboard.tsx and admin/control-center.tsx to confirm they reference and reflect the same group and plan data.
+	•	Ensure plan upload and document override tools are only available on admin views.
+	•	PDF Template Mapping:
+	•	Review pdf-form-generator.tsx and pdf-templates.tsx.
+	•	Confirm mapped fields match onboarding input field names.
+	•	Fix template loading errors and allow dynamic selection per carrier.
+	•	Plan Upload Enhancements:
+	•	In plan-upload.tsx, ensure plans are sorted by carrier, date, and metal tier.
+	•	Allow filtering and archiving old plans.
+
+⸻
+
+5. SECURITY + STABILITY
+	•	Email Verification Completion:
+	•	Complete 6-digit verification via SendGrid or Resend API.
+	•	Verify registration and contact email fields with real-time validation.
+	•	Signature Pad Reliability:
+	•	Test signature-pad.tsx for mobile responsiveness.
+	•	Ensure drawing persists and converts to base64 for submission.
+	•	Fix File Upload Limits:
+	•	file-upload.tsx must enforce file size and type restrictions.
+	•	Display warnings before upload is attempted.
+
+⸻
+
+6. HOOKS + REFACTORING
+	•	Audit Hooks:
+	•	Review use-auth.tsx, use-multistep-form.tsx, use-autosave.tsx, use-document-validation.tsx
+	•	Improve logic cohesion between autosave and multi-step progress.
+	•	Ensure use-toast.ts provides consistent alerts for user flow checkpoints.
+
+⸻
+
+7. FUTURE EXPANSION SUPPORT (Scaffold Now)
+	•	Role-Specific Pages:
+	•	Add placeholders for Employee Dashboard, Renewal Center, Policy Review, and CRM activity feed.
+	•	Navigation Engine:
+	•	Ensure navigation-menu.tsx and sidebar.tsx can dynamically load nav items by role and context.
+	•	Design System:
+	•	Centralize color, font, spacing, and components via Tailwind config and theme-provider.tsx
+
+⸻
+
+✅ Replit Prompt Block
+
+Update the SecureMultiStepForm app to:
+
+1. Enforce a consistent two-panel layout across all user roles and enrollment steps
+2. Refactor or merge duplicate files: 
+   - Combine `review-submit.tsx`, `review-submit-clean.tsx`, `review-submit-fixed.tsx`
+   - Remove `company-info.tsx`, use `company-information.tsx`
+3. Fix field save issues in `use-multistep-form.tsx` and autosave hook
+4. Implement email verification via SendGrid or Resend
+5. Fix file upload size/type limits with warnings in `file-upload.tsx`
+6. Build proper routing to support role switching between Admin, Broker, Employer
+7. Add sticky top progress bar to enrollment layout
+8. Ensure form inputs provide real-time feedback, success state visuals, and inline errors
+9. Complete `pdf-form-generator.tsx` to work with mapped fields and upload logic
+10. Finish Admin Panel with: plan filtering, invoice logs, and document override visibility
+11. Support future expansion by wiring in `navigation-menu.tsx` and dashboard scaffolds for CRM and renewal modules
+
+
+⸻
+
+VC Summary
+
+This directive ensures a robust foundation while aggressively cleaning code and setting the groundwork for modular, enterprise-level expansion.
+
+Next Step: Submit full directive and Replit prompt to your build environment for implementation. We’ll perform regression QA and track fixes post-merge.
