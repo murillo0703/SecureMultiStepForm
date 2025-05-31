@@ -48,10 +48,8 @@ function Router() {
 
       <ProtectedRoute path="/enrollment/ownership" component={OwnershipInfo} />
       <ProtectedRoute path="/enrollment/ownership-info" component={OwnershipInfo} />
-      <ProtectedRoute path="/enrollment/authorized-contact" component={() => <ComingSoonPage />} />
-      {/* Employee section is temporarily hidden and redirected to Coming Soon page */}
-      <ProtectedRoute path="/enrollment/employees" component={() => <ComingSoonPage />} />
-      <ProtectedRoute path="/enrollment/employee-info" component={() => <ComingSoonPage />} />
+      <ProtectedRoute path="/enrollment/employees" component={EmployeeInfo} />
+      <ProtectedRoute path="/enrollment/employee-info" component={EmployeeInfo} />
       <ProtectedRoute path="/enrollment/documents" component={DocumentUpload} />
       <ProtectedRoute path="/enrollment/document-upload" component={DocumentUpload} />
       <ProtectedRoute

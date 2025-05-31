@@ -1038,6 +1038,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Broker-specific routes for accessing their own data
+  app.get('/api/broker/companies', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      if (!req.user?.brokerId) {
+        return res.status(403).json({ message: 'Access denied: No broker association' });
+      }
+
+      const companies = await storage.getCompaniesByBroker(req.user.brokerId);
+      res.json(companies);
+    } catch (error) {
+      console.error('Error fetching broker companies:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/broker/applications', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      if (!req.user?.brokerId) {
+        return res.status(403).json({ message: 'Access denied: No broker association' });
+      }
+
+      const applications = await storage.getApplicationsByBroker(req.user.brokerId);
+      res.json(applications);
+    } catch (error) {
+      console.error('Error fetching broker applications:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/broker/users', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      if (!req.user?.brokerId || req.user.role !== 'owner') {
+        return res.status(403).json({ message: 'Access denied: Owner role required' });
+      }
+
+      const users = await storage.getUsersByBroker(req.user.brokerId);
+      res.json(users);
+    } catch (error) {
+      console.error('Error fetching broker users:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
   app.post('/api/admin/document-override', isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { canOverrideValidation } = await import('./document-validation');

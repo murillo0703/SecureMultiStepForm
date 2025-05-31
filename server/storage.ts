@@ -63,6 +63,7 @@ export interface IStorage {
   createCompany(company: InsertCompany): Promise<Company>;
   getCompany(id: number): Promise<Company | undefined>;
   getCompaniesByUserId(userId: number): Promise<Company[]>;
+  getCompaniesByBroker(brokerId: string): Promise<Company[]>;
 
   // Owner operations
   createOwner(owner: InsertOwner): Promise<Owner>;

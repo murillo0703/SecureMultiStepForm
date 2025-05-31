@@ -1,7 +1,13 @@
+import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TwoPanelLayout } from '@/components/layout/two-panel-layout';
+import { useAuth } from '@/hooks/use-auth';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { Company, Application, User } from '@shared/schema';
 import {
   Building2,
   Users,
@@ -12,10 +18,57 @@ import {
   Mail,
   Plus,
   Eye,
+  ExternalLink,
 } from 'lucide-react';
 
-// Sample Components for Broker Dashboard
+// Broker Overview Component with Real Data
 function BrokerOverview() {
+  const { user } = useAuth();
+
+  // Fetch broker's companies (clients)
+  const { data: companies = [], isLoading: isLoadingCompanies } = useQuery<Company[]>({
+    queryKey: ['/api/broker/companies'],
+    queryFn: async () => {
+      const res = await apiRequest('GET', '/api/broker/companies');
+      return await res.json();
+    },
+  });
+
+  // Fetch broker's applications
+  const { data: applications = [], isLoading: isLoadingApplications } = useQuery<Application[]>({
+    queryKey: ['/api/broker/applications'],
+    queryFn: async () => {
+      const res = await apiRequest('GET', '/api/broker/applications');
+      return await res.json();
+    },
+  });
+
+  const activeClients = companies.length;
+  const pendingApplications = applications.filter(app => app.status === 'in_progress' || app.status === 'pending_review').length;
+  const recentActivity = applications
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .slice(0, 5);
+
+  if (isLoadingCompanies || isLoadingApplications) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map(i => (
+            <Card key={i}>
+              <CardContent className="p-6">
+                <div className="animate-pulse">
+                  <div className="h-8 w-8 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-6 w-16 bg-gray-200 rounded mb-1"></div>
+                  <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -24,7 +77,7 @@ function BrokerOverview() {
             <div className="flex items-center gap-3">
               <Users className="h-8 w-8 text-blue-600" />
               <div>
-                <p className="text-2xl font-bold">47</p>
+                <p className="text-2xl font-bold">{activeClients}</p>
                 <p className="text-sm text-gray-600">Active Clients</p>
               </div>
             </div>
@@ -35,7 +88,7 @@ function BrokerOverview() {
             <div className="flex items-center gap-3">
               <FileText className="h-8 w-8 text-green-600" />
               <div>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-2xl font-bold">{pendingApplications}</p>
                 <p className="text-sm text-gray-600">Pending Applications</p>
               </div>
             </div>
@@ -46,8 +99,8 @@ function BrokerOverview() {
             <div className="flex items-center gap-3">
               <BarChart3 className="h-8 w-8 text-purple-600" />
               <div>
-                <p className="text-2xl font-bold">$47K</p>
-                <p className="text-sm text-gray-600">Monthly Commissions</p>
+                <p className="text-2xl font-bold">{applications.length}</p>
+                <p className="text-sm text-gray-600">Total Applications</p>
               </div>
             </div>
           </CardContent>
@@ -59,20 +112,28 @@ function BrokerOverview() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b">
-              <div>
-                <p className="font-medium">ABC Corp submitted application</p>
-                <p className="text-sm text-gray-600">2 hours ago</p>
-              </div>
-              <Badge variant="outline">New</Badge>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b">
-              <div>
-                <p className="font-medium">XYZ Inc document uploaded</p>
-                <p className="text-sm text-gray-600">4 hours ago</p>
-              </div>
-              <Badge variant="secondary">Updated</Badge>
-            </div>
+            {recentActivity.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">No recent activity</p>
+            ) : (
+              recentActivity.map((app) => {
+                const company = companies.find(c => c.id === app.companyId);
+                return (
+                  <div key={app.id} className="flex items-center justify-between py-2 border-b">
+                    <div>
+                      <p className="font-medium">
+                        {company?.name || 'Unknown Company'} - {app.status.replace('_', ' ')}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {new Date(app.updatedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Badge variant={app.status === 'submitted' ? 'default' : 'outline'}>
+                      {app.status.replace('_', ' ')}
+                    </Badge>
+                  </div>
+                );
+              })
+            )}
           </div>
         </CardContent>
       </Card>
