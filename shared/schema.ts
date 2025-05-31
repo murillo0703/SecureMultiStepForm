@@ -67,6 +67,19 @@ export const brokers = pgTable('brokers', {
   logoUrl: text('logo_url'),
   colorPrimary: text('color_primary').default('#3b82f6'), // Default blue
   colorSecondary: text('color_secondary').default('#1e40af'), // Default darker blue
+  subdomain: text('subdomain').unique(), // For white-label subdomains
+  customDomain: text('custom_domain').unique(), // Custom domain support
+  subscriptionTier: text('subscription_tier').default('basic').notNull(), // basic, premium, enterprise
+  subscriptionStatus: text('subscription_status').default('active').notNull(), // active, suspended, cancelled
+  maxUsers: integer('max_users').default(10).notNull(),
+  maxSubmissions: integer('max_submissions').default(100).notNull(),
+  stripeCustomerId: text('stripe_customer_id'),
+  stripeSubscriptionId: text('stripe_subscription_id'),
+  billingEmail: text('billing_email'),
+  isActive: boolean('is_active').default(true).notNull(),
+  trialEndsAt: timestamp('trial_ends_at'),
+  lastBillingDate: timestamp('last_billing_date'),
+  nextBillingDate: timestamp('next_billing_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -77,7 +90,64 @@ export const insertBrokerSchema = createInsertSchema(brokers).omit({
   updatedAt: true,
 });
 
-// Users table for authentication
+// Subscription Plans table for defining SaaS tiers
+export const subscriptionPlans = pgTable('subscription_plans', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(), // Basic, Premium, Enterprise
+  description: text('description'),
+  price: integer('price').notNull(), // Price in cents
+  billingInterval: text('billing_interval').default('monthly').notNull(), // monthly, yearly
+  maxUsers: integer('max_users').notNull(),
+  maxSubmissions: integer('max_submissions').notNull(),
+  features: json('features'), // Array of feature flags
+  stripeProductId: text('stripe_product_id'),
+  stripePriceId: text('stripe_price_id'),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Billing History table for tracking payments
+export const billingHistory = pgTable('billing_history', {
+  id: serial('id').primaryKey(),
+  brokerId: uuid('broker_id').references(() => brokers.id).notNull(),
+  amount: integer('amount').notNull(), // Amount in cents
+  currency: text('currency').default('usd').notNull(),
+  status: text('status').notNull(), // paid, failed, pending, refunded
+  stripePaymentIntentId: text('stripe_payment_intent_id'),
+  stripeInvoiceId: text('stripe_invoice_id'),
+  description: text('description'),
+  paidAt: timestamp('paid_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const insertBillingHistorySchema = createInsertSchema(billingHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Usage Metrics table for tracking broker usage
+export const usageMetrics = pgTable('usage_metrics', {
+  id: serial('id').primaryKey(),
+  brokerId: uuid('broker_id').references(() => brokers.id).notNull(),
+  metricType: text('metric_type').notNull(), // submissions, users, storage
+  value: integer('value').notNull(),
+  period: text('period').notNull(), // daily, monthly, yearly
+  recordedAt: timestamp('recorded_at').defaultNow().notNull(),
+});
+
+export const insertUsageMetricsSchema = createInsertSchema(usageMetrics).omit({
+  id: true,
+  recordedAt: true,
+});
+
+// Users table for authentication with enhanced roles
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   username: text('username').notNull().unique(),
@@ -85,9 +155,15 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
   brokerId: uuid('broker_id').references(() => brokers.id),
-  role: text('role').default('employer').notNull(), // employer, admin, owner, staff
+  role: text('role').default('employer').notNull(), // master_admin, broker_admin, broker_staff, employer
   companyName: text('company_name'),
+  isActive: boolean('is_active').default(true).notNull(),
+  lastLoginAt: timestamp('last_login_at'),
+  emailVerified: boolean('email_verified').default(false).notNull(),
+  resetToken: text('reset_token'),
+  resetTokenExpiry: timestamp('reset_token_expiry'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
