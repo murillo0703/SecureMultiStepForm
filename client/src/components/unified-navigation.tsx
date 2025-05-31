@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -60,8 +60,35 @@ interface NavSection {
 
 export function UnifiedNavigation() {
   const { user } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [currentRole, setCurrentRole] = useState<'master-admin' | 'broker' | 'employer'>('master-admin');
+
+  // Auto-detect role based on current location
+  useEffect(() => {
+    if (location.startsWith('/master-admin')) {
+      setCurrentRole('master-admin');
+    } else if (location.startsWith('/broker')) {
+      setCurrentRole('broker');
+    } else if (location.startsWith('/employer')) {
+      setCurrentRole('employer');
+    }
+  }, [location]);
+
+  const handleRoleSwitch = (role: 'master-admin' | 'broker' | 'employer') => {
+    setCurrentRole(role);
+    // Navigate to the appropriate dashboard for the selected role
+    switch (role) {
+      case 'master-admin':
+        setLocation('/master-admin/dashboard');
+        break;
+      case 'broker':
+        setLocation('/broker/dashboard');
+        break;
+      case 'employer':
+        setLocation('/employer/dashboard');
+        break;
+    }
+  };
 
   const navigationSections: Record<string, NavSection[]> = {
     'master-admin': [
@@ -345,15 +372,15 @@ export function UnifiedNavigation() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuItem onClick={() => setCurrentRole('master-admin')}>
+              <DropdownMenuItem onClick={() => handleRoleSwitch('master-admin')}>
                 <Crown className="w-4 h-4 mr-2" />
                 Master Administrator
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setCurrentRole('broker')}>
+              <DropdownMenuItem onClick={() => handleRoleSwitch('broker')}>
                 <Shield className="w-4 h-4 mr-2" />
                 Broker Portal
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setCurrentRole('employer')}>
+              <DropdownMenuItem onClick={() => handleRoleSwitch('employer')}>
                 <Building2 className="w-4 h-4 mr-2" />
                 Employer Portal
               </DropdownMenuItem>
@@ -376,6 +403,11 @@ export function UnifiedNavigation() {
                         key={item.href}
                         href={item.href}
                         className="group grid h-auto w-full items-center justify-start gap-1 rounded-md p-4 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+                        onClick={() => {
+                          // Close the navigation menu when a link is clicked
+                          const event = new CustomEvent('closeNavigation');
+                          window.dispatchEvent(event);
+                        }}
                       >
                         <div className="flex items-center space-x-2">
                           {item.icon}
