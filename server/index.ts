@@ -50,6 +50,11 @@ app.use(cors({
   credentials: true,
 }));
 
+// Apply security middleware
+app.use(securityHeaders);
+app.use(securityLogger);
+app.use(sanitizeInput);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 

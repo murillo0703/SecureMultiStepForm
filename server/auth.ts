@@ -2,7 +2,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Express } from 'express';
 import session from 'express-session';
-import { scrypt, randomBytes, timingSafeEqual } from 'crypto';
+import { scrypt, randomBytes, timingSafeEqual, randomUUID } from 'crypto';
 import { promisify } from 'util';
 import { storage } from './storage';
 import { User as SelectUser } from '@shared/schema';
@@ -30,17 +30,20 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || 'murillo-insurance-enrollment-secret',
-    resave: true,
-    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
+    resave: false,
+    saveUninitialized: false,
     store: storage.sessionStore,
+    name: 'murillo.sid', // Custom session name for security
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-      secure: false,
-      sameSite: 'none', // Changed for mobile compatibility
-      httpOnly: false,
-      domain: undefined, // Let browser determine domain
+      maxAge: 1000 * 60 * 30, // 30 minutes (shorter timeout for security)
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+      sameSite: 'strict', // CSRF protection
+      httpOnly: true, // Prevent XSS attacks
+      domain: undefined,
     },
+    // Regenerate session ID on login for security
+    genid: () => randomUUID(),
   };
 
   app.set('trust proxy', 1);
@@ -105,18 +108,27 @@ export function setupAuth(app: Express) {
         role,
       });
 
-      req.login(user, err => {
+      // Regenerate session ID for security
+      req.session.regenerate((err) => {
         if (err) {
-          console.error('Login error after registration:', err);
+          console.error('Session regeneration error:', err);
           return next(err);
         }
-        console.log(
-          'User logged in after registration:',
-          user.username,
-          'Session ID:',
-          req.sessionID
-        );
-        res.status(201).json(user);
+
+          req.login(user, err => {
+            if (err) {
+              console.error('Login error after registration:', err);
+              return next(err);
+            }
+            console.log(
+              'User logged in after registration:',
+              user.username,
+              'Session ID:',
+              req.sessionID
+            );
+            res.status(201).json(user);
+          });
+        });
       });
     } catch (error) {
       next(error);
@@ -124,15 +136,22 @@ export function setupAuth(app: Express) {
   });
 
   app.post('/api/login', (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: 'Invalid username or password' });
 
-      req.login(user, err => {
+      // Regenerate session ID for security
+      req.session.regenerate((err) => {
         if (err) {
-          console.error('Login error:', err);
+          console.error('Session regeneration error:', err);
           return next(err);
         }
+
+        req.login(user, err => {
+          if (err) {
+            console.error('Login error:', err);
+            return next(err);
+          }
         console.log(
           'User logged in:',
           user.username,
