@@ -73,6 +73,7 @@ export function ProgressSidebar() {
   // Debug logging to see what data we're getting
   console.log('Progress Debug:', {
     companyId,
+    companies,
     application,
     completedSteps: application?.completedSteps,
     currentStep: application?.currentStep,
