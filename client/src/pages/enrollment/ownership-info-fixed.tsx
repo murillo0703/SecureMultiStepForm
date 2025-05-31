@@ -11,8 +11,7 @@ import { Owner } from '@shared/schema';
 import { ownerValidationSchema } from '@/utils/form-validators';
 import { formatPhoneNumber } from '@/utils/format-masks';
 import { Header } from '@/components/layout/header';
-import { ProgressBar } from '@/components/layout/progress-bar';
-import { EnrollmentChecklist } from '@/components/enrollment/checklist';
+import { ProgressSidebar } from '@/components/enrollment/progress-sidebar';
 import { getEnabledEnrollmentSteps } from '@/utils/enrollment-steps';
 import {
   Form,
