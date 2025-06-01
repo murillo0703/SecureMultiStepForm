@@ -1766,6 +1766,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Employer Companies API Routes
+  app.get('/api/employer-companies', isAuthenticated, async (req, res, next) => {
+    try {
+      const userId = req.user!.id;
+      const companies = await storage.getCompaniesByUserId(userId);
+      
+      // Transform to employer-companies format
+      const employerCompanies = companies.map(company => ({
+        id: company.id,
+        companyName: company.name,
+        legalName: company.name, // Using name as legal name for now
+        taxId: null,
+        industry: company.industry || null,
+        website: null,
+        employeeCount: company.employeeCount || 1,
+        brokerId: company.brokerId || null,
+        effectiveDate: company.effectiveDate,
+        renewalDate: null,
+        isActive: true,
+        createdAt: company.createdAt,
+        updatedAt: company.updatedAt,
+      }));
+
+      res.json(employerCompanies);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/employer-companies', isAuthenticated, async (req, res, next) => {
+    try {
+      const userId = req.user!.id;
+      const { companyName, legalName, taxId, industry, website, employeeCount, effectiveDate } = req.body;
+      
+      // Create company using existing storage method
+      const company = await storage.createCompany({
+        userId,
+        name: companyName,
+        address: '', // Will be added via locations
+        city: '',
+        state: '',
+        zip: '',
+        phone: '',
+        email: req.user!.email || '',
+        employeeCount: employeeCount || 1,
+        effectiveDate: effectiveDate || new Date().toISOString().split('T')[0],
+        industry: industry || null,
+      });
+
+      // Return in employer-companies format
+      const employerCompany = {
+        id: company.id,
+        companyName: company.name,
+        legalName: legalName || company.name,
+        taxId: taxId || null,
+        industry: industry || null,
+        website: website || null,
+        employeeCount: company.employeeCount,
+        brokerId: company.brokerId || null,
+        effectiveDate: company.effectiveDate,
+        renewalDate: null,
+        isActive: true,
+        createdAt: company.createdAt,
+        updatedAt: company.updatedAt,
+      };
+
+      res.status(201).json(employerCompany);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Employer API Routes
   app.get('/api/employer/stats', isAuthenticated, async (req, res, next) => {
     try {
