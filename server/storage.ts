@@ -195,6 +195,8 @@ export class MemStorage implements IStorage {
     this.contributions = new Map();
     this.applications = new Map();
     this.applicationInitiators = new Map();
+    this.onboardingProgress = new Map();
+    this.companyContacts = new Map();
     this.auditLogs = [];
 
     this.userIdCounter = 1;
@@ -732,6 +734,57 @@ export class MemStorage implements IStorage {
       }
     }
     return undefined;
+  }
+
+  // Onboarding operations
+  async getOnboardingProgress(userId: number): Promise<any> {
+    return this.onboardingProgress.get(userId) || {
+      step1CompanyInfo: false,
+      step2ContactInfo: false,
+      step3OwnershipInfo: false,
+      isComplete: false,
+      companyId: null
+    };
+  }
+
+  async updateOnboardingProgress(userId: number, step: string, companyId?: number): Promise<any> {
+    const current = await this.getOnboardingProgress(userId);
+    const updated = { ...current };
+    
+    if (step === 'company') {
+      updated.step1CompanyInfo = true;
+      if (companyId) updated.companyId = companyId;
+    } else if (step === 'contact') {
+      updated.step2ContactInfo = true;
+    } else if (step === 'owner') {
+      updated.step3OwnershipInfo = true;
+      updated.isComplete = true;
+    }
+    
+    this.onboardingProgress.set(userId, updated);
+    return updated;
+  }
+
+  async createCompanyContact(contact: any): Promise<any> {
+    const id = Math.max(0, ...Array.from(this.companyContacts.keys())) + 1;
+    const newContact = {
+      id,
+      ...contact,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.companyContacts.set(id, newContact);
+    return newContact;
+  }
+
+  async getCompanyContacts(companyId: number): Promise<any[]> {
+    const contacts = [];
+    for (const contact of this.companyContacts.values()) {
+      if (contact.companyId === companyId) {
+        contacts.push(contact);
+      }
+    }
+    return contacts;
   }
 }
 

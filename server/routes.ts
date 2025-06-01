@@ -1115,6 +1115,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize example insurance plans (in a real app, this would be seeded in the database)
   await initializePlans();
 
+  // Employer Onboarding API Routes
+  app.get('/api/employer/onboarding/progress', async (req, res) => {
+    try {
+      // For testing, using user ID 1 - in production this would come from authenticated session
+      const userId = 1;
+      const progress = await storage.getOnboardingProgress(userId);
+      res.json(progress);
+    } catch (error: any) {
+      console.error('Get onboarding progress error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/employer/onboarding/company', async (req, res) => {
+    try {
+      // For testing, using user ID 1 - in production this would come from authenticated session
+      const userId = 1;
+      const companyData = req.body;
+      
+      // Create or update company
+      const company = await storage.createCompany({
+        ...companyData,
+        userId
+      });
+      
+      // Update onboarding progress
+      await storage.updateOnboardingProgress(userId, 'company', company.id);
+      
+      res.json({ success: true, companyId: company.id });
+    } catch (error: any) {
+      console.error('Save company onboarding error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/employer/onboarding/contact', async (req, res) => {
+    try {
+      // For testing, using user ID 1 - in production this would come from authenticated session
+      const userId = 1;
+      const contactData = req.body;
+      
+      // Get the company ID from onboarding progress
+      const progress = await storage.getOnboardingProgress(userId);
+      if (!progress.companyId) {
+        return res.status(400).json({ error: 'Company information must be completed first' });
+      }
+      
+      // Create company contact
+      await storage.createCompanyContact({
+        ...contactData,
+        companyId: progress.companyId
+      });
+      
+      // Update onboarding progress
+      await storage.updateOnboardingProgress(userId, 'contact');
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Save contact onboarding error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/employer/onboarding/owner', async (req, res) => {
+    try {
+      // For testing, using user ID 1 - in production this would come from authenticated session
+      const userId = 1;
+      const ownerData = req.body;
+      
+      // Get the company ID from onboarding progress
+      const progress = await storage.getOnboardingProgress(userId);
+      if (!progress.companyId) {
+        return res.status(400).json({ error: 'Company information must be completed first' });
+      }
+      
+      // Create owner
+      await storage.createOwner({
+        ...ownerData,
+        companyId: progress.companyId,
+        ownershipPercentage: parseFloat(ownerData.ownershipPercentage)
+      });
+      
+      // Update onboarding progress to complete
+      await storage.updateOnboardingProgress(userId, 'owner');
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Save owner onboarding error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Developer role switching endpoint
   app.post('/api/dev/switch-role', isAuthenticated, async (req: Request, res: Response) => {
     try {
