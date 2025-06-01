@@ -3,7 +3,6 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -64,6 +63,7 @@ export default function EmployerDashboard() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [activeSection, setActiveSection] = useState('overview');
 
   // Redirect if not employer
   if (user?.role !== 'employer') {
@@ -102,35 +102,6 @@ export default function EmployerDashboard() {
     },
   });
 
-  const resumeApplicationMutation = useMutation({
-    mutationFn: async (applicationId: number) => {
-      const response = await apiRequest('POST', `/api/employer/applications/${applicationId}/resume`);
-      return response.json();
-    },
-    onSuccess: (data) => {
-      toast({
-        title: 'Success',
-        description: 'Resuming your application.',
-      });
-      setLocation(`/enrollment/${data.nextStep}?applicationId=${data.applicationId}`);
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to resume application.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  if (statsLoading || applicationsLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
@@ -163,175 +134,295 @@ export default function EmployerDashboard() {
     return stepNames[step] || step;
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Employer Dashboard</h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Manage your insurance enrollments and submissions
+  // Table of Contents for left panel
+  const tableOfContents = [
+    {
+      title: 'Dashboard',
+      items: [
+        {
+          id: 'overview',
+          title: 'Overview',
+          icon: <BarChart3 className="h-4 w-4" />,
+          isActive: activeSection === 'overview',
+          onClick: () => setActiveSection('overview'),
+        },
+        {
+          id: 'applications',
+          title: 'Applications',
+          icon: <FileText className="h-4 w-4" />,
+          badge: `${applications.length}`,
+          isActive: activeSection === 'applications',
+          onClick: () => setActiveSection('applications'),
+        },
+        {
+          id: 'company-info',
+          title: 'Company Information',
+          icon: <Building className="h-4 w-4" />,
+          isActive: activeSection === 'company-info',
+          onClick: () => setActiveSection('company-info'),
+        }
+      ]
+    },
+    {
+      title: 'Quick Actions',
+      items: [
+        {
+          id: 'benefits',
+          title: 'Benefits Summary',
+          icon: <Shield className="h-4 w-4" />,
+          isActive: activeSection === 'benefits',
+          onClick: () => setActiveSection('benefits'),
+        },
+        {
+          id: 'employees',
+          title: 'Employee Overview',
+          icon: <Users className="h-4 w-4" />,
+          badge: stats?.currentCompany?.employees?.toString() || '0',
+          isActive: activeSection === 'employees',
+          onClick: () => setActiveSection('employees'),
+        },
+        {
+          id: 'costs',
+          title: 'Cost Analysis',
+          icon: <DollarSign className="h-4 w-4" />,
+          isActive: activeSection === 'costs',
+          onClick: () => setActiveSection('costs'),
+        }
+      ]
+    },
+    {
+      title: 'Management',
+      items: [
+        {
+          id: 'tasks',
+          title: 'Pending Tasks',
+          icon: <Calendar className="h-4 w-4" />,
+          badge: stats?.pendingReview?.toString() || '0',
+          isActive: activeSection === 'tasks',
+          onClick: () => setActiveSection('tasks'),
+        },
+        {
+          id: 'activity',
+          title: 'Recent Activity',
+          icon: <Activity className="h-4 w-4" />,
+          isActive: activeSection === 'activity',
+          onClick: () => setActiveSection('activity'),
+        },
+        {
+          id: 'settings',
+          title: 'Settings',
+          icon: <Settings className="h-4 w-4" />,
+          isActive: activeSection === 'settings',
+          onClick: () => setActiveSection('settings'),
+        }
+      ]
+    }
+  ];
+
+  const renderContent = () => {
+    if (statsLoading || applicationsLoading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      );
+    }
+
+    switch (activeSection) {
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats?.totalApplications || 0}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats?.completedApplications || 0}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                  <Clock className="h-4 w-4 text-blue-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats?.inProgressApplications || 0}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+                  <AlertCircle className="h-4 w-4 text-yellow-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats?.pendingReview || 0}</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Current Company Info */}
+            {stats?.currentCompany && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Building className="h-5 w-5" />
+                    <span>Current Company</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <div className="text-sm text-muted-foreground">Company Name</div>
+                      <div className="font-medium">{stats.currentCompany.name}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Employees</div>
+                      <div className="font-medium flex items-center space-x-1">
+                        <Users className="h-4 w-4" />
+                        <span>{stats.currentCompany.employees}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Industry</div>
+                      <div className="font-medium">{stats.currentCompany.industry}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        );
+
+      case 'applications':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Applications</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Manage your benefits applications and track their progress.
               </p>
-              {stats?.currentCompany && (
-                <div className="mt-2 flex items-center text-sm text-gray-600">
-                  <Building className="w-4 h-4 mr-1" />
-                  {stats.currentCompany.name} • {stats.currentCompany.employees} employees • {stats.currentCompany.industry}
+            </CardHeader>
+            <CardContent>
+              {applications.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Company</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Progress</TableHead>
+                      <TableHead>Current Step</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {applications.map((application) => (
+                      <TableRow key={application.id}>
+                        <TableCell className="font-medium">
+                          {application.companyName}
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(application.status)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Progress value={application.progress} className="w-20" />
+                            <span className="text-sm text-muted-foreground">
+                              {application.progress}%
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">
+                            {getStepName(application.currentStep)}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(application.createdAt).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Button size="sm" variant="outline">
+                              <Eye className="h-4 w-4 mr-1" />
+                              View
+                            </Button>
+                            {application.status === 'completed' && (
+                              <Button size="sm" variant="outline">
+                                <Download className="h-4 w-4 mr-1" />
+                                Download
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Applications Yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Start your first benefits application to get coverage for your employees.
+                  </p>
+                  <Button 
+                    onClick={() => startNewApplicationMutation.mutate()}
+                    disabled={startNewApplicationMutation.isPending}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Start Your First Application
+                  </Button>
                 </div>
               )}
-            </div>
-            <div className="flex space-x-3">
-              <Button onClick={() => startNewApplicationMutation.mutate()}>
-                <Plus className="w-4 h-4 mr-2" />
-                Start New Application
-              </Button>
-              <Button variant="outline" onClick={() => setLocation('/employer/profile')}>
-                Manage Profile
-              </Button>
+            </CardContent>
+          </Card>
+        );
+
+      default:
+        return (
+          <div className="text-center py-12">
+            <div className="text-muted-foreground">
+              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-medium mb-2">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</h3>
+              <p>This section will display {activeSection} information and functionality.</p>
             </div>
           </div>
-        </div>
-      </div>
+        );
+    }
+  };
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Dashboard Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Total Applications</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.totalApplications || 0}</p>
-                  <p className="text-xs text-blue-600">All time</p>
-                </div>
-                <FileText className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">In Progress</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.inProgressApplications || 0}</p>
-                  <p className="text-xs text-yellow-600">Needs attention</p>
-                </div>
-                <Clock className="h-8 w-8 text-yellow-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Completed</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.completedApplications || 0}</p>
-                  <p className="text-xs text-green-600">Successfully submitted</p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Pending Review</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.pendingReview || 0}</p>
-                  <p className="text-xs text-purple-600">Under review</p>
-                </div>
-                <AlertCircle className="h-8 w-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Application History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Company Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Progress</TableHead>
-                  <TableHead>Current Step</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Submitted</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {applications.map((application) => (
-                  <TableRow key={application.id}>
-                    <TableCell className="font-medium">
-                      {application.companyName}
-                    </TableCell>
-                    <TableCell>
-                      {getStatusBadge(application.status)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={application.progress} className="w-20" />
-                        <span className="text-sm text-gray-500">{application.progress}%</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm">{getStepName(application.currentStep)}</span>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(application.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      {application.submittedAt 
-                        ? new Date(application.submittedAt).toLocaleDateString()
-                        : '-'
-                      }
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        {application.status === 'in_progress' ? (
-                          <Button
-                            size="sm"
-                            onClick={() => resumeApplicationMutation.mutate(application.id)}
-                            disabled={resumeApplicationMutation.isPending}
-                          >
-                            Resume
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setLocation(`/employer/applications/${application.id}`)}
-                          >
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
-                          </Button>
-                        )}
-                        {application.status === 'completed' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setLocation(`/employer/applications/${application.id}/download`)}
-                          >
-                            <Download className="w-4 h-4 mr-1" />
-                            Download
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+  return (
+    <TwoPanelLayout
+      title="Employer Dashboard"
+      description="Manage applications, employees, and benefits"
+      tableOfContents={tableOfContents}
+      rightPanelTitle={`${activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}`}
+      rightPanelActions={
+        <Button 
+          onClick={() => startNewApplicationMutation.mutate()}
+          disabled={startNewApplicationMutation.isPending}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Start New Application
+        </Button>
+      }
+    >
+      {renderContent()}
+    </TwoPanelLayout>
   );
 }
