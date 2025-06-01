@@ -1,0 +1,98 @@
+You're reviewing an existing multi-step employer form app designed for onboarding and application submission.
+This code already includes basic routing, some React form logic, and rudimentary progress tracking.
+You are not rebuilding from scratch — you are auditing, correcting, and upgrading the current employer module for SaaS readiness.
+
+Here’s what I want you to do:
+
+🔍 1. Audit What’s Already Built
+Identify which components in the Employer folder (or pages) already handle:
+
+Company details
+
+Ownership structure
+
+Address and contact info
+
+Signature steps
+
+Application submission
+
+Note areas where code is duplicated, not DRY, or missing form validation.
+
+If the employer is marked as an owner, ensure their data prefills the ownership section without requiring reentry.
+
+🛠 2. Fix Logic Bugs and Redundancy
+Fix any places where:
+
+State resets on page reload.
+
+Date pickers default to wrong values (e.g. wrong month).
+
+Progress bar doesn't update consistently.
+
+Deduplicate repeated conditional JSX (e.g. ownership or entity-type checks).
+
+Modularize form fields into reusable components.
+
+🔐 3. Security + Save/Resume Logic
+Implement secure local storage or DB save functionality:
+
+When the employer fills in data, it's saved in real-time or when “Save” is clicked.
+
+If they return, data is repopulated automatically.
+
+Ensure that saved data cannot be accessed or submitted by others unless logged in or authenticated.
+
+Add simple email + verification code login for employers to resume saved work.
+
+🧾 4. File Upload + Final Submission
+Fix or implement file upload logic:
+
+Accept only PDF, JPG, PNG.
+
+Enforce 5MB size cap.
+
+Store uploaded docs securely (placeholder backend or Supabase preferred).
+
+On final submission:
+
+Show a review screen before submit.
+
+Submit a complete packet via email to broker and admin.
+
+Store a copy in broker dashboard + employer’s “submission history”.
+
+📊 5. Dashboard + Resumable Quotes
+Create a basic Employer Dashboard view:
+
+List saved applications and quotes.
+
+Allow user to resume unfinished applications.
+
+Finalized quotes should be view-only.
+
+Incomplete quotes expire after 12 months.
+
+🎨 6. UI/UX Enhancements
+Match layout to SaaS-grade 2-tier layout:
+
+Left: Navigation menu (Quote / Application / History / Docs).
+
+Right: Main form or content.
+
+Use a top bar when multiple sub-sections exist (e.g. employee tabs).
+
+Ensure all forms are mobile-friendly.
+
+Highlight required fields and validation errors clearly.
+
+✅ Final Deliverable
+A fully audited and upgraded Employer Module:
+
+Preserving all working logic
+
+Eliminating code debt
+
+Ready for multi-user SaaS use
+
+Secure, saveable, resumable, and cleanly structured
