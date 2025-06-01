@@ -375,15 +375,28 @@ export default function EmployerDashboard() {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="companyName">Company Name</Label>
-                    <Input id="companyName" placeholder="Enter company name" />
+                    <Input 
+                      id="companyName" 
+                      placeholder="Enter company name"
+                      value={companyFormData.companyName}
+                      onChange={(e) => setCompanyFormData({...companyFormData, companyName: e.target.value})}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="taxId">Tax ID / EIN</Label>
-                    <Input id="taxId" placeholder="XX-XXXXXXX" />
+                    <Input 
+                      id="taxId" 
+                      placeholder="XX-XXXXXXX"
+                      value={companyFormData.taxId}
+                      onChange={(e) => setCompanyFormData({...companyFormData, taxId: e.target.value})}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="industry">Industry</Label>
-                    <Select>
+                    <Select 
+                      value={companyFormData.industry} 
+                      onValueChange={(value) => setCompanyFormData({...companyFormData, industry: value})}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select industry" />
                       </SelectTrigger>
@@ -399,37 +412,88 @@ export default function EmployerDashboard() {
                   </div>
                   <div>
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" placeholder="(555) 123-4567" />
+                    <Input 
+                      id="phone" 
+                      placeholder="(555) 123-4567"
+                      value={companyFormData.phone}
+                      onChange={(e) => setCompanyFormData({...companyFormData, phone: e.target.value})}
+                    />
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="address">Street Address</Label>
-                    <Input id="address" placeholder="123 Main Street" />
+                    <Input 
+                      id="address" 
+                      placeholder="123 Main Street"
+                      value={companyFormData.address}
+                      onChange={(e) => setCompanyFormData({...companyFormData, address: e.target.value})}
+                    />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <Label htmlFor="city">City</Label>
-                      <Input id="city" placeholder="City" />
+                      <Input 
+                        id="city" 
+                        placeholder="City"
+                        value={companyFormData.city}
+                        onChange={(e) => setCompanyFormData({...companyFormData, city: e.target.value})}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="state">State</Label>
-                      <Input id="state" placeholder="CA" />
+                      <Input 
+                        id="state" 
+                        placeholder="CA"
+                        value={companyFormData.state}
+                        onChange={(e) => setCompanyFormData({...companyFormData, state: e.target.value})}
+                      />
                     </div>
                   </div>
                   <div>
                     <Label htmlFor="zip">ZIP Code</Label>
-                    <Input id="zip" placeholder="12345" />
+                    <Input 
+                      id="zip" 
+                      placeholder="12345"
+                      value={companyFormData.zip}
+                      onChange={(e) => setCompanyFormData({...companyFormData, zip: e.target.value})}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="employeeCount">Number of Employees</Label>
-                    <Input id="employeeCount" type="number" placeholder="50" />
+                    <Input 
+                      id="employeeCount" 
+                      type="number" 
+                      placeholder="50"
+                      value={companyFormData.employeeCount}
+                      onChange={(e) => setCompanyFormData({...companyFormData, employeeCount: e.target.value})}
+                    />
                   </div>
                 </div>
               </div>
               <div className="mt-6 flex justify-end space-x-2">
-                <Button variant="outline">Cancel</Button>
-                <Button>Save Company Information</Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setCompanyFormData({
+                    companyName: '',
+                    taxId: '',
+                    industry: '',
+                    phone: '',
+                    address: '',
+                    city: '',
+                    state: '',
+                    zip: '',
+                    employeeCount: ''
+                  })}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => saveCompanyMutation.mutate(companyFormData)}
+                  disabled={saveCompanyMutation.isPending}
+                >
+                  {saveCompanyMutation.isPending ? 'Saving...' : 'Save Company Information'}
+                </Button>
               </div>
             </CardContent>
           </Card>
