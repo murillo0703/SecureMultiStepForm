@@ -407,7 +407,35 @@ export default function EmployerOnboarding() {
               </div>
               <div className="mt-6 flex justify-end">
                 <Button 
-                  onClick={() => saveCompanyMutation.mutate(companyData)}
+                  onClick={() => {
+                    // Validate required fields
+                    if (!companyData.name || !companyData.taxId || !companyData.industry || !companyData.address || !companyData.city || !companyData.state || !companyData.zip || !companyData.phone) {
+                      toast({
+                        title: 'Missing Information',
+                        description: 'Please fill in all required fields.',
+                        variant: 'destructive',
+                      });
+                      return;
+                    }
+                    
+                    if (!selectedIndustryCategory || !companyData.industrySubcategory) {
+                      toast({
+                        title: 'Missing Information', 
+                        description: 'Please select both industry category and subcategory.',
+                        variant: 'destructive',
+                      });
+                      return;
+                    }
+                    
+                    // Clean phone and tax ID for storage
+                    const cleanedData = {
+                      ...companyData,
+                      phone: cleanPhoneNumber(companyData.phone),
+                      taxId: companyData.taxId.replace(/[^\d]/g, '')
+                    };
+                    
+                    saveCompanyMutation.mutate(cleanedData);
+                  }}
                   disabled={saveCompanyMutation.isPending}
                   className="flex items-center space-x-2"
                 >
