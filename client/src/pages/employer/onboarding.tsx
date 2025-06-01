@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
+import { INDUSTRY_OPTIONS, RELATIONSHIP_OPTIONS, US_STATES, formatPhoneNumber, cleanPhoneNumber } from '@shared/constants';
 
 interface OnboardingProgress {
   step1CompanyInfo: boolean;

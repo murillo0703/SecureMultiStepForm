@@ -382,6 +382,10 @@ export class MemStorage implements IStorage {
     return newOwner;
   }
 
+  async getOwnersByCompany(companyId: number): Promise<Owner[]> {
+    return Array.from(this.owners.values()).filter(owner => owner.companyId === companyId);
+  }
+
   async getOwnersByCompanyId(companyId: number): Promise<Owner[]> {
     return Array.from(this.owners.values()).filter(owner => owner.companyId === companyId);
   }

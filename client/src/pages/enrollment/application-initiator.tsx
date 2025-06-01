@@ -333,9 +333,25 @@ export default function ApplicationInitiator() {
     <TwoPanelLayout 
       title="Start Your Application"
       tableOfContents={[
-        { title: "Company Information", href: "#company" },
-        { title: "Authorized Contacts", href: "#contacts" },
-        { title: "Company Owners", href: "#owners" }
+        { 
+          title: "Company Information", 
+          items: [
+            { title: "Company Details", href: "#company" },
+            { title: "Business Address", href: "#address" }
+          ]
+        },
+        { 
+          title: "Authorized Contacts", 
+          items: [
+            { title: "Contact Information", href: "#contacts" }
+          ]
+        },
+        { 
+          title: "Company Owners", 
+          items: [
+            { title: "Ownership Structure", href: "#owners" }
+          ]
+        }
       ]}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

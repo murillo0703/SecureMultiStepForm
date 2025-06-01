@@ -1229,7 +1229,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const contacts = await storage.getCompanyContacts(progress.companyId);
       
       // Get owners for the company
-      const owners = await storage.getOwnersByCompany(progress.companyId);
+      const owners = await storage.getOwnersByCompanyId(progress.companyId);
       
       res.json({
         company: {
