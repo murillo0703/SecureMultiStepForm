@@ -296,17 +296,11 @@ export default function EmployerOnboarding() {
                         <SelectValue placeholder="Select industry" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="technology">Technology</SelectItem>
-                        <SelectItem value="healthcare">Healthcare</SelectItem>
-                        <SelectItem value="finance">Finance</SelectItem>
-                        <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                        <SelectItem value="retail">Retail</SelectItem>
-                        <SelectItem value="construction">Construction</SelectItem>
-                        <SelectItem value="education">Education</SelectItem>
-                        <SelectItem value="hospitality">Hospitality</SelectItem>
-                        <SelectItem value="transportation">Transportation</SelectItem>
-                        <SelectItem value="agriculture">Agriculture</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        {INDUSTRY_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -333,12 +327,21 @@ export default function EmployerOnboarding() {
                     </div>
                     <div>
                       <Label htmlFor="state">State *</Label>
-                      <Input 
-                        id="state" 
-                        placeholder="CA"
+                      <Select 
                         value={companyData.state}
-                        onChange={(e) => setCompanyData({...companyData, state: e.target.value})}
-                      />
+                        onValueChange={(value) => setCompanyData({...companyData, state: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select state" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {US_STATES.map((state) => (
+                            <SelectItem key={state.value} value={state.value}>
+                              {state.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <div>
@@ -356,7 +359,10 @@ export default function EmployerOnboarding() {
                       id="phone" 
                       placeholder="(555) 123-4567"
                       value={companyData.phone}
-                      onChange={(e) => setCompanyData({...companyData, phone: e.target.value})}
+                      onChange={(e) => {
+                        const formatted = formatPhoneNumber(e.target.value);
+                        setCompanyData({...companyData, phone: formatted});
+                      }}
                     />
                   </div>
                 </div>
@@ -424,7 +430,10 @@ export default function EmployerOnboarding() {
                       id="contactPhone" 
                       placeholder="(555) 123-4567"
                       value={contactData.phone}
-                      onChange={(e) => setContactData({...contactData, phone: e.target.value})}
+                      onChange={(e) => {
+                        const formatted = formatPhoneNumber(e.target.value);
+                        setContactData({...contactData, phone: formatted});
+                      }}
                     />
                   </div>
                 </div>
@@ -448,17 +457,11 @@ export default function EmployerOnboarding() {
                         <SelectValue placeholder="Select relationship" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="HR">HR</SelectItem>
-                        <SelectItem value="HR_DIRECTOR">HR Director</SelectItem>
-                        <SelectItem value="CFO">CFO</SelectItem>
-                        <SelectItem value="CEO">CEO</SelectItem>
-                        <SelectItem value="COO">COO</SelectItem>
-                        <SelectItem value="PRESIDENT">President</SelectItem>
-                        <SelectItem value="VICE_PRESIDENT">Vice President</SelectItem>
-                        <SelectItem value="CONTROLLER">Controller</SelectItem>
-                        <SelectItem value="OFFICE_MANAGER">Office Manager</SelectItem>
-                        <SelectItem value="BENEFITS_ADMINISTRATOR">Benefits Administrator</SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
+                        {RELATIONSHIP_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
