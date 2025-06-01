@@ -1207,6 +1207,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get onboarding data for application initiator
+  app.get('/api/employer/onboarding/data', async (req, res) => {
+    try {
+      // For testing, using user ID 1 - in production this would come from authenticated session
+      const userId = 1;
+      
+      // Get the company ID from onboarding progress
+      const progress = await storage.getOnboardingProgress(userId);
+      if (!progress.companyId) {
+        return res.status(404).json({ error: 'No company data found. Please complete onboarding first.' });
+      }
+      
+      // Get company details
+      const company = await storage.getCompany(progress.companyId);
+      if (!company) {
+        return res.status(404).json({ error: 'Company not found' });
+      }
+      
+      // Get contacts for the company
+      const contacts = await storage.getCompanyContacts(progress.companyId);
+      
+      // Get owners for the company
+      const owners = await storage.getOwnersByCompany(progress.companyId);
+      
+      res.json({
+        company: {
+          id: company.id,
+          name: company.name,
+          taxId: company.taxId,
+          industry: company.industry,
+          phone: company.phone,
+          address: company.address,
+          city: company.city,
+          state: company.state,
+          zip: company.zip
+        },
+        contacts: contacts.map(contact => ({
+          id: contact.id,
+          firstName: contact.firstName,
+          lastName: contact.lastName,
+          email: contact.email,
+          phone: contact.phone,
+          title: contact.title,
+          relationshipToCompany: contact.relationshipToCompany
+        })),
+        owners: owners.map(owner => ({
+          id: owner.id,
+          firstName: owner.firstName,
+          lastName: owner.lastName,
+          ownershipPercentage: owner.ownershipPercentage,
+          isAuthorizedContact: owner.isAuthorizedContact || false
+        }))
+      });
+    } catch (error: any) {
+      console.error('Get onboarding data error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Start application process
+  app.post('/api/enrollment/start-application', async (req, res) => {
+    try {
+      // For testing, using user ID 1 - in production this would come from authenticated session
+      const userId = 1;
+      
+      // Get the company ID from onboarding progress
+      const progress = await storage.getOnboardingProgress(userId);
+      if (!progress.companyId) {
+        return res.status(400).json({ error: 'Company information must be completed first' });
+      }
+      
+      // Create a new application
+      const application = await storage.createApplication({
+        companyId: progress.companyId,
+        status: 'in_progress',
+        currentStep: 'employee_info'
+      });
+      
+      res.json({ 
+        success: true, 
+        applicationId: application.id,
+        message: 'Application started successfully'
+      });
+    } catch (error: any) {
+      console.error('Start application error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Developer role switching endpoint
   app.post('/api/dev/switch-role', isAuthenticated, async (req: Request, res: Response) => {
     try {

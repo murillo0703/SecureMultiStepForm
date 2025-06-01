@@ -137,11 +137,11 @@ export default function EmployerOnboarding() {
     },
     onSuccess: () => {
       toast({
-        title: 'Success',
-        description: 'Owner information saved successfully. Onboarding complete!',
+        title: 'Congratulations!',
+        description: 'Your company setup is complete! 🎉',
       });
       queryClient.invalidateQueries({ queryKey: ['/api/employer/onboarding/progress'] });
-      setLocation('/employer/dashboard');
+      // Don't redirect yet - show completion screen
     },
     onError: (error: any) => {
       toast({
@@ -194,6 +194,54 @@ export default function EmployerOnboarding() {
   ];
 
   const renderStepContent = () => {
+    // Show completion screen if onboarding is complete
+    if (progress?.isComplete) {
+      return (
+        <Card className="text-center">
+          <CardHeader>
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            <CardTitle className="text-2xl text-green-600">Setup Complete!</CardTitle>
+            <p className="text-muted-foreground">
+              Congratulations! Your company information has been successfully set up.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h3 className="font-semibold text-green-800 mb-2">What's Next?</h3>
+              <p className="text-green-700 text-sm">
+                You can now start your insurance application process. All the information you've provided 
+                will be automatically pre-filled to save you time.
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                onClick={() => setLocation('/enrollment/application-initiator')}
+                className="bg-green-600 hover:bg-green-700"
+                size="lg"
+              >
+                Start Application Process
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setLocation('/employer/dashboard')}
+                size="lg"
+              >
+                Maybe Later - Go to Dashboard
+              </Button>
+            </div>
+
+            <div className="text-xs text-muted-foreground">
+              Don't worry - you can always edit your information later from your dashboard.
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     switch (currentStep) {
       case 1:
         return (
