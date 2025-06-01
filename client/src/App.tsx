@@ -70,6 +70,7 @@ function Router() {
 
       {/* Employer Location Management */}
       <ProtectedRoute path="/employer/location-management" component={LocationManagement} />
+      <ProtectedRoute path="/employer/company-management" component={CompanyManagement} />
 
       {/* Employee Enrollment Management Routes */}
       <ProtectedRoute path="/enrollment-management/employee-enrollment" component={EmployeeEnrollment} />
