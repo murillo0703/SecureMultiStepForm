@@ -16,6 +16,7 @@ import RenewalManager from '@/pages/renewals/renewal-manager';
 import EmployeePortal from '@/pages/employee-portal';
 import BrokerManagement from '@/pages/master-admin/brokers';
 import LocationManagement from '@/pages/employer/location-management';
+import CompanyManagement from '@/pages/employer/company-management';
 import ApplicationInitiator from '@/pages/enrollment/application-initiator';
 import CarriersPage from '@/pages/enrollment/carriers';
 import CompanyInformation from '@/pages/enrollment/company-information';

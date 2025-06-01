@@ -147,10 +147,30 @@ export const insertUsageMetricsSchema = createInsertSchema(usageMetrics).omit({
   recordedAt: true,
 });
 
-// Employer Locations - Central source of truth for company information
-export const employerLocations = pgTable('employer_locations', {
+// Employer Companies - Central source of truth for company information
+export const employerCompanies = pgTable('employer_companies', {
   id: serial('id').primaryKey(),
   companyName: text('company_name').notNull(),
+  legalName: text('legal_name'),
+  taxId: text('tax_id'),
+  industry: text('industry'),
+  sicCode: text('sic_code'),
+  naicsCode: text('naics_code'),
+  website: text('website'),
+  employeeCount: integer('employee_count').default(1),
+  brokerId: uuid('broker_id').references(() => brokers.id),
+  effectiveDate: timestamp('effective_date'),
+  renewalDate: timestamp('renewal_date'),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Company Locations - Multiple locations per company
+export const companyLocations = pgTable('company_locations', {
+  id: serial('id').primaryKey(),
+  companyId: integer('company_id').references(() => employerCompanies.id).notNull(),
+  locationName: text('location_name').notNull(), // e.g., "Headquarters", "Branch Office"
   address: text('address').notNull(),
   city: text('city').notNull(),
   state: text('state').notNull(),
@@ -158,13 +178,8 @@ export const employerLocations = pgTable('employer_locations', {
   county: text('county').notNull(),
   ratingArea: text('rating_area').notNull(),
   phone: text('phone'),
-  taxId: text('tax_id'),
-  industry: text('industry'),
-  sicCode: text('sic_code'),
-  naicsCode: text('naics_code'),
-  employeeCount: integer('employee_count').default(1),
-  brokerId: uuid('broker_id').references(() => brokers.id),
-  effectiveDate: timestamp('effective_date'),
+  employeeCount: integer('employee_count').default(0),
+  isPrimary: boolean('is_primary').default(false),
   isActive: boolean('is_active').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -178,7 +193,7 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
   brokerId: uuid('broker_id').references(() => brokers.id),
-  locationId: integer('location_id').references(() => employerLocations.id),
+  companyId: integer('company_id').references(() => employerCompanies.id),
   role: text('role').default('employer').notNull(), // master_admin, broker_admin, broker_staff, employer
   isActive: boolean('is_active').default(true).notNull(),
   lastLoginAt: timestamp('last_login_at'),
@@ -195,11 +210,17 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   name: true,
   brokerId: true,
-  locationId: true,
+  companyId: true,
   role: true,
 });
 
-export const insertEmployerLocationSchema = createInsertSchema(employerLocations).omit({
+export const insertEmployerCompanySchema = createInsertSchema(employerCompanies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCompanyLocationSchema = createInsertSchema(companyLocations).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -209,7 +230,8 @@ export const insertEmployerLocationSchema = createInsertSchema(employerLocations
 export const quoteProjects = pgTable('quote_projects', {
   id: serial('id').primaryKey(),
   projectName: text('project_name').notNull(),
-  locationId: integer('location_id').references(() => employerLocations.id).notNull(),
+  companyId: integer('company_id').references(() => employerCompanies.id).notNull(),
+  locationId: integer('location_id').references(() => companyLocations.id),
   brokerId: uuid('broker_id').references(() => brokers.id),
   createdBy: integer('created_by').references(() => users.id).notNull(),
   effectiveDate: timestamp('effective_date').notNull(),

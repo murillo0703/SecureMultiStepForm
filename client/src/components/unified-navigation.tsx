@@ -211,10 +211,10 @@ export function UnifiedNavigation() {
             badge: 'Premium'
           },
           {
-            title: 'Employer Locations',
-            href: '/employer/location-management',
-            icon: <MapPin className="w-4 h-4" />,
-            description: 'Manage client company locations'
+            title: 'Company Management',
+            href: '/employer/company-management',
+            icon: <Building2 className="w-4 h-4" />,
+            description: 'Manage client company data and locations'
           },
           {
             title: 'Employee Enrollment',
@@ -278,10 +278,10 @@ export function UnifiedNavigation() {
             description: 'Company overview and applications'
           },
           {
-            title: 'Location Management',
-            href: '/employer/location-management',
-            icon: <MapPin className="w-4 h-4" />,
-            description: 'Manage company locations and information'
+            title: 'Company Management',
+            href: '/employer/company-management',
+            icon: <Building2 className="w-4 h-4" />,
+            description: 'Manage company data and locations'
           },
           {
             title: 'Employee Management',
