@@ -2552,4 +2552,215 @@ async function initializePlans() {
       await storage.createPlan(plan);
     }
   }
+
+  // Initialize subscription system
+  await initializeSubscriptionSystem();
+}
+
+// Subscription Management API Routes
+async function initializeSubscriptionSystem() {
+  // Import subscription service
+  const { SubscriptionService, initializeStripe, DEFAULT_SUBSCRIPTION_PLANS } = await import('./subscription-service');
+  
+  // Initialize Stripe if keys are available
+  const stripeInitialized = initializeStripe();
+  
+  // Create default subscription plans if they don't exist
+  for (const planData of DEFAULT_SUBSCRIPTION_PLANS) {
+    const existingPlan = await storage.getSubscriptionPlanByName(planData.name);
+    if (!existingPlan) {
+      await storage.createSubscriptionPlan(planData);
+    }
+  }
+
+  // Subscription API routes
+
+  // Get available subscription plans
+  app.get('/api/subscription/plans', async (req: Request, res: Response) => {
+    try {
+      const plans = await storage.getActiveSubscriptionPlans();
+      res.json(plans);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get broker's current subscription
+  app.get('/api/subscription/current', async (req: Request, res: Response) => {
+    try {
+      // For now, mock broker ID since auth is bypassed for testing
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+      
+      const subscription = await storage.getBrokerSubscription(brokerId);
+      if (!subscription) {
+        return res.status(404).json({ error: 'No active subscription found' });
+      }
+
+      const plan = await storage.getSubscriptionPlan(subscription.planId);
+      res.json({ subscription, plan });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Create new subscription
+  app.post('/api/subscription/create', async (req: Request, res: Response) => {
+    try {
+      if (!stripeInitialized) {
+        return res.status(400).json({ 
+          error: 'Stripe not configured. Please provide API keys to enable subscription billing.' 
+        });
+      }
+
+      const { planId } = req.body;
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+
+      const result = await SubscriptionService.createSubscription(brokerId, planId);
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Change subscription plan
+  app.post('/api/subscription/change-plan', async (req: Request, res: Response) => {
+    try {
+      if (!stripeInitialized) {
+        return res.status(400).json({ 
+          error: 'Stripe not configured. Please provide API keys to enable plan changes.' 
+        });
+      }
+
+      const { planId } = req.body;
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+
+      const subscription = await SubscriptionService.changePlan(brokerId, planId);
+      res.json(subscription);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Cancel subscription
+  app.post('/api/subscription/cancel', async (req: Request, res: Response) => {
+    try {
+      if (!stripeInitialized) {
+        return res.status(400).json({ 
+          error: 'Stripe not configured. Please provide API keys to enable subscription cancellation.' 
+        });
+      }
+
+      const { cancelAtPeriodEnd = true } = req.body;
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+
+      const subscription = await SubscriptionService.cancelSubscription(brokerId, cancelAtPeriodEnd);
+      res.json(subscription);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get module access for broker
+  app.get('/api/subscription/modules', async (req: Request, res: Response) => {
+    try {
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+      const modules = await storage.getBrokerModuleAccess(brokerId);
+      res.json(modules);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Check specific module access
+  app.get('/api/subscription/modules/:moduleName/access', async (req: Request, res: Response) => {
+    try {
+      const { moduleName } = req.params;
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+      
+      const accessLevel = await SubscriptionService.checkModuleAccess(brokerId, moduleName);
+      res.json({ moduleName, accessLevel, hasAccess: accessLevel !== 'none' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Track module usage
+  app.post('/api/subscription/usage', async (req: Request, res: Response) => {
+    try {
+      const { moduleName, action, resourceId } = req.body;
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+      
+      await SubscriptionService.trackUsage(brokerId, moduleName, action, resourceId);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get usage statistics
+  app.get('/api/subscription/usage/:period', async (req: Request, res: Response) => {
+    try {
+      const { period } = req.params; // YYYY-MM format
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+      
+      const usage = await storage.getUsageByBrokerAndPeriod(brokerId, period);
+      res.json(usage);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get subscription invoices
+  app.get('/api/subscription/invoices', async (req: Request, res: Response) => {
+    try {
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+      const subscription = await storage.getBrokerSubscription(brokerId);
+      
+      if (!subscription) {
+        return res.status(404).json({ error: 'No subscription found' });
+      }
+
+      const invoices = await storage.getSubscriptionInvoices(subscription.id);
+      res.json(invoices);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Payment methods routes
+  app.get('/api/subscription/payment-methods', async (req: Request, res: Response) => {
+    try {
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+      const paymentMethods = await storage.getBrokerPaymentMethods(brokerId);
+      res.json(paymentMethods);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/subscription/payment-methods', async (req: Request, res: Response) => {
+    try {
+      if (!stripeInitialized) {
+        return res.status(400).json({ 
+          error: 'Stripe not configured. Please provide API keys to manage payment methods.' 
+        });
+      }
+
+      const { stripePaymentMethodId, isDefault } = req.body;
+      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
+
+      // Here you would integrate with Stripe to get payment method details
+      // For now, we'll store the basic information
+      const paymentMethod = await storage.createPaymentMethod({
+        brokerId,
+        stripePaymentMethodId,
+        type: 'card', // Would come from Stripe
+        isDefault: isDefault || false,
+      });
+
+      res.json(paymentMethod);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 }
