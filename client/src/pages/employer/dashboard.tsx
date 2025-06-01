@@ -3,6 +3,9 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -28,7 +31,11 @@ import {
   DollarSign,
   Shield,
   BarChart3,
-  Settings
+  Settings,
+  UserPlus,
+  UserCheck,
+  Crown,
+  Contact
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useLocation } from 'wouter';
@@ -64,6 +71,17 @@ export default function EmployerDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [activeSection, setActiveSection] = useState('overview');
+  const [companyFormData, setCompanyFormData] = useState({
+    companyName: '',
+    taxId: '',
+    industry: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    zip: '',
+    employeeCount: ''
+  });
 
   // Redirect if not employer
   if (user?.role !== 'employer') {
@@ -97,6 +115,27 @@ export default function EmployerDashboard() {
       toast({
         title: 'Error',
         description: error.message || 'Failed to start new application.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const saveCompanyMutation = useMutation({
+    mutationFn: async (companyData: typeof companyFormData) => {
+      const response = await apiRequest('POST', '/api/employer/company', companyData);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Success',
+        description: 'Company information saved successfully.',
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/employer/stats'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to save company information.',
         variant: 'destructive',
       });
     },
@@ -160,6 +199,20 @@ export default function EmployerDashboard() {
           icon: <Building className="h-4 w-4" />,
           isActive: activeSection === 'company-info',
           onClick: () => setActiveSection('company-info'),
+        },
+        {
+          id: 'owners',
+          title: 'Company Owners',
+          icon: <Crown className="h-4 w-4" />,
+          isActive: activeSection === 'owners',
+          onClick: () => setActiveSection('owners'),
+        },
+        {
+          id: 'contacts',
+          title: 'Authorized Contacts',
+          icon: <Contact className="h-4 w-4" />,
+          isActive: activeSection === 'contacts',
+          onClick: () => setActiveSection('contacts'),
         }
       ]
     },
@@ -179,7 +232,7 @@ export default function EmployerDashboard() {
           icon: <Users className="h-4 w-4" />,
           badge: stats?.currentCompany?.employees?.toString() || '0',
           isActive: activeSection === 'employees',
-          onClick: () => setActiveSection('employees'),
+          onClick: () => setLocation('/employer/employee-management'),
         },
         {
           id: 'costs',
@@ -305,6 +358,187 @@ export default function EmployerDashboard() {
                 </CardContent>
               </Card>
             )}
+          </div>
+        );
+
+      case 'company-info':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Company Information</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Manage your company details, address, and business information.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="companyName">Company Name</Label>
+                    <Input id="companyName" placeholder="Enter company name" />
+                  </div>
+                  <div>
+                    <Label htmlFor="taxId">Tax ID / EIN</Label>
+                    <Input id="taxId" placeholder="XX-XXXXXXX" />
+                  </div>
+                  <div>
+                    <Label htmlFor="industry">Industry</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="technology">Technology</SelectItem>
+                        <SelectItem value="healthcare">Healthcare</SelectItem>
+                        <SelectItem value="finance">Finance</SelectItem>
+                        <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="retail">Retail</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input id="phone" placeholder="(555) 123-4567" />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="address">Street Address</Label>
+                    <Input id="address" placeholder="123 Main Street" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="city">City</Label>
+                      <Input id="city" placeholder="City" />
+                    </div>
+                    <div>
+                      <Label htmlFor="state">State</Label>
+                      <Input id="state" placeholder="CA" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="zip">ZIP Code</Label>
+                    <Input id="zip" placeholder="12345" />
+                  </div>
+                  <div>
+                    <Label htmlFor="employeeCount">Number of Employees</Label>
+                    <Input id="employeeCount" type="number" placeholder="50" />
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end space-x-2">
+                <Button variant="outline">Cancel</Button>
+                <Button>Save Company Information</Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      case 'owners':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Company Owners</span>
+                <Button size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Owner
+                </Button>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Manage company ownership information and ownership percentages.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Crown className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No Owners Added</h3>
+                <p className="text-muted-foreground mb-4">
+                  Add company owners with their ownership percentages and contact information.
+                </p>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add First Owner
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      case 'contacts':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Authorized Contacts</span>
+                <Button size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Contact
+                </Button>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Manage authorized contacts who can act on behalf of the company.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <UserCheck className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No Authorized Contacts</h3>
+                <p className="text-muted-foreground mb-4">
+                  Add authorized contacts who can make decisions and sign documents for your company.
+                </p>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add First Contact
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      case 'employees':
+        return (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Employee Management</span>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Upload CSV
+                    </Button>
+                    <Button size="sm">
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Add Employee
+                    </Button>
+                  </div>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Add and manage your employees and their dependents.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Employees Added</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Start by adding your first employee or upload a CSV file with multiple employees.
+                  </p>
+                  <div className="flex justify-center space-x-2">
+                    <Button variant="outline">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Upload Employee List
+                    </Button>
+                    <Button>
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Add First Employee
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         );
 
