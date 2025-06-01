@@ -19,7 +19,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
-import { INDUSTRY_OPTIONS, RELATIONSHIP_OPTIONS, US_STATES, formatPhoneNumber, cleanPhoneNumber } from '@shared/constants';
+import { INDUSTRY_OPTIONS, INDUSTRY_CATEGORIES, RELATIONSHIP_OPTIONS, US_STATES, formatPhoneNumber, cleanPhoneNumber, formatTaxId } from '@shared/constants';
 
 interface OnboardingProgress {
   step1CompanyInfo: boolean;
@@ -45,8 +45,12 @@ export default function EmployerOnboarding() {
     phone: '',
     taxId: '',
     sicCode: '',
-    industry: ''
+    industry: '',
+    industrySubcategory: ''
   });
+
+  // Industry selection state
+  const [selectedIndustryCategory, setSelectedIndustryCategory] = useState('');
 
   // Contact Information State
   const [contactData, setContactData] = useState({
@@ -274,7 +278,10 @@ export default function EmployerOnboarding() {
                       id="taxId" 
                       placeholder="XX-XXXXXXX"
                       value={companyData.taxId}
-                      onChange={(e) => setCompanyData({...companyData, taxId: e.target.value})}
+                      onChange={(e) => {
+                        const formatted = formatTaxId(e.target.value);
+                        setCompanyData({...companyData, taxId: formatted});
+                      }}
                     />
                   </div>
                   <div>
@@ -287,23 +294,54 @@ export default function EmployerOnboarding() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="industry">Industry *</Label>
+                    <Label htmlFor="industryCategory">Industry Category *</Label>
                     <Select 
-                      value={companyData.industry} 
-                      onValueChange={(value) => setCompanyData({...companyData, industry: value})}
+                      value={selectedIndustryCategory} 
+                      onValueChange={(value) => {
+                        setSelectedIndustryCategory(value);
+                        setCompanyData({...companyData, industry: '', industrySubcategory: ''});
+                      }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select industry" />
+                        <SelectValue placeholder="Select industry category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {INDUSTRY_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        {INDUSTRY_CATEGORIES.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+                  {selectedIndustryCategory && (
+                    <div>
+                      <Label htmlFor="industrySubcategory">Industry Subcategory *</Label>
+                      <Select 
+                        value={companyData.industrySubcategory} 
+                        onValueChange={(value) => {
+                          const selectedCategory = INDUSTRY_CATEGORIES.find(cat => cat.value === selectedIndustryCategory);
+                          const selectedSub = selectedCategory?.subcategories.find(sub => sub.value === value);
+                          setCompanyData({
+                            ...companyData, 
+                            industry: selectedCategory?.label || '',
+                            industrySubcategory: value
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select specific industry" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {INDUSTRY_CATEGORIES.find(cat => cat.value === selectedIndustryCategory)?.subcategories.map((subcategory) => (
+                            <SelectItem key={subcategory.value} value={subcategory.value}>
+                              {subcategory.value}. {subcategory.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-4">
                   <div>
