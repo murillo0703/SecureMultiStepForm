@@ -797,6 +797,11 @@ export class DatabaseStorage implements IStorage {
   public sessionStore: any;
 
   constructor() {
+    // Import the required modules inside the constructor
+    const connectPg = require('connect-pg-simple');
+    const session = require('express-session');
+    const { pool } = require('./db');
+    
     const PostgresSessionStore = connectPg(session);
     this.sessionStore = new PostgresSessionStore({
       pool,

@@ -649,17 +649,29 @@ export default function EmployerOnboarding() {
                       id="ownerPhone" 
                       placeholder="(555) 123-4567"
                       value={ownerData.phone}
-                      onChange={(e) => setOwnerData({...ownerData, phone: e.target.value})}
+                      onChange={(e) => {
+                        const formatted = formatPhoneNumber(e.target.value);
+                        setOwnerData({...ownerData, phone: formatted});
+                      }}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="ownerRelationship">Relationship to Company</Label>
-                    <Input 
-                      id="ownerRelationship" 
-                      placeholder="Owner, Partner, etc."
-                      value={ownerData.relationshipToCompany}
-                      onChange={(e) => setOwnerData({...ownerData, relationshipToCompany: e.target.value})}
-                    />
+                    <Label htmlFor="ownerRelationship">Relationship to Company *</Label>
+                    <Select 
+                      value={ownerData.relationshipToCompany} 
+                      onValueChange={(value) => setOwnerData({...ownerData, relationshipToCompany: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select relationship" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {RELATIONSHIP_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
@@ -695,7 +707,25 @@ export default function EmployerOnboarding() {
                   <span>Back</span>
                 </Button>
                 <Button 
-                  onClick={() => saveOwnerMutation.mutate(ownerData)}
+                  onClick={() => {
+                    // Validate required fields
+                    if (!ownerData.firstName || !ownerData.lastName || !ownerData.title || !ownerData.ownershipPercentage || !ownerData.email || !ownerData.phone || !ownerData.relationshipToCompany) {
+                      toast({
+                        title: 'Missing Information',
+                        description: 'Please fill in all required fields.',
+                        variant: 'destructive',
+                      });
+                      return;
+                    }
+                    
+                    // Clean phone number for storage
+                    const cleanedData = {
+                      ...ownerData,
+                      phone: cleanPhoneNumber(ownerData.phone)
+                    };
+                    
+                    saveOwnerMutation.mutate(cleanedData);
+                  }}
                   disabled={saveOwnerMutation.isPending}
                   className="flex items-center space-x-2"
                 >
