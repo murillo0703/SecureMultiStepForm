@@ -285,9 +285,9 @@ export function UnifiedNavigation() {
           },
           {
             title: 'Employee Management',
-            href: '/employer/employees',
+            href: '/employer/employee-management',
             icon: <Users className="w-4 h-4" />,
-            description: 'Manage employee information'
+            description: 'Comprehensive employee database and lifecycle tracking'
           },
           {
             title: 'Documents',

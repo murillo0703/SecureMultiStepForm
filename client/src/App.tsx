@@ -17,6 +17,7 @@ import EmployeePortal from '@/pages/employee-portal';
 import BrokerManagement from '@/pages/master-admin/brokers';
 import LocationManagement from '@/pages/employer/location-management';
 import CompanyManagement from '@/pages/employer/company-management';
+import EmployeeManagement from '@/pages/employer/employee-management';
 import ApplicationInitiator from '@/pages/enrollment/application-initiator';
 import CarriersPage from '@/pages/enrollment/carriers';
 import CompanyInformation from '@/pages/enrollment/company-information';
@@ -71,6 +72,7 @@ function Router() {
       {/* Employer Location Management */}
       <ProtectedRoute path="/employer/location-management" component={LocationManagement} />
       <ProtectedRoute path="/employer/company-management" component={CompanyManagement} />
+      <ProtectedRoute path="/employer/employee-management" component={EmployeeManagement} />
 
       {/* Employee Enrollment Management Routes */}
       <ProtectedRoute path="/enrollment-management/employee-enrollment" component={EmployeeEnrollment} />

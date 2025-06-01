@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
+import { TwoPanelLayout } from '@/components/layouts/two-panel-layout';
 import { 
   FileText, 
   Plus, 
@@ -21,7 +23,13 @@ import {
   CheckCircle,
   AlertCircle,
   Building,
-  Users
+  Users,
+  Activity,
+  Calendar,
+  DollarSign,
+  Shield,
+  BarChart3,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useLocation } from 'wouter';

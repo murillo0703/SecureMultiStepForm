@@ -357,28 +357,185 @@ export const insertOwnerSchema = createInsertSchema(owners).omit({
   createdAt: true,
 });
 
-// Employees table
+// Centralized Employee Database - Tracks employees throughout their lifecycle
 export const employees = pgTable('employees', {
   id: serial('id').primaryKey(),
-  companyId: integer('company_id')
-    .references(() => companies.id)
-    .notNull(),
+  employeeNumber: text('employee_number').unique(), // Unique identifier across all companies
+  
+  // Personal Information
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
-  dob: text('dob').notNull(),
+  middleName: text('middle_name'),
+  preferredName: text('preferred_name'),
+  email: text('email').notNull(),
+  personalEmail: text('personal_email'),
+  phone: text('phone'),
+  mobilePhone: text('mobile_phone'),
+  dob: text('dob').notNull(), // Keep as text for compatibility
   ssn: text('ssn').notNull(),
+  gender: text('gender'), // male, female, other, prefer_not_to_say
+  maritalStatus: text('marital_status'), // single, married, divorced, widowed, separated
+  
+  // Address Information
   address: text('address').notNull(),
+  address2: text('address2'),
   city: text('city').notNull(),
   state: text('state').notNull(),
   zip: text('zip').notNull(),
+  country: text('country').default('US'),
+  
+  // Emergency Contact
+  emergencyContactName: text('emergency_contact_name'),
+  emergencyContactPhone: text('emergency_contact_phone'),
+  emergencyContactRelationship: text('emergency_contact_relationship'),
+  
+  // Current Employment Information
+  currentCompanyId: integer('current_company_id').references(() => companies.id),
+  currentJobTitle: text('current_job_title'),
+  currentDepartment: text('current_department'),
+  currentSalary: integer('current_salary'), // in cents
+  currentHireDate: timestamp('current_hire_date'),
+  currentEmploymentStatus: text('current_employment_status').default('active'), // active, terminated, on_leave, suspended
+  currentTerminationDate: timestamp('current_termination_date'),
+  currentTerminationReason: text('current_termination_reason'),
+  
+  // Benefits Eligibility
+  isEligibleForBenefits: boolean('is_eligible_for_benefits').default(true),
+  benefitsEligibilityDate: timestamp('benefits_eligibility_date'),
+  hoursPerWeek: integer('hours_per_week').default(40),
+  employeeClass: text('employee_class'), // full_time, part_time, contractor, temp
+  payrollFrequency: text('payroll_frequency').default('bi-weekly'),
+  
+  // Benefit Enrollment Status
+  medicalEnrollmentStatus: text('medical_enrollment_status').default('not_enrolled'),
+  dentalEnrollmentStatus: text('dental_enrollment_status').default('not_enrolled'),
+  visionEnrollmentStatus: text('vision_enrollment_status').default('not_enrolled'),
+  lifeEnrollmentStatus: text('life_enrollment_status').default('not_enrolled'),
+  disabilityEnrollmentStatus: text('disability_enrollment_status').default('not_enrolled'),
+  
+  // Cost Information
+  totalMonthlyCost: integer('total_monthly_cost').default(0), // in cents
+  employeeMonthlyCost: integer('employee_monthly_cost').default(0), // in cents
+  employerMonthlyCost: integer('employer_monthly_cost').default(0), // in cents
+  
+  // System Information
+  createdBy: integer('created_by').references(() => users.id),
+  updatedBy: integer('updated_by').references(() => users.id),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Employee Employment History - Track all employment records
+export const employeeEmploymentHistory = pgTable('employee_employment_history', {
+  id: serial('id').primaryKey(),
+  employeeId: integer('employee_id').references(() => employees.id).notNull(),
+  companyId: integer('company_id').references(() => companies.id).notNull(),
+  jobTitle: text('job_title').notNull(),
+  department: text('department'),
+  salary: integer('salary'), // in cents
+  hireDate: timestamp('hire_date').notNull(),
+  terminationDate: timestamp('termination_date'),
+  terminationReason: text('termination_reason'),
+  employmentStatus: text('employment_status').notNull(), // active, terminated, on_leave, suspended
+  hoursPerWeek: integer('hours_per_week').default(40),
+  employeeClass: text('employee_class'), // full_time, part_time, contractor, temp
+  payrollFrequency: text('payroll_frequency').default('bi-weekly'),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Employee Dependents - Track all dependents throughout their lifecycle
+export const employeeDependents = pgTable('employee_dependents', {
+  id: serial('id').primaryKey(),
+  employeeId: integer('employee_id').references(() => employees.id).notNull(),
+  
+  // Personal Information
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  middleName: text('middle_name'),
+  relationship: text('relationship').notNull(), // spouse, child, domestic_partner, other
+  dob: text('dob'),
+  ssn: text('ssn'),
+  gender: text('gender'),
+  
+  // Contact Information
   email: text('email'),
   phone: text('phone'),
+  address: text('address'),
+  city: text('city'),
+  state: text('state'),
+  zip: text('zip'),
+  
+  // Eligibility and Coverage
+  isEligibleForCoverage: boolean('is_eligible_for_coverage').default(true),
+  coverageStartDate: timestamp('coverage_start_date'),
+  coverageEndDate: timestamp('coverage_end_date'),
+  
+  // Benefit Enrollment
+  medicalEnrollmentStatus: text('medical_enrollment_status').default('not_enrolled'),
+  dentalEnrollmentStatus: text('dental_enrollment_status').default('not_enrolled'),
+  visionEnrollmentStatus: text('vision_enrollment_status').default('not_enrolled'),
+  lifeEnrollmentStatus: text('life_enrollment_status').default('not_enrolled'),
+  
+  // Cost Information
+  totalMonthlyCost: integer('total_monthly_cost').default(0), // in cents
+  
+  // System Information
+  isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Employee Benefit Enrollments - Track all benefit selections and changes
+export const employeeBenefitEnrollments = pgTable('employee_benefit_enrollments', {
+  id: serial('id').primaryKey(),
+  employeeId: integer('employee_id').references(() => employees.id).notNull(),
+  dependentId: integer('dependent_id').references(() => employeeDependents.id), // null for employee
+  planId: integer('plan_id').references(() => plans.id).notNull(),
+  
+  // Enrollment Details
+  enrollmentType: text('enrollment_type').notNull(), // new_hire, open_enrollment, qualifying_event
+  effectiveDate: timestamp('effective_date').notNull(),
+  terminationDate: timestamp('termination_date'),
+  enrollmentStatus: text('enrollment_status').default('active'), // active, terminated, suspended, pending
+  
+  // Cost Information
+  monthlyPremium: integer('monthly_premium').notNull(), // in cents
+  employeeContribution: integer('employee_contribution').notNull(), // in cents
+  employerContribution: integer('employer_contribution').notNull(), // in cents
+  
+  // Coverage Details
+  coverageTier: text('coverage_tier').notNull(), // employee, employee_spouse, employee_child, family
+  deductible: integer('deductible'),
+  coInsurance: integer('co_insurance'),
+  copay: integer('copay'),
+  outOfPocketMax: integer('out_of_pocket_max'),
+  
+  // System Information
+  enrolledBy: integer('enrolled_by').references(() => users.id),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const insertEmployeeSchema = createInsertSchema(employees).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
+});
+
+export const insertEmployeeDependentSchema = createInsertSchema(employeeDependents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertEmployeeBenefitEnrollmentSchema = createInsertSchema(employeeBenefitEnrollments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 // Documents table
