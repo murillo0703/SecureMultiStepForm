@@ -132,6 +132,12 @@ export interface IStorage {
   }): Promise<any[]>;
   getRecentAuditLogs(limit?: number): Promise<any[]>;
 
+  // Onboarding operations
+  getOnboardingProgress(userId: number): Promise<any>;
+  updateOnboardingProgress(userId: number, step: string, companyId?: number): Promise<any>;
+  createCompanyContact(contact: any): Promise<any>;
+  getCompanyContacts(companyId: number): Promise<any[]>;
+
   // Session store
   sessionStore: any;
 }
@@ -148,6 +154,8 @@ export class MemStorage implements IStorage {
   private contributions: Map<number, Contribution>;
   private applications: Map<number, Application>;
   private applicationInitiators: Map<number, ApplicationInitiator>;
+  private onboardingProgress: Map<number, any>;
+  private companyContacts: Map<number, any>;
   private auditLogs: Array<{
     id: number;
     userId: number;

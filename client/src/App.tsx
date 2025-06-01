@@ -9,6 +9,7 @@ import AdminControlCenter from '@/pages/admin/control-center';
 import MasterAdminDashboard from '@/pages/master-admin/dashboard';
 import BrokerDashboard from '@/pages/broker/dashboard';
 import EmployerDashboard from '@/pages/employer/dashboard';
+import EmployerOnboarding from '@/pages/employer/onboarding';
 import QuoteBuilder from '@/pages/quoting/quote-builder';
 import AdvancedQuoteEngine from '@/pages/quoting/advanced-quote-engine';
 import EmployeeEnrollment from '@/pages/enrollment-management/employee-enrollment';
@@ -59,6 +60,7 @@ function Router() {
       
       {/* Employer Routes */}
       <ProtectedRoute path="/employer/dashboard" component={EmployerDashboard} />
+      <ProtectedRoute path="/employer/onboarding" component={EmployerOnboarding} />
 
       {/* Employee Portal */}
       <ProtectedRoute path="/employee-portal" component={EmployeePortal} />

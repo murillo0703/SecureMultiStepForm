@@ -357,6 +357,53 @@ export const insertOwnerSchema = createInsertSchema(owners).omit({
   createdAt: true,
 });
 
+// Company Contacts - Primary contacts for the company
+export const companyContacts = pgTable('company_contacts', {
+  id: serial('id').primaryKey(),
+  companyId: integer('company_id')
+    .references(() => companies.id)
+    .notNull(),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  email: text('email').notNull(),
+  jobTitle: text('job_title').notNull(),
+  relationshipToCompany: text('relationship_to_company').notNull(), // HR, HR_DIRECTOR, CFO, CEO, COO, etc.
+  isPrimaryContact: boolean('is_primary_contact').default(false),
+  isAuthorizedSigner: boolean('is_authorized_signer').default(false),
+  phone: text('phone'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const insertCompanyContactSchema = createInsertSchema(companyContacts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Onboarding Progress tracking
+export const onboardingProgress = pgTable('onboarding_progress', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .references(() => users.id)
+    .notNull(),
+  companyId: integer('company_id')
+    .references(() => companies.id),
+  step1CompanyInfo: boolean('step1_company_info').default(false),
+  step2ContactInfo: boolean('step2_contact_info').default(false),
+  step3OwnershipInfo: boolean('step3_ownership_info').default(false),
+  isComplete: boolean('is_complete').default(false),
+  completedAt: timestamp('completed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const insertOnboardingProgressSchema = createInsertSchema(onboardingProgress).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Centralized Employee Database - Tracks employees throughout their lifecycle
 export const employees = pgTable('employees', {
   id: serial('id').primaryKey(),
