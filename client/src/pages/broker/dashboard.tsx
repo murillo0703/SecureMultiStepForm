@@ -62,9 +62,15 @@ export default function BrokerDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Redirect if not broker role
+  // Redirect if not broker role - use useEffect to avoid state update during render
+  useEffect(() => {
+    if (!user?.brokerId || (user?.role !== 'broker_admin' && user?.role !== 'broker_staff')) {
+      setLocation('/');
+    }
+  }, [user, setLocation]);
+
+  // Don't render if user doesn't have broker access
   if (!user?.brokerId || (user?.role !== 'broker_admin' && user?.role !== 'broker_staff')) {
-    setLocation('/');
     return null;
   }
 
