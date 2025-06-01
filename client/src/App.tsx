@@ -10,10 +10,12 @@ import MasterAdminDashboard from '@/pages/master-admin/dashboard';
 import BrokerDashboard from '@/pages/broker/dashboard';
 import EmployerDashboard from '@/pages/employer/dashboard';
 import QuoteBuilder from '@/pages/quoting/quote-builder';
+import AdvancedQuoteEngine from '@/pages/quoting/advanced-quote-engine';
 import EmployeeEnrollment from '@/pages/enrollment-management/employee-enrollment';
 import RenewalManager from '@/pages/renewals/renewal-manager';
 import EmployeePortal from '@/pages/employee-portal';
 import BrokerManagement from '@/pages/master-admin/brokers';
+import LocationManagement from '@/pages/employer/location-management';
 import ApplicationInitiator from '@/pages/enrollment/application-initiator';
 import CarriersPage from '@/pages/enrollment/carriers';
 import CompanyInformation from '@/pages/enrollment/company-information';
@@ -60,14 +62,21 @@ function Router() {
       <ProtectedRoute path="/employee-portal" component={EmployeePortal} />
 
       {/* Quote Builder Routes */}
+      <ProtectedRoute path="/quoting/quote-builder" component={QuoteBuilder} />
+      <ProtectedRoute path="/quoting/advanced-quote-engine" component={AdvancedQuoteEngine} />
       <ProtectedRoute path="/quotes/builder" component={QuoteBuilder} />
       <ProtectedRoute path="/quotes" component={QuoteBuilder} />
 
+      {/* Employer Location Management */}
+      <ProtectedRoute path="/employer/location-management" component={LocationManagement} />
+
       {/* Employee Enrollment Management Routes */}
+      <ProtectedRoute path="/enrollment-management/employee-enrollment" component={EmployeeEnrollment} />
       <ProtectedRoute path="/enrollment-management" component={EmployeeEnrollment} />
       <ProtectedRoute path="/employee-enrollment" component={EmployeeEnrollment} />
 
       {/* Renewal Management Routes */}
+      <ProtectedRoute path="/renewals/renewal-manager" component={RenewalManager} />
       <ProtectedRoute path="/renewals" component={RenewalManager} />
       <ProtectedRoute path="/renewal-manager" component={RenewalManager} />
 

@@ -40,7 +40,9 @@ import {
   CreditCard,
   BarChart3,
   Shield,
-  Database
+  Database,
+  Zap,
+  MapPin
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -276,6 +278,12 @@ export function UnifiedNavigation() {
             description: 'Company overview and applications'
           },
           {
+            title: 'Location Management',
+            href: '/employer/location-management',
+            icon: <MapPin className="w-4 h-4" />,
+            description: 'Manage company locations and information'
+          },
+          {
             title: 'Employee Management',
             href: '/employer/employees',
             icon: <Users className="w-4 h-4" />,
@@ -294,13 +302,13 @@ export function UnifiedNavigation() {
         items: [
           {
             title: 'Get Quotes',
-            href: '/quotes/builder',
+            href: '/quoting/quote-builder',
             icon: <Calculator className="w-4 h-4" />,
             description: 'Self-service quote generation'
           },
           {
             title: 'Employee Enrollment',
-            href: '/enrollment-management',
+            href: '/enrollment-management/employee-enrollment',
             icon: <UserCheck className="w-4 h-4" />,
             description: 'Manage employee benefit selections'
           },
@@ -317,7 +325,7 @@ export function UnifiedNavigation() {
         items: [
           {
             title: 'Policy Renewals',
-            href: '/renewals',
+            href: '/renewals/renewal-manager',
             icon: <RefreshCw className="w-4 h-4" />,
             description: 'View and manage policy renewals'
           },
