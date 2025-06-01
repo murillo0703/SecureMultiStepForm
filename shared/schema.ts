@@ -147,6 +147,29 @@ export const insertUsageMetricsSchema = createInsertSchema(usageMetrics).omit({
   recordedAt: true,
 });
 
+// Employer Locations - Central source of truth for company information
+export const employerLocations = pgTable('employer_locations', {
+  id: serial('id').primaryKey(),
+  companyName: text('company_name').notNull(),
+  address: text('address').notNull(),
+  city: text('city').notNull(),
+  state: text('state').notNull(),
+  zipCode: text('zip_code').notNull(),
+  county: text('county').notNull(),
+  ratingArea: text('rating_area').notNull(),
+  phone: text('phone'),
+  taxId: text('tax_id'),
+  industry: text('industry'),
+  sicCode: text('sic_code'),
+  naicsCode: text('naics_code'),
+  employeeCount: integer('employee_count').default(1),
+  brokerId: uuid('broker_id').references(() => brokers.id),
+  effectiveDate: timestamp('effective_date'),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Users table for authentication with enhanced roles
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -155,8 +178,8 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
   brokerId: uuid('broker_id').references(() => brokers.id),
+  locationId: integer('location_id').references(() => employerLocations.id),
   role: text('role').default('employer').notNull(), // master_admin, broker_admin, broker_staff, employer
-  companyName: text('company_name'),
   isActive: boolean('is_active').default(true).notNull(),
   lastLoginAt: timestamp('last_login_at'),
   emailVerified: boolean('email_verified').default(false).notNull(),
@@ -172,8 +195,97 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   name: true,
   brokerId: true,
+  locationId: true,
   role: true,
-  companyName: true,
+});
+
+export const insertEmployerLocationSchema = createInsertSchema(employerLocations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Advanced Quoting System
+export const quoteProjects = pgTable('quote_projects', {
+  id: serial('id').primaryKey(),
+  projectName: text('project_name').notNull(),
+  locationId: integer('location_id').references(() => employerLocations.id).notNull(),
+  brokerId: uuid('broker_id').references(() => brokers.id),
+  createdBy: integer('created_by').references(() => users.id).notNull(),
+  effectiveDate: timestamp('effective_date').notNull(),
+  renewalDate: timestamp('renewal_date'),
+  status: text('status').default('draft').notNull(), // draft, active, locked, purchased
+  tier: text('tier').default('basic').notNull(), // basic, premium
+  totalEmployees: integer('total_employees').default(1),
+  totalDependents: integer('total_dependents').default(0),
+  selectedCarrier: text('selected_carrier'),
+  lockedAt: timestamp('locked_at'),
+  purchasedAt: timestamp('purchased_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Employee and Dependent Information for Quotes
+export const quoteEmployees = pgTable('quote_employees', {
+  id: serial('id').primaryKey(),
+  quoteId: integer('quote_id').references(() => quoteProjects.id).notNull(),
+  employeeType: text('employee_type').notNull(), // employee, spouse, child
+  age: integer('age').notNull(),
+  zipCode: text('zip_code').notNull(),
+  tier: text('tier').notNull(), // employee, employee_spouse, employee_child, family
+  tobaccoUse: boolean('tobacco_use').default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Benefit Type Selection for Quotes
+export const quoteBenefitSelections = pgTable('quote_benefit_selections', {
+  id: serial('id').primaryKey(),
+  quoteId: integer('quote_id').references(() => quoteProjects.id).notNull(),
+  benefitType: text('benefit_type').notNull(), // medical, dental, vision, life, disability
+  isSelected: boolean('is_selected').default(false),
+  metalTier: text('metal_tier'), // bronze, silver, gold, platinum
+  network: text('network'),
+  deductible: integer('deductible'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Carrier Selection and Plan Filtering
+export const quoteCarrierPlans = pgTable('quote_carrier_plans', {
+  id: serial('id').primaryKey(),
+  quoteId: integer('quote_id').references(() => quoteProjects.id).notNull(),
+  carrier: text('carrier').notNull(),
+  planId: integer('plan_id').references(() => plans.id).notNull(),
+  isSelected: boolean('is_selected').default(false),
+  monthlyPremium: integer('monthly_premium').notNull(), // in cents
+  annualPremium: integer('annual_premium').notNull(), // in cents
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Contribution Models
+export const quoteContributionModels = pgTable('quote_contribution_models', {
+  id: serial('id').primaryKey(),
+  quoteId: integer('quote_id').references(() => quoteProjects.id).notNull(),
+  modelName: text('model_name').notNull(),
+  benefitType: text('benefit_type').notNull(),
+  employeeContribution: integer('employee_contribution').default(0), // percentage or fixed amount
+  spouseContribution: integer('spouse_contribution').default(0),
+  childContribution: integer('child_contribution').default(0),
+  familyContribution: integer('family_contribution').default(0),
+  contributionType: text('contribution_type').default('percentage'), // percentage, fixed
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Document Generation and Proposals
+export const quoteDocuments = pgTable('quote_documents', {
+  id: serial('id').primaryKey(),
+  quoteId: integer('quote_id').references(() => quoteProjects.id).notNull(),
+  documentType: text('document_type').notNull(), // proposal, summary, carrier_app, census
+  fileName: text('file_name').notNull(),
+  filePath: text('file_path').notNull(),
+  fileSize: integer('file_size'),
+  generatedAt: timestamp('generated_at').defaultNow().notNull(),
+  isPublic: boolean('is_public').default(false),
 });
 
 // Companies table

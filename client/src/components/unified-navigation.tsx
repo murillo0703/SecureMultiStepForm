@@ -196,15 +196,27 @@ export function UnifiedNavigation() {
         title: 'Quoting & Enrollment',
         items: [
           {
-            title: 'Quote Builder',
-            href: '/quotes/builder',
+            title: 'Basic Quote Builder',
+            href: '/quoting/quote-builder',
             icon: <Calculator className="w-4 h-4" />,
-            description: 'Generate quotes for clients',
-            badge: 'Pro'
+            description: 'Simple quoting tool'
+          },
+          {
+            title: 'Advanced Quote Engine',
+            href: '/quoting/advanced-quote-engine',
+            icon: <Zap className="w-4 h-4" />,
+            description: 'Comprehensive quoting with premium features',
+            badge: 'Premium'
+          },
+          {
+            title: 'Employer Locations',
+            href: '/employer/location-management',
+            icon: <MapPin className="w-4 h-4" />,
+            description: 'Manage client company locations'
           },
           {
             title: 'Employee Enrollment',
-            href: '/enrollment-management',
+            href: '/enrollment-management/employee-enrollment',
             icon: <UserCheck className="w-4 h-4" />,
             description: 'Manage client employee enrollments',
             badge: 'Pro'
