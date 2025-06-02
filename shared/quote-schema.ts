@@ -110,7 +110,7 @@ export const quotePlanSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const insertQuotePlanSchema = createInsertSchema(z.object({
+export const insertQuotePlanSchema = z.object({
   quoteId: z.number(),
   planId: z.number(),
   planType: z.enum([
@@ -131,7 +131,7 @@ export const insertQuotePlanSchema = createInsertSchema(z.object({
   employerContribution: z.number().min(0).max(100),
   employeeContribution: z.number().min(0),
   isSelected: z.boolean().default(false),
-})).omit({ id: true, createdAt: true, updatedAt: true });
+});
 
 export type QuotePlan = z.infer<typeof quotePlanSchema>;
 export type InsertQuotePlan = z.infer<typeof insertQuotePlanSchema>;
@@ -160,7 +160,7 @@ export const contributionModelSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const insertContributionModelSchema = createInsertSchema(z.object({
+export const insertContributionModelSchema = z.object({
   quoteId: z.number(),
   planType: z.enum([
     'medical',
@@ -178,7 +178,7 @@ export const insertContributionModelSchema = createInsertSchema(z.object({
   familyContribution: z.number().min(0).max(100),
   contributionType: z.enum(['percentage', 'fixed_amount']),
   maxEmployerContribution: z.number().min(0).optional(),
-})).omit({ id: true, createdAt: true, updatedAt: true });
+});
 
 export type ContributionModel = z.infer<typeof contributionModelSchema>;
 export type InsertContributionModel = z.infer<typeof insertContributionModelSchema>;
@@ -203,7 +203,7 @@ export const proposalSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const insertProposalSchema = createInsertSchema(z.object({
+export const insertProposalSchema = z.object({
   quoteId: z.number(),
   proposalNumber: z.string(),
   status: z.enum(['draft', 'sent', 'viewed', 'accepted', 'declined']).default('draft'),
@@ -213,7 +213,7 @@ export const insertProposalSchema = createInsertSchema(z.object({
   masterPlanList: z.boolean().default(true),
   benefitSummary: z.boolean().default(true),
   customSections: z.array(z.string()).default([]),
-})).omit({ id: true, generatedAt: true, createdAt: true, updatedAt: true });
+});
 
 export type Proposal = z.infer<typeof proposalSchema>;
 export type InsertProposal = z.infer<typeof insertProposalSchema>;
