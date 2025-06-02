@@ -62,8 +62,10 @@ export interface IStorage {
   // Company operations
   createCompany(company: InsertCompany): Promise<Company>;
   getCompany(id: number): Promise<Company | undefined>;
+  updateCompany(id: number, updates: Partial<InsertCompany>): Promise<Company>;
   getCompaniesByUserId(userId: number): Promise<Company[]>;
   getCompaniesByBroker(brokerId: string): Promise<Company[]>;
+  getAllCompanies(): Promise<Company[]>;
   
   // Additional methods for SaaS functionality
   getTotalSubmissions(): Promise<number>;

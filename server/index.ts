@@ -1,5 +1,5 @@
 import express, { type Request, Response, NextFunction } from 'express';
-import { registerRoutes } from './routes';
+import { registerRoutes } from './routes-new';
 import { setupVite, serveStatic, log } from './vite';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
