@@ -78,6 +78,16 @@ export interface IStorage {
   // Employee operations
   createEmployee(employee: InsertEmployee): Promise<Employee>;
   getEmployeesByCompanyId(companyId: number): Promise<Employee[]>;
+  getEmployeesByCompany(companyId: number): Promise<Employee[]>;
+  updateEmployee(id: number, updates: Partial<InsertEmployee>): Promise<Employee>;
+  deleteEmployee(id: number): Promise<void>;
+
+  // Quote operations for comprehensive quoting engine
+  createQuote(quote: any): Promise<any>;
+  getQuote(id: number): Promise<any>;
+  updateQuote(id: number, updates: any): Promise<any>;
+  getQuotesByUser(userId: number): Promise<any[]>;
+  getPlans(filters: any): Promise<Plan[]>;
 
   // Document operations
   createDocument(document: InsertDocument): Promise<Document>;
@@ -421,6 +431,113 @@ export class MemStorage implements IStorage {
 
   async getEmployeesByCompanyId(companyId: number): Promise<Employee[]> {
     return Array.from(this.employees.values()).filter(employee => employee.companyId === companyId);
+  }
+
+  async getEmployeesByCompany(companyId: number): Promise<Employee[]> {
+    return this.getEmployeesByCompanyId(companyId);
+  }
+
+  async updateEmployee(id: number, updates: Partial<InsertEmployee>): Promise<Employee> {
+    const existing = this.employees.get(id);
+    if (!existing) {
+      throw new Error('Employee not found');
+    }
+    
+    const updated: Employee = {
+      ...existing,
+      ...updates,
+    };
+    this.employees.set(id, updated);
+    return updated;
+  }
+
+  async deleteEmployee(id: number): Promise<void> {
+    this.employees.delete(id);
+  }
+
+  async updateCompany(id: number, updates: Partial<InsertCompany>): Promise<Company> {
+    const existing = this.companies.get(id);
+    if (!existing) {
+      throw new Error('Company not found');
+    }
+    
+    const updated: Company = {
+      ...existing,
+      ...updates,
+      updatedAt: new Date(),
+    };
+    this.companies.set(id, updated);
+    return updated;
+  }
+
+  async getAllCompanies(): Promise<Company[]> {
+    return Array.from(this.companies.values());
+  }
+
+  // Quote operations for comprehensive quoting engine
+  private quotes: Map<number, any> = new Map();
+  private quoteIdCounter: number = 1;
+
+  async createQuote(quote: any): Promise<any> {
+    const id = this.quoteIdCounter++;
+    const now = new Date();
+    const newQuote = {
+      ...quote,
+      id,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.quotes.set(id, newQuote);
+    return newQuote;
+  }
+
+  async getQuote(id: number): Promise<any> {
+    return this.quotes.get(id);
+  }
+
+  async updateQuote(id: number, updates: any): Promise<any> {
+    const existing = this.quotes.get(id);
+    if (!existing) {
+      throw new Error('Quote not found');
+    }
+    
+    const updated = {
+      ...existing,
+      ...updates,
+      updatedAt: new Date(),
+    };
+    this.quotes.set(id, updated);
+    return updated;
+  }
+
+  async getQuotesByUser(userId: number): Promise<any[]> {
+    return Array.from(this.quotes.values()).filter(quote => quote.userId === userId);
+  }
+
+  async getPlans(filters: any): Promise<Plan[]> {
+    let plans = Array.from(this.plans.values());
+    
+    if (filters.carrier) {
+      plans = plans.filter(plan => plan.carrier === filters.carrier);
+    }
+    
+    if (filters.planType) {
+      plans = plans.filter(plan => plan.planType === filters.planType);
+    }
+    
+    if (filters.state) {
+      // Filter by state - for now, return all plans as we don't have state-specific filtering
+      // In a real implementation, this would filter by state availability
+    }
+    
+    if (filters.effectiveDate) {
+      plans = plans.filter(plan => 
+        plan.effectiveStart <= filters.effectiveDate && 
+        plan.effectiveEnd >= filters.effectiveDate
+      );
+    }
+    
+    return plans;
   }
 
   // Document operations
