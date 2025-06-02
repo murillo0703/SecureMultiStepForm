@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSearchParams } from 'wouter';
+import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -70,8 +70,9 @@ interface Employee extends EmployeeForm {
 export default function EmployeeManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
-  const quoteId = searchParams.get('quoteId');
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const quoteId = urlParams.get('quoteId');
   
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);

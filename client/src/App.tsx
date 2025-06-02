@@ -12,6 +12,12 @@ import EmployerDashboard from '@/pages/employer/dashboard';
 import EmployerOnboarding from '@/pages/employer/onboarding';
 import QuoteBuilder from '@/pages/quoting/quote-builder';
 import AdvancedQuoteEngine from '@/pages/quoting/advanced-quote-engine';
+import CompanySetup from '@/pages/quoting/company-setup';
+import BenefitSelection from '@/pages/quoting/benefit-selection';
+import EmployeeManagementQuoting from '@/pages/quoting/employee-management';
+import CarrierSelection from '@/pages/quoting/carrier-selection';
+import PlanFiltering from '@/pages/quoting/plan-filtering';
+import ProposalGeneration from '@/pages/quoting/proposal-generation';
 import EmployeeEnrollment from '@/pages/enrollment-management/employee-enrollment';
 import RenewalManager from '@/pages/renewals/renewal-manager';
 import EmployeePortal from '@/pages/employee-portal';
@@ -70,6 +76,14 @@ function Router() {
       <ProtectedRoute path="/quoting/advanced-quote-engine" component={AdvancedQuoteEngine} />
       <ProtectedRoute path="/quotes/builder" component={QuoteBuilder} />
       <ProtectedRoute path="/quotes" component={QuoteBuilder} />
+      
+      {/* Comprehensive Quoting Engine Workflow */}
+      <ProtectedRoute path="/quoting/company-setup" component={CompanySetup} />
+      <ProtectedRoute path="/quoting/benefit-selection" component={BenefitSelection} />
+      <ProtectedRoute path="/quoting/employee-management" component={EmployeeManagementQuoting} />
+      <ProtectedRoute path="/quoting/carrier-selection" component={CarrierSelection} />
+      <ProtectedRoute path="/quoting/plan-filtering" component={PlanFiltering} />
+      <ProtectedRoute path="/quoting/proposal-generation" component={ProposalGeneration} />
 
       {/* Employer Location Management */}
       <ProtectedRoute path="/employer/location-management" component={LocationManagement} />

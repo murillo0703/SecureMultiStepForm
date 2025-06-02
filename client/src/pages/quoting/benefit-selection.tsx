@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSearchParams } from 'wouter';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -133,8 +133,9 @@ const categoryDescriptions = {
 export default function BenefitSelection() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
-  const companyId = searchParams.get('companyId');
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const companyId = urlParams.get('companyId');
   
   const [selectedBenefits, setSelectedBenefits] = useState<string[]>(['medical']); // Medical pre-selected
 
