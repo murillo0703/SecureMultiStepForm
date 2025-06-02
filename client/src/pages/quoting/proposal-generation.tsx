@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSearchParams } from 'wouter';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -54,8 +54,9 @@ interface ProposalData {
 export default function ProposalGeneration() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
-  const quoteId = searchParams.get('quoteId');
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const quoteId = urlParams.get('quoteId');
   
   const [proposalSections, setProposalSections] = useState<ProposalSections>({
     coverPage: true,

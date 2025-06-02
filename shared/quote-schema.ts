@@ -16,7 +16,7 @@ export const quoteSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const insertQuoteSchema = createInsertSchema(z.object({
+export const insertQuoteSchema = z.object({
   userId: z.number(),
   companyId: z.number(),
   quoteNumber: z.string(),
@@ -25,7 +25,7 @@ export const insertQuoteSchema = createInsertSchema(z.object({
   expirationDate: z.date(),
   brokerageRate: z.number().min(0).max(100).default(0),
   totalPremium: z.number().min(0).default(0),
-})).omit({ id: true, createdAt: true, updatedAt: true });
+});
 
 export type Quote = z.infer<typeof quoteSchema>;
 export type InsertQuote = z.infer<typeof insertQuoteSchema>;
@@ -59,7 +59,7 @@ export const employeeQuoteSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const insertEmployeeQuoteSchema = createInsertSchema(z.object({
+export const insertEmployeeQuoteSchema = z.object({
   quoteId: z.number(),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -72,7 +72,7 @@ export const insertEmployeeQuoteSchema = createInsertSchema(z.object({
   hoursPerWeek: z.number().min(0).max(168),
   eligibleDate: z.date(),
   enrollmentTier: z.enum(['employee', 'employee_spouse', 'employee_children', 'family']),
-})).omit({ id: true, createdAt: true, updatedAt: true });
+});
 
 export type EmployeeQuote = z.infer<typeof employeeQuoteSchema>;
 export type InsertEmployeeQuote = z.infer<typeof insertEmployeeQuoteSchema>;

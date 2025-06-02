@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSearchParams } from 'wouter';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +22,7 @@ import {
   AlertCircle,
   TrendingUp,
   Calculator,
-  Compare,
+  GitCompare,
   Settings,
   Info,
   CheckCircle,
@@ -89,8 +89,9 @@ const metalTierColors = {
 export default function PlanFiltering() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
-  const quoteId = searchParams.get('quoteId');
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const quoteId = urlParams.get('quoteId');
   
   const [selectedPlans, setSelectedPlans] = useState<number[]>([]);
   const [filterCarrier, setFilterCarrier] = useState<string>('');
@@ -348,7 +349,7 @@ export default function PlanFiltering() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <Compare className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+          <GitCompare className="h-16 w-16 text-blue-600 mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Plan Filtering & Selection</h1>
           <p className="text-xl text-gray-600 mb-4">
             Filter and compare insurance plans with contribution modeling

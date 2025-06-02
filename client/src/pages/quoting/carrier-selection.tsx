@@ -156,8 +156,9 @@ const planTypeIcons = {
 export default function CarrierSelection() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
-  const quoteId = searchParams.get('quoteId');
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const quoteId = urlParams.get('quoteId');
   
   const [selectedCarriers, setSelectedCarriers] = useState<string[]>([]);
   const [filterState, setFilterState] = useState<string>('');
