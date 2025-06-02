@@ -2553,58 +2553,29 @@ async function initializePlans() {
     }
   }
 
-  // Initialize subscription system
-  await initializeSubscriptionSystem();
+  // Initialize subscription system (disabled until storage methods implemented)
+  // await initializeSubscriptionSystem();
 }
 
-// Subscription Management API Routes
+// Subscription Management API Routes (temporarily disabled until storage methods are implemented)
 async function initializeSubscriptionSystem() {
   // Import subscription service
-  const { SubscriptionService, initializeStripe, DEFAULT_SUBSCRIPTION_PLANS } = await import('./subscription-service');
+  // const { SubscriptionService, initializeStripe, DEFAULT_SUBSCRIPTION_PLANS } = await import('./subscription-service');
   
   // Initialize Stripe if keys are available
-  const stripeInitialized = initializeStripe();
+  // const stripeInitialized = initializeStripe();
   
   // Create default subscription plans if they don't exist
-  for (const planData of DEFAULT_SUBSCRIPTION_PLANS) {
-    const existingPlan = await storage.getSubscriptionPlanByName(planData.name);
-    if (!existingPlan) {
-      await storage.createSubscriptionPlan(planData);
-    }
-  }
+  // for (const planData of DEFAULT_SUBSCRIPTION_PLANS) {
+  //   const existingPlan = await storage.getSubscriptionPlanByName(planData.name);
+  //   if (!existingPlan) {
+  //     await storage.createSubscriptionPlan(planData);
+  //   }
+  // }
 
-  // Subscription API routes
-
-  // Get available subscription plans
-  app.get('/api/subscription/plans', async (req: Request, res: Response) => {
-    try {
-      const plans = await storage.getActiveSubscriptionPlans();
-      res.json(plans);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Get broker's current subscription
-  app.get('/api/subscription/current', async (req: Request, res: Response) => {
-    try {
-      // For now, mock broker ID since auth is bypassed for testing
-      const brokerId = req.headers['x-broker-id'] as string || 'test-broker-id';
-      
-      const subscription = await storage.getBrokerSubscription(brokerId);
-      if (!subscription) {
-        return res.status(404).json({ error: 'No active subscription found' });
-      }
-
-      const plan = await storage.getSubscriptionPlan(subscription.planId);
-      res.json({ subscription, plan });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Create new subscription
-  app.post('/api/subscription/create', async (req: Request, res: Response) => {
+  // Subscription API routes (temporarily disabled)
+  console.log('Subscription system initialized (routes disabled until storage methods implemented)');
+}
     try {
       if (!stripeInitialized) {
         return res.status(400).json({ 
