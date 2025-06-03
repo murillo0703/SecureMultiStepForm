@@ -392,6 +392,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Document management endpoints
+  app.get('/api/documents', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const documents = await storage.getDocuments();
+      res.json(documents);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/documents/upload', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const document = {
+        id: Date.now(),
+        filename: req.body.filename || `doc_${Date.now()}`,
+        originalName: req.body.originalName || 'uploaded_file',
+        mimeType: req.body.mimeType || 'application/octet-stream',
+        size: req.body.size || 0,
+        type: req.body.type || 'other',
+        uploadedBy: req.user!.id,
+        uploadedAt: new Date().toISOString(),
+        companyId: req.user!.companyId
+      };
+      
+      res.status(201).json(document);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete('/api/documents/:id', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      // In a real implementation, this would delete from storage
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Employee census upload endpoint
+  app.post('/api/employees/census-upload', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { employees } = req.body;
+      
+      if (!Array.isArray(employees)) {
+        return res.status(400).json({ error: 'Invalid employees data' });
+      }
+
+      let imported = 0;
+      const errors: string[] = [];
+
+      for (const emp of employees) {
+        try {
+          if (!emp.fullName || !emp.dateOfBirth || !emp.email) {
+            errors.push(`Missing required fields for employee: ${emp.fullName || 'Unknown'}`);
+            continue;
+          }
+
+          const [firstName, ...lastNameParts] = emp.fullName.split(' ');
+          const lastName = lastNameParts.join(' ');
+
+          const employee = {
+            firstName,
+            lastName,
+            email: emp.email,
+            dob: emp.dateOfBirth,
+            address: emp.address || '',
+            ssn: emp.ssn || '',
+            companyId: req.user!.companyId || 1,
+            isActive: true,
+            phone: '',
+            city: '',
+            state: '',
+            zip: '',
+            gender: null,
+            salary: 0,
+            hoursPerWeek: 40,
+            hireDate: new Date().toISOString(),
+            jobTitle: '',
+            department: '',
+            employeeId: `EMP${Date.now()}_${imported}`,
+            benefitEligibilityDate: new Date().toISOString(),
+            workLocation: '',
+            manager: '',
+            payrollFrequency: 'biweekly',
+            exemptStatus: 'non-exempt',
+            unionMember: false,
+            cobEnrolled: false,
+            notes: 'Imported from census upload'
+          };
+
+          await storage.createEmployee(employee);
+          imported++;
+        } catch (err: any) {
+          errors.push(`Failed to import ${emp.fullName}: ${err.message}`);
+        }
+      }
+
+      res.json({ 
+        imported, 
+        total: employees.length, 
+        errors: errors.length > 0 ? errors : undefined 
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -40,6 +40,7 @@ import ReviewSubmit from '@/pages/enrollment/review-submit';
 import Signature from '@/pages/enrollment/signature';
 import ComingSoonPage from '@/pages/enrollment/coming-soon';
 import BrokerSettingsPage from '@/pages/broker-settings';
+import DocumentManager from '@/pages/document-manager';
 import { ProtectedRoute } from '@/lib/protected-route';
 import { getBrandConfig } from '@/lib/brand-config';
 import { RoleSwitcher } from '@/components/role-switcher';
@@ -85,10 +86,16 @@ function Router() {
       <ProtectedRoute path="/quoting/plan-filtering" component={PlanFiltering} />
       <ProtectedRoute path="/quoting/proposal-generation" component={ProposalGeneration} />
 
+      {/* Document Manager */}
+      <ProtectedRoute path="/document-manager" component={DocumentManager} />
+      <ProtectedRoute path="/documents" component={DocumentManager} />
+
       {/* Employer Location Management */}
       <ProtectedRoute path="/employer/location-management" component={LocationManagement} />
-      <ProtectedRoute path="/employer/company-management" component={CompanyManagement} />
       <ProtectedRoute path="/employer/employee-management" component={EmployeeManagement} />
+
+      {/* Broker-only Company Management */}
+      <ProtectedRoute path="/broker/company-management" component={CompanyManagement} />
 
       {/* Employee Enrollment Management Routes */}
       <ProtectedRoute path="/enrollment-management/employee-enrollment" component={EmployeeEnrollment} />

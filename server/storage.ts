@@ -92,6 +92,7 @@ export interface IStorage {
   // Document operations
   createDocument(document: InsertDocument): Promise<Document>;
   getDocument(id: number): Promise<Document | undefined>;
+  getDocuments(): Promise<Document[]>;
   getDocumentsByCompanyId(companyId: number): Promise<Document[]>;
   deleteDocument(id: number): Promise<void>;
 
@@ -555,6 +556,10 @@ export class MemStorage implements IStorage {
 
   async getDocument(id: number): Promise<Document | undefined> {
     return this.documents.get(id);
+  }
+
+  async getDocuments(): Promise<Document[]> {
+    return Array.from(this.documents.values());
   }
 
   async getDocumentsByCompanyId(companyId: number): Promise<Document[]> {
