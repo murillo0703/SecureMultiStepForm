@@ -36,6 +36,15 @@ export const getQueryFn: <T>(options: { on401: UnauthorizedBehavior }) => QueryF
     }
 
     await throwIfResNotOk(res);
+    
+    // Check if response is actually JSON before parsing
+    const contentType = res.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await res.text();
+      console.error(`Non-JSON response from ${queryKey[0]}:`, text.slice(0, 200));
+      throw new Error(`Expected JSON response from ${queryKey[0]} but got ${contentType}`);
+    }
+    
     return await res.json();
   };
 
