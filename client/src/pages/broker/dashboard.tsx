@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
@@ -12,138 +13,96 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Users, 
-  FileText, 
-  CreditCard, 
-  Settings,
+import {
+  Building2,
+  Users,
+  FileText,
   TrendingUp,
-  AlertCircle,
+  Calendar,
+  Plus,
+  Settings,
+  Eye,
+  Edit,
+  BarChart3,
+  Shield,
   CheckCircle,
-  Plus
+  Clock,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import { useLocation } from 'wouter';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest, queryClient } from '@/lib/queryClient';
 
-interface BrokerStats {
-  totalUsers: number;
-  totalSubmissions: number;
-  activeSubmissions: number;
-  completedSubmissions: number;
-  subscriptionTier: string;
-  usagePercentage: number;
-  maxUsers: number;
-  maxSubmissions: number;
-}
-
-interface User {
+interface Company {
   id: number;
   name: string;
-  email: string;
-  role: string;
-  lastActive: string;
-  submissionCount: number;
-  isActive: boolean;
+  employees: number;
+  status: 'active' | 'pending' | 'renewal';
+  lastActivity: string;
+  applications: number;
 }
 
-interface Submission {
+interface Application {
   id: number;
   companyName: string;
-  ownerName: string;
-  status: string;
-  submittedAt: string;
-  carrier: string;
+  type: string;
+  status: 'submitted' | 'in_review' | 'approved' | 'rejected';
+  submittedDate: string;
+  effectiveDate: string;
 }
 
 export default function BrokerDashboard() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  const { toast } = useToast();
 
-  // Redirect if not broker role - use useEffect to avoid state update during render
-  useEffect(() => {
-    if (!user?.brokerId || (user?.role !== 'broker_admin' && user?.role !== 'broker_staff')) {
-      setLocation('/');
-    }
-  }, [user, setLocation]);
-
-  // Don't render if user doesn't have broker access
-  if (!user?.brokerId || (user?.role !== 'broker_admin' && user?.role !== 'broker_staff')) {
-    return null;
-  }
-
-  // Fetch broker statistics
-  const { data: stats, isLoading: statsLoading } = useQuery<BrokerStats>({
-    queryKey: ['/api/broker/stats'],
+  // Fetch broker companies
+  const { data: companies = [] } = useQuery<Company[]>({
+    queryKey: ['/api/broker/companies'],
   });
 
-  // Fetch users under this broker
-  const { data: users = [], isLoading: usersLoading } = useQuery<User[]>({
-    queryKey: ['/api/broker/users'],
+  // Fetch applications
+  const { data: applications = [] } = useQuery<Application[]>({
+    queryKey: ['/api/broker/applications'],
   });
 
-  // Fetch submissions under this broker
-  const { data: submissions = [], isLoading: submissionsLoading } = useQuery<Submission[]>({
-    queryKey: ['/api/broker/submissions'],
-  });
+  const stats = {
+    totalClients: companies.length,
+    activeApplications: applications.filter(app => app.status === 'in_review').length,
+    pendingRenewals: companies.filter(company => company.status === 'renewal').length,
+    monthlyRevenue: '$24,500',
+  };
 
-  const inviteUserMutation = useMutation({
-    mutationFn: async (email: string) => {
-      const response = await apiRequest('POST', '/api/broker/invite-user', { email });
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Success',
-        description: 'User invitation sent successfully.',
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/broker/users'] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to send invitation.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  if (statsLoading || usersLoading || submissionsLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  const getStatusBadge = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Completed</Badge>;
-      case 'in_progress':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">In Progress</Badge>;
+      case 'active':
+      case 'approved':
+        return 'bg-green-100 text-green-800';
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>;
+      case 'in_review':
       case 'submitted':
-        return <Badge className="bg-purple-100 text-purple-800 border-purple-200">Submitted</Badge>;
+        return 'bg-yellow-100 text-yellow-800';
+      case 'renewal':
+        return 'bg-blue-100 text-blue-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
       default:
-        return <Badge variant="secondary">{status}</Badge>;
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getUserRoleBadge = (role: string) => {
-    switch (role) {
-      case 'broker_admin':
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Admin</Badge>;
-      case 'broker_staff':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Staff</Badge>;
-      case 'employer':
-        return <Badge variant="outline">Employer</Badge>;
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active':
+      case 'approved':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'pending':
+      case 'in_review':
+      case 'submitted':
+        return <Clock className="h-4 w-4" />;
+      case 'renewal':
+        return <Calendar className="h-4 w-4" />;
+      case 'rejected':
+        return <AlertCircle className="h-4 w-4" />;
       default:
-        return <Badge variant="secondary">{role}</Badge>;
+        return <FileText className="h-4 w-4" />;
     }
   };
 
@@ -153,9 +112,12 @@ export default function BrokerDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Broker Dashboard</h1>
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <Shield className="h-6 w-6 text-blue-600" />
+                Broker Dashboard
+              </h1>
               <p className="mt-1 text-sm text-gray-500">
-                Manage your clients, users, and subscription
+                Welcome back, {user?.name}. Manage your clients and submissions.
               </p>
             </div>
             <div className="flex space-x-3">
@@ -173,61 +135,16 @@ export default function BrokerDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Subscription Status */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Subscription Status</span>
-              <Badge className="bg-green-100 text-green-800 border-green-200">
-                {stats?.subscriptionTier?.toUpperCase()}
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Users ({stats?.totalUsers || 0}/{stats?.maxUsers || 0})</span>
-                  <span>{Math.round(((stats?.totalUsers || 0) / ((stats?.maxUsers || 1))) * 100)}%</span>
-                </div>
-                <Progress value={((stats?.totalUsers || 0) / ((stats?.maxUsers || 1))) * 100} className="mb-4" />
-                
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Submissions ({stats?.totalSubmissions || 0}/{stats?.maxSubmissions || 0})</span>
-                  <span>{Math.round(((stats?.totalSubmissions || 0) / ((stats?.maxSubmissions || 1))) * 100)}%</span>
-                </div>
-                <Progress value={((stats?.totalSubmissions || 0) / ((stats?.maxSubmissions || 1))) * 100} />
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Plan:</span>
-                  <span className="text-sm">{stats?.subscriptionTier?.charAt(0).toUpperCase() + stats?.subscriptionTier?.slice(1)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Next Billing:</span>
-                  <span className="text-sm">December 1, 2024</span>
-                </div>
-                <Button size="sm" variant="outline" onClick={() => setLocation('/broker/billing')}>
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  Manage Billing
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Dashboard Stats */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Total Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.totalUsers || 0}</p>
-                  <p className="text-xs text-blue-600">Active clients</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Clients</p>
+                  <p className="text-2xl font-bold">{stats.totalClients}</p>
                 </div>
-                <Users className="h-8 w-8 text-blue-500" />
+                <Building2 className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
@@ -236,11 +153,10 @@ export default function BrokerDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Active Submissions</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.activeSubmissions || 0}</p>
-                  <p className="text-xs text-yellow-600">In progress</p>
+                  <p className="text-sm font-medium text-muted-foreground">Active Applications</p>
+                  <p className="text-2xl font-bold">{stats.activeApplications}</p>
                 </div>
-                <FileText className="h-8 w-8 text-yellow-500" />
+                <FileText className="h-8 w-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
@@ -249,11 +165,10 @@ export default function BrokerDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Completed</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.completedSubmissions || 0}</p>
-                  <p className="text-xs text-green-600">This month</p>
+                  <p className="text-sm font-medium text-muted-foreground">Pending Renewals</p>
+                  <p className="text-2xl font-bold">{stats.pendingRenewals}</p>
                 </div>
-                <CheckCircle className="h-8 w-8 text-green-500" />
+                <Calendar className="h-8 w-8 text-yellow-600" />
               </div>
             </CardContent>
           </Card>
@@ -262,141 +177,146 @@ export default function BrokerDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Usage</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.usagePercentage || 0}%</p>
-                  <p className="text-xs text-purple-600">Of plan limit</p>
+                  <p className="text-sm font-medium text-muted-foreground">Monthly Revenue</p>
+                  <p className="text-2xl font-bold">{stats.monthlyRevenue}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-purple-500" />
+                <TrendingUp className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="submissions" className="space-y-6">
+        {/* Main Content */}
+        <Tabs defaultValue="companies" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="submissions">Recent Submissions</TabsTrigger>
-            <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="companies">Client Companies</TabsTrigger>
+            <TabsTrigger value="applications">Applications</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="submissions">
+          <TabsContent value="companies">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Submissions</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5" />
+                  Client Companies
+                </CardTitle>
+                <CardDescription>
+                  Manage your client companies and their benefit programs
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Company Name</TableHead>
-                      <TableHead>Owner</TableHead>
+                      <TableHead>Employees</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Carrier</TableHead>
-                      <TableHead>Submitted</TableHead>
+                      <TableHead>Last Activity</TableHead>
+                      <TableHead>Applications</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {submissions.map((submission) => (
-                      <TableRow key={submission.id}>
-                        <TableCell className="font-medium">
-                          {submission.companyName}
-                        </TableCell>
-                        <TableCell>{submission.ownerName}</TableCell>
+                    {companies.map((company) => (
+                      <TableRow key={company.id}>
+                        <TableCell className="font-medium">{company.name}</TableCell>
+                        <TableCell>{company.employees}</TableCell>
                         <TableCell>
-                          {getStatusBadge(submission.status)}
+                          <Badge className={getStatusColor(company.status)}>
+                            <div className="flex items-center gap-1">
+                              {getStatusIcon(company.status)}
+                              {company.status}
+                            </div>
+                          </Badge>
                         </TableCell>
-                        <TableCell>{submission.carrier || 'Not selected'}</TableCell>
+                        <TableCell>{company.lastActivity}</TableCell>
+                        <TableCell>{company.applications}</TableCell>
                         <TableCell>
-                          {new Date(submission.submittedAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setLocation(`/broker/submissions/${submission.id}`)}
-                            >
-                              View
+                          <div className="flex items-center gap-2">
+                            <Button size="sm" variant="outline" onClick={() => setLocation(`/broker/companies/${company.id}`)}>
+                              <Eye className="h-4 w-4" />
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setLocation(`/broker/submissions/${submission.id}/edit`)}
-                            >
-                              Edit
+                            <Button size="sm" variant="outline" onClick={() => setLocation(`/broker/companies/${company.id}/edit`)}>
+                              <Edit className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
                       </TableRow>
                     ))}
+                    {companies.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8">
+                          <div className="text-muted-foreground">
+                            <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                            <p>No client companies yet</p>
+                            <p className="text-sm">Start by adding your first client company</p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="users">
+          <TabsContent value="applications">
             <Card>
               <CardHeader>
-                <CardTitle>User Management</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Recent Applications
+                </CardTitle>
+                <CardDescription>
+                  Track application submissions and their status
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Submissions</TableHead>
-                      <TableHead>Last Active</TableHead>
+                      <TableHead>Company</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Submitted</TableHead>
+                      <TableHead>Effective Date</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {users.map((userItem) => (
-                      <TableRow key={userItem.id}>
-                        <TableCell className="font-medium">
-                          {userItem.name}
-                        </TableCell>
-                        <TableCell>{userItem.email}</TableCell>
+                    {applications.map((application) => (
+                      <TableRow key={application.id}>
+                        <TableCell className="font-medium">{application.companyName}</TableCell>
+                        <TableCell>{application.type}</TableCell>
                         <TableCell>
-                          {getUserRoleBadge(userItem.role)}
+                          <Badge className={getStatusColor(application.status)}>
+                            <div className="flex items-center gap-1">
+                              {getStatusIcon(application.status)}
+                              {application.status.replace('_', ' ')}
+                            </div>
+                          </Badge>
                         </TableCell>
-                        <TableCell>{userItem.submissionCount}</TableCell>
+                        <TableCell>{application.submittedDate}</TableCell>
+                        <TableCell>{application.effectiveDate}</TableCell>
                         <TableCell>
-                          {new Date(userItem.lastActive).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          {userItem.isActive ? (
-                            <Badge className="bg-green-100 text-green-800 border-green-200">Active</Badge>
-                          ) : (
-                            <Badge className="bg-red-100 text-red-800 border-red-200">Inactive</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setLocation(`/broker/users/${userItem.id}`)}
-                            >
-                              View
-                            </Button>
-                            {user?.role === 'broker_admin' && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setLocation(`/broker/users/${userItem.id}/edit`)}
-                              >
-                                Edit
-                              </Button>
-                            )}
-                          </div>
+                          <Button size="sm" variant="outline" onClick={() => setLocation(`/broker/applications/${application.id}`)}>
+                            <Eye className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
+                    {applications.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8">
+                          <div className="text-muted-foreground">
+                            <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                            <p>No applications submitted yet</p>
+                            <p className="text-sm">Applications will appear here once submitted</p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -404,50 +324,56 @@ export default function BrokerDashboard() {
           </TabsContent>
 
           <TabsContent value="analytics">
-            <Card>
-              <CardHeader>
-                <CardTitle>Analytics & Insights</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Submission Trends</h3>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm">This month</span>
-                        <span className="text-sm font-medium">{stats?.totalSubmissions || 0} submissions</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm">Completion rate</span>
-                        <span className="text-sm font-medium">87%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm">Average time</span>
-                        <span className="text-sm font-medium">3.2 days</span>
-                      </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Performance Overview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Conversion Rate</span>
+                      <span className="font-medium">78%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Average Deal Size</span>
+                      <span className="font-medium">$2,450</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Time to Close</span>
+                      <span className="font-medium">18 days</span>
                     </div>
                   </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Popular Carriers</h3>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm">Anthem</span>
-                        <span className="text-sm font-medium">45%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm">Blue Shield</span>
-                        <span className="text-sm font-medium">32%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm">Kaiser</span>
-                        <span className="text-sm font-medium">23%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button className="w-full justify-start" onClick={() => setLocation('/quoting/quote-builder')}>
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Generate New Quote
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => setLocation('/broker/company-management')}>
+                    <Building2 className="h-4 w-4 mr-2" />
+                    Add New Client
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => setLocation('/document-manager')}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Document Center
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => setLocation('/enrollment-management')}>
+                    <Users className="h-4 w-4 mr-2" />
+                    Employee Enrollment
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

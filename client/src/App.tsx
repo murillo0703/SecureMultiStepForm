@@ -7,7 +7,6 @@ import AdminDashboard from '@/pages/admin/dashboard';
 import AdminPlanUpload from '@/pages/admin/plan-upload';
 import AdminControlCenter from '@/pages/admin/control-center';
 import MasterAdminDashboard from '@/pages/master-admin/dashboard';
-import BrokerDashboard from '@/pages/broker/dashboard';
 import EmployerDashboard from '@/pages/employer/dashboard';
 import EmployerOnboarding from '@/pages/employer/onboarding';
 import QuoteBuilder from '@/pages/quoting/quote-builder';
@@ -41,6 +40,7 @@ import Signature from '@/pages/enrollment/signature';
 import ComingSoonPage from '@/pages/enrollment/coming-soon';
 import BrokerSettingsPage from '@/pages/broker-settings';
 import DocumentManager from '@/pages/document-manager';
+import BrokerDashboard from '@/pages/broker/dashboard';
 import { ProtectedRoute } from '@/lib/protected-route';
 import { getBrandConfig } from '@/lib/brand-config';
 import { RoleSwitcher } from '@/components/role-switcher';
@@ -94,7 +94,8 @@ function Router() {
       <ProtectedRoute path="/employer/location-management" component={LocationManagement} />
       <ProtectedRoute path="/employer/employee-management" component={EmployeeManagement} />
 
-      {/* Broker-only Company Management */}
+      {/* Broker Dashboard and Management */}
+      <ProtectedRoute path="/broker/dashboard" component={BrokerDashboard} />
       <ProtectedRoute path="/broker/company-management" component={CompanyManagement} />
 
       {/* Employee Enrollment Management Routes */}

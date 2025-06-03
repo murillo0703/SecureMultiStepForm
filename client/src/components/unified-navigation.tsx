@@ -212,7 +212,7 @@ export function UnifiedNavigation() {
           },
           {
             title: 'Company Management',
-            href: '/employer/company-management',
+            href: '/broker/company-management',
             icon: <Building2 className="w-4 h-4" />,
             description: 'Manage client company data and locations'
           },
