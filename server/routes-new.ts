@@ -298,6 +298,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Subscription module access endpoints
+  app.get('/api/subscription/modules/:moduleName/access', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { moduleName } = req.params;
+      const user = req.user!;
+      
+      const moduleAccess = {
+        moduleName,
+        accessLevel: user.role === 'master_admin' ? 'full' : 'read',
+        hasAccess: true
+      };
+      
+      res.json(moduleAccess);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/subscription/usage', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { moduleName, action, resourceId } = req.body;
+      
+      const usage = {
+        id: Date.now(),
+        userId: req.user!.id,
+        moduleName,
+        action,
+        resourceId,
+        timestamp: new Date()
+      };
+      
+      res.json(usage);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Rating areas endpoint
+  app.get('/api/rating-areas', async (req: Request, res: Response) => {
+    try {
+      const ratingAreas = [
+        { zip: '90210', county: 'Los Angeles', state: 'CA', ratingArea: 1 },
+        { zip: '94102', county: 'San Francisco', state: 'CA', ratingArea: 2 },
+        { zip: '93710', county: 'Fresno', state: 'CA', ratingArea: 3 }
+      ];
+      res.json(ratingAreas);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Carriers endpoint
+  app.get('/api/carriers', async (req: Request, res: Response) => {
+    try {
+      const carriers = [
+        { id: 'anthem', name: 'Anthem Blue Cross', active: true },
+        { id: 'blue_shield', name: 'Blue Shield of California', active: true },
+        { id: 'kaiser', name: 'Kaiser Permanente', active: true },
+        { id: 'health_net', name: 'Health Net', active: true },
+        { id: 'sharp', name: 'Sharp Health Plan', active: true }
+      ];
+      res.json(carriers);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Quote generation endpoint
+  app.post('/api/quotes/generate', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { zipCode, effectiveDate, employees, planTypes } = req.body;
+      
+      if (!zipCode || !effectiveDate || !planTypes?.length) {
+        return res.status(400).json({ message: 'Missing required quote parameters' });
+      }
+
+      const quotes = planTypes.map((type: string, index: number) => ({
+        id: `quote_${Date.now()}_${index}`,
+        carrierName: ['Anthem Blue Cross', 'Kaiser Permanente', 'Health Net'][index % 3],
+        planName: `${type.charAt(0).toUpperCase() + type.slice(1)} Plan ${index + 1}`,
+        planType: type,
+        monthlyPremium: 450 + (index * 50),
+        deductible: 1000 + (index * 500),
+        outOfPocketMax: 5000 + (index * 1000),
+        network: 'PPO',
+        metalTier: ['Bronze', 'Silver', 'Gold'][index % 3]
+      }));
+
+      res.json({ quotes, ratingArea: 1 });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
