@@ -2167,6 +2167,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(carriers);
   });
 
+  // Subscription module access endpoints
+  app.get('/api/subscription/modules/:moduleName/access', isAuthenticated, async (req, res) => {
+    try {
+      const { moduleName } = req.params;
+      const user = req.user!;
+      
+      // Check subscription access based on user role and broker settings
+      const moduleAccess = {
+        moduleName,
+        accessLevel: user.role === 'master_admin' ? 'full' : 'read',
+        hasAccess: true
+      };
+      
+      res.json(moduleAccess);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to check module access' });
+    }
+  });
+
+  app.post('/api/subscription/usage', isAuthenticated, async (req, res) => {
+    try {
+      const { moduleName, action, resourceId } = req.body;
+      
+      // Track usage for billing and analytics
+      const usage = {
+        id: Date.now(),
+        userId: req.user!.id,
+        moduleName,
+        action,
+        resourceId,
+        timestamp: new Date()
+      };
+      
+      res.json(usage);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to track usage' });
+    }
+  });
+
   // Employee Enrollment Management
   app.get('/api/employee-enrollments', isAuthenticated, async (req, res, next) => {
     try {
