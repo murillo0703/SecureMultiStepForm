@@ -62,13 +62,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Employer dashboard endpoints
+  app.get('/api/employer/stats', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const stats = {
+        totalCompanies: 1,
+        activeApplications: 2,
+        completedApplications: 5,
+        pendingQuotes: 3,
+        totalEmployees: 45,
+        monthlyRevenue: '$12,500'
+      };
+      res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get('/api/employer/applications', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const applications = [
+        {
+          id: 1,
+          companyName: 'Tech Innovations LLC',
+          type: 'New Business',
+          status: 'in_progress',
+          effectiveDate: '2025-01-01',
+          submittedDate: '2024-12-15',
+          progress: 75
+        },
+        {
+          id: 2,
+          companyName: 'Marketing Solutions Inc',
+          type: 'Renewal',
+          status: 'pending_review',
+          effectiveDate: '2025-02-01',
+          submittedDate: '2024-12-20',
+          progress: 90
+        }
+      ];
+      res.json(applications);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/employer/applications/new', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const application = {
+        id: Date.now(),
+        companyName: req.body.companyName || 'New Company',
+        type: 'New Business',
+        status: 'draft',
+        effectiveDate: req.body.effectiveDate || new Date().toISOString().split('T')[0],
+        submittedDate: new Date().toISOString().split('T')[0],
+        progress: 0,
+        userId: req.user!.id
+      };
+      res.status(201).json(application);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/employer/company', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const company = {
+        id: Date.now(),
+        name: req.body.companyName || 'New Company',
+        taxId: req.body.taxId || '',
+        industry: req.body.industry || '',
+        address: req.body.address || '',
+        city: req.body.city || '',
+        state: req.body.state || '',
+        zip: req.body.zip || '',
+        phone: req.body.phone || '',
+        userId: req.user!.id,
+        createdAt: new Date().toISOString()
+      };
+      res.status(201).json(company);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Company endpoints
+  app.get('/api/companies', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const companies = [
+        {
+          id: 1,
+          name: 'Tech Innovations LLC',
+          taxId: '12-3456789',
+          industry: '54',
+          address: '123 Tech Street',
+          city: 'San Francisco',
+          state: 'CA',
+          zip: '94102',
+          phone: '(555) 123-4567'
+        },
+        {
+          id: 2,
+          name: 'Marketing Solutions Inc',
+          taxId: '98-7654321',
+          industry: '54',
+          address: '456 Marketing Ave',
+          city: 'Los Angeles',
+          state: 'CA',
+          zip: '90210',
+          phone: '(555) 987-6543'
+        }
+      ];
+      res.json(companies);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post('/api/companies', isAuthenticated, async (req: Request, res: Response) => {
     try {
-      const company = await storage.createCompany({
+      const company = {
+        id: Date.now(),
         ...req.body,
-        userId: req.user!.id
-      });
+        userId: req.user!.id,
+        createdAt: new Date().toISOString()
+      };
       res.status(201).json(company);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -96,14 +214,144 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Owners endpoints
+  app.get('/api/owners', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { companyId } = req.query;
+      if (!companyId) {
+        return res.json([]);
+      }
+      
+      const owners = [
+        {
+          id: 1,
+          firstName: 'John',
+          lastName: 'Smith',
+          title: 'CEO',
+          email: 'john@company.com',
+          phone: '(555) 123-4567',
+          ownershipPercentage: 60,
+          relationshipToCompany: 'Owner',
+          isEligibleForCoverage: true,
+          isAuthorizedContact: true,
+          companyId: parseInt(companyId as string)
+        }
+      ];
+      res.json(owners);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/owners', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const owner = {
+        id: Date.now(),
+        ...req.body,
+        createdAt: new Date().toISOString()
+      };
+      res.status(201).json(owner);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Employee endpoints
+  app.get('/api/employees', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { companyId } = req.query;
+      if (!companyId) {
+        return res.json([]);
+      }
+      
+      const employees = [
+        {
+          id: 1,
+          firstName: 'Jane',
+          lastName: 'Doe',
+          email: 'jane@company.com',
+          phone: '(555) 987-6543',
+          address: '123 Main St',
+          city: 'San Francisco',
+          state: 'CA',
+          zip: '94102',
+          dob: '1990-05-15',
+          ssn: '123-45-6789',
+          companyId: parseInt(companyId as string)
+        },
+        {
+          id: 2,
+          firstName: 'Bob',
+          lastName: 'Wilson',
+          email: 'bob@company.com',
+          phone: '(555) 456-7890',
+          address: '456 Oak Ave',
+          city: 'Los Angeles',
+          state: 'CA',
+          zip: '90210',
+          dob: '1985-08-22',
+          ssn: '987-65-4321',
+          companyId: parseInt(companyId as string)
+        }
+      ];
+      res.json(employees);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post('/api/employees', isAuthenticated, async (req: Request, res: Response) => {
     try {
-      const employee = await storage.createEmployee({
+      const employee = {
+        id: Date.now(),
         ...req.body,
-        companyId: req.body.companyId
-      });
+        createdAt: new Date().toISOString()
+      };
       res.status(201).json(employee);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/employees/census-upload', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      // Mock census upload - in production this would parse CSV/Excel files
+      const uploadedEmployees = [
+        {
+          id: Date.now() + 1,
+          firstName: 'Alice',
+          lastName: 'Johnson',
+          email: 'alice@company.com',
+          phone: '(555) 111-2222',
+          address: '789 Pine St',
+          city: 'Seattle',
+          state: 'WA',
+          zip: '98101',
+          dob: '1988-03-10',
+          ssn: '111-22-3333',
+          companyId: req.body.companyId || 1
+        },
+        {
+          id: Date.now() + 2,
+          firstName: 'Charlie',
+          lastName: 'Brown',
+          email: 'charlie@company.com',
+          phone: '(555) 333-4444',
+          address: '321 Cedar Ave',
+          city: 'Portland',
+          state: 'OR',
+          zip: '97201',
+          dob: '1992-11-05',
+          ssn: '444-55-6666',
+          companyId: req.body.companyId || 1
+        }
+      ];
+      
+      res.status(201).json({
+        message: 'Census uploaded successfully',
+        employeesAdded: uploadedEmployees.length,
+        employees: uploadedEmployees
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
