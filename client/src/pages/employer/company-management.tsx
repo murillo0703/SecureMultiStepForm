@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { TwoPanelLayout } from '@/components/layouts/two-panel-layout';
 import { 
   Building2, 
@@ -65,12 +69,115 @@ interface CompanyLocation {
 }
 
 const US_STATES = [
-  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+  { value: 'AL', label: 'Alabama' },
+  { value: 'AK', label: 'Alaska' },
+  { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
+  { value: 'CA', label: 'California' },
+  { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' },
+  { value: 'DE', label: 'Delaware' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' },
+  { value: 'HI', label: 'Hawaii' },
+  { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'IN', label: 'Indiana' },
+  { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' },
+  { value: 'KY', label: 'Kentucky' },
+  { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' },
+  { value: 'MD', label: 'Maryland' },
+  { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' },
+  { value: 'MT', label: 'Montana' },
+  { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' },
+  { value: 'NH', label: 'New Hampshire' },
+  { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' },
+  { value: 'NY', label: 'New York' },
+  { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' },
+  { value: 'OH', label: 'Ohio' },
+  { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' },
+  { value: 'PA', label: 'Pennsylvania' },
+  { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' },
+  { value: 'SD', label: 'South Dakota' },
+  { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'UT', label: 'Utah' },
+  { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' },
+  { value: 'WA', label: 'Washington' },
+  { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' },
+  { value: 'WY', label: 'Wyoming' }
 ];
+
+const INDUSTRIES = [
+  { value: '11', label: 'Agriculture, Forestry, Fishing and Hunting' },
+  { value: '21', label: 'Mining, Quarrying, and Oil and Gas Extraction' },
+  { value: '22', label: 'Utilities' },
+  { value: '23', label: 'Construction' },
+  { value: '31-33', label: 'Manufacturing' },
+  { value: '42', label: 'Wholesale Trade' },
+  { value: '44-45', label: 'Retail Trade' },
+  { value: '48-49', label: 'Transportation and Warehousing' },
+  { value: '51', label: 'Information' },
+  { value: '52', label: 'Finance and Insurance' },
+  { value: '53', label: 'Real Estate and Rental and Leasing' },
+  { value: '54', label: 'Professional, Scientific, and Technical Services' },
+  { value: '55', label: 'Management of Companies and Enterprises' },
+  { value: '56', label: 'Administrative and Support and Waste Management and Remediation Services' },
+  { value: '61', label: 'Educational Services' },
+  { value: '62', label: 'Health Care and Social Assistance' },
+  { value: '71', label: 'Arts, Entertainment, and Recreation' },
+  { value: '72', label: 'Accommodation and Food Services' },
+  { value: '81', label: 'Other Services (except Public Administration)' },
+  { value: '92', label: 'Public Administration' }
+];
+
+const companyFormSchema = z.object({
+  companyName: z.string().min(1, 'Company name is required'),
+  legalName: z.string().optional(),
+  taxId: z.string().regex(/^\d{2}-\d{7}$/, 'Tax ID must be in format XX-XXXXXXX'),
+  industry: z.string().min(1, 'Industry is required'),
+  website: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  employeeCount: z.number().min(1, 'Employee count must be at least 1'),
+  effectiveDate: z.string().min(1, 'Effective date is required'),
+  address: z.string().min(1, 'Address is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(2, 'State is required'),
+  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, 'ZIP code must be in format XXXXX or XXXXX-XXXX'),
+  phone: z.string().regex(/^\(\d{3}\) \d{3}-\d{4}$/, 'Phone must be in format (XXX) XXX-XXXX')
+});
+
+// Input masking functions
+const formatTaxId = (value: string) => {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}-${digits.slice(2, 9)}`;
+};
+
+const formatPhone = (value: string) => {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+};
+
+const formatZipCode = (value: string) => {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length <= 5) return digits;
+  return `${digits.slice(0, 5)}-${digits.slice(5, 9)}`;
+};
 
 const RATING_AREAS = [
   'Area 1', 'Area 2', 'Area 3', 'Area 4', 'Area 5', 'Area 6', 'Area 7',
@@ -83,14 +190,23 @@ export default function CompanyManagement() {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [activeSection, setActiveSection] = useState('overview');
   const [isCompanyDialogOpen, setIsCompanyDialogOpen] = useState(false);
-  const [companyFormData, setCompanyFormData] = useState({
-    companyName: '',
-    legalName: '',
-    taxId: '',
-    industry: '',
-    website: '',
-    employeeCount: 1,
-    effectiveDate: new Date().toISOString().split('T')[0],
+
+  const form = useForm({
+    resolver: zodResolver(companyFormSchema),
+    defaultValues: {
+      companyName: '',
+      legalName: '',
+      taxId: '',
+      industry: '',
+      website: '',
+      employeeCount: 1,
+      effectiveDate: new Date().toISOString().split('T')[0],
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      phone: ''
+    }
   });
 
   // Fetch companies
