@@ -41,6 +41,7 @@ import ComingSoonPage from '@/pages/enrollment/coming-soon';
 import BrokerSettingsPage from '@/pages/broker-settings';
 import DocumentManager from '@/pages/document-manager';
 import BrokerDashboard from '@/pages/broker/dashboard';
+import SmartDocumentDemo from '@/pages/enrollment/smart-document-demo';
 import { ProtectedRoute } from '@/lib/protected-route';
 import { getBrandConfig } from '@/lib/brand-config';
 import { RoleSwitcher } from '@/components/role-switcher';
@@ -121,13 +122,7 @@ function Router() {
       <ProtectedRoute path="/enrollment/employee-info" component={EmployeeInfo} />
       <ProtectedRoute path="/enrollment/documents" component={DocumentUpload} />
       <ProtectedRoute path="/enrollment/document-upload" component={DocumentUpload} />
-      <ProtectedRoute
-        path="/enrollment/smart-documents"
-        component={() => {
-          const SmartDocumentDemo = require('@/pages/enrollment/smart-document-demo').default;
-          return <SmartDocumentDemo />;
-        }}
-      />
+      <ProtectedRoute path="/enrollment/smart-documents" component={SmartDocumentDemo} />
       <ProtectedRoute path="/enrollment/plans" component={PlanSelection} />
       <ProtectedRoute path="/enrollment/plan-selection" component={PlanSelection} />
       <ProtectedRoute path="/enrollment/contributions" component={ContributionSetup} />

@@ -7,6 +7,7 @@ import { queryClient } from '@/lib/queryClient';
 import { AuthProvider } from '@/hooks/use-auth';
 import { applyBrandTheme } from '@/lib/brand-config';
 import { Toaster } from '@/components/ui/toaster';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 // Apply brand theme variables from configuration
 applyBrandTheme();
