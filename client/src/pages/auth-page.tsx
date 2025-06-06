@@ -294,7 +294,7 @@ export default function AuthPage() {
           {/* Using dynamic branding from configuration */}
           {getBrandConfig().logo ? (
             <img
-              src={getBrandConfig().logo}
+              src={getBrandConfig().logo!}
               alt={getAppName()}
               className="mx-auto mb-4 h-12 w-auto"
             />
