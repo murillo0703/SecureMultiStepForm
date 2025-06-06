@@ -760,6 +760,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enrollment Routes
+  app.post('/api/enrollment/start-application', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      PerformanceMonitor.startTimer('start-application');
+      ApplicationLogger.info('Starting new enrollment application', { userId: req.user?.id });
+      
+      const userId = req.user?.id || 1;
+      
+      // Get the company ID from onboarding progress
+      const progress = await storage.getOnboardingProgress(userId);
+      if (!progress?.companyId) {
+        ApplicationLogger.warn('No company found for user starting application', { userId });
+        return res.status(400).json({ error: 'Company information must be completed first' });
+      }
+      
+      // Create a new application
+      const application = await storage.createApplication({
+        companyId: progress.companyId,
+        status: 'in_progress',
+        currentStep: 'employee_info'
+      });
+      
+      ApplicationLogger.info('Application created successfully', { 
+        applicationId: application.id, 
+        companyId: progress.companyId 
+      });
+      
+      PerformanceMonitor.endTimer('start-application', 'Enrollment application started');
+      
+      ResponseUtils.success(res, { 
+        applicationId: application.id,
+        companyId: progress.companyId,
+        currentStep: 'employee_info'
+      }, 'Application started successfully');
+    } catch (error: any) {
+      ErrorHandler.handleApiError(error, req, res, 'start-application');
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
