@@ -9,15 +9,16 @@ export interface AppError {
 
 export class ErrorHandler {
   // Enhanced error logging with structured format
-  static logError(error: any, context?: string): void {
+  static logError(error: unknown, context?: string): void {
     const timestamp = new Date().toISOString();
+    const err = error as any;
     const errorInfo = {
       timestamp,
       context: context || 'Unknown',
-      message: error.message || 'Unknown error',
-      stack: error.stack,
-      ...(error.code && { code: error.code }),
-      ...(error.status && { status: error.status }),
+      message: err?.message || 'Unknown error',
+      stack: err?.stack,
+      ...(err?.code && { code: err.code }),
+      ...(err?.status && { status: err.status }),
     };
     
     console.error('[ERROR]', JSON.stringify(errorInfo, null, 2));
@@ -34,11 +35,12 @@ export class ErrorHandler {
       return { success: true, data };
     } catch (error) {
       this.logError(error, context);
+      const err = error as any;
       
       const appError: AppError = {
-        code: error.code || 'UNKNOWN_ERROR',
-        message: error.message || 'An unexpected error occurred',
-        details: error.details,
+        code: err?.code || 'UNKNOWN_ERROR',
+        message: err?.message || 'An unexpected error occurred',
+        details: err?.details,
         timestamp: new Date(),
       };
 
