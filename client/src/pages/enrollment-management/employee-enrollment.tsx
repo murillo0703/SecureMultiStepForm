@@ -404,7 +404,7 @@ export default function EmployeeEnrollment() {
                                 <SelectValue placeholder="Select medical plan" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">No Coverage</SelectItem>
+                                <SelectItem value="">No coverage</SelectItem>
                                 {availablePlans
                                   .filter(plan => plan.type === 'medical')
                                   .map(plan => (
@@ -434,7 +434,7 @@ export default function EmployeeEnrollment() {
                                 <SelectValue placeholder="Select dental plan" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">No Coverage</SelectItem>
+                                <SelectItem value="">No coverage</SelectItem>
                                 {availablePlans
                                   .filter(plan => plan.type === 'dental')
                                   .map(plan => (
@@ -464,7 +464,7 @@ export default function EmployeeEnrollment() {
                                 <SelectValue placeholder="Select vision plan" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">No Coverage</SelectItem>
+                                <SelectItem value="">No coverage</SelectItem>
                                 {availablePlans
                                   .filter(plan => plan.type === 'vision')
                                   .map(plan => (
